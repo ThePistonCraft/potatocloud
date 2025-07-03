@@ -28,6 +28,7 @@
         <jline.version>3.30.4</jline.version>
         <commons-io.version>2.19.0</commons-io.version>
         <slf4j-nop.version>2.0.7</slf4j-nop.version>
+        <netty.version>4.2.2.Final</netty.version>
 
         <paper.version>1.21.6-R0.1-SNAPSHOT</paper.version>
         <velocity.version>3.4.0-SNAPSHOT</velocity.version>
