@@ -11,7 +11,7 @@ public class Launcher {
         if (args[0].equalsIgnoreCase("--manager")) {
             net.potatocloud.manager.ManagerMain.main(args);
         } else if (args[0].equalsIgnoreCase("--node")) {
-            //net.potatocloud.node.NodeMain.main(args);
+            net.potatocloud.node.NodeMain.main(args);
         } else {
             System.err.println("Use --manager or --node");
         }
