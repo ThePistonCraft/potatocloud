@@ -24,6 +24,18 @@
             <artifactId>core</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>net.potatocloud.manager</groupId>
+            <artifactId>manager</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.potatocloud.node</groupId>
+            <artifactId>node</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
