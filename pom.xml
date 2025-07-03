@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
@@ -29,6 +29,7 @@
         <commons-io.version>2.19.0</commons-io.version>
         <slf4j-nop.version>2.0.7</slf4j-nop.version>
         <netty.version>4.2.2.Final</netty.version>
+        <simpleyaml.version>1.8.4</simpleyaml.version>
 
         <paper.version>1.21.6-R0.1-SNAPSHOT</paper.version>
         <velocity.version>3.4.0-SNAPSHOT</velocity.version>

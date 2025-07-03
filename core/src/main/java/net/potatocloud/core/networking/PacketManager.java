@@ -1,8 +1,12 @@
 package net.potatocloud.core.networking;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import lombok.Getter;
-import java.util.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Getter
 public class PacketManager {

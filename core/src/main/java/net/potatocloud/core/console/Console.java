@@ -17,8 +17,8 @@ public class Console {
 
     private final Terminal terminal;
     private final LineReader lineReader;
-    private ConsoleReader consoleReader;
     private final String prompt;
+    private ConsoleReader consoleReader;
 
     @SneakyThrows
     public Console(String prompt, CommandManager commandManager, ShutdownHandler shutdownHandler) {

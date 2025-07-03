@@ -12,11 +12,10 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class Logger {
 
-    private final Console console;
-    private final File logsFolder;
-
     private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+    private final Console console;
+    private final File logsFolder;
 
     public void info(String message) {
         log("INFO", "&a", message);
