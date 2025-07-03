@@ -1,0 +1,21 @@
+package net.potatocloud.api;
+
+import lombok.Getter;
+import net.potatocloud.api.group.ServiceGroupManager;
+import net.potatocloud.api.service.ServiceManager;
+
+@Getter
+public abstract class CloudAPI {
+
+    @Getter
+    private static CloudAPI instance;
+
+    public CloudAPI() {
+        instance = this;
+    }
+
+    public abstract ServiceGroupManager getServiceGroupManager();
+
+    public abstract ServiceManager getServiceManager();
+
+}
