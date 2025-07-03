@@ -3,7 +3,6 @@ package net.potatocloud.api.group;
 import net.potatocloud.api.platform.Platform;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ServiceGroupManager {
 
