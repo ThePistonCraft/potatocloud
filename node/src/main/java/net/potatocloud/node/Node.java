@@ -10,6 +10,7 @@ import net.potatocloud.node.console.Console;
 import net.potatocloud.node.console.ExceptionMessageHandler;
 import net.potatocloud.node.console.Logger;
 import net.potatocloud.node.group.ServiceGroupManagerImpl;
+import net.potatocloud.node.platform.PlatformDownloader;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -22,6 +23,7 @@ public class Node extends CloudAPI {
     private final Console console;
     private final Logger logger;
     private final ServiceGroupManager groupManager;
+    private final PlatformDownloader platformDownloader;
 
     public Node() {
         config = new NodeConfig();
@@ -34,6 +36,8 @@ public class Node extends CloudAPI {
 
         groupManager = new ServiceGroupManagerImpl(Path.of(config.getGroupsFolder()));
         logger.info("Found &a" + groupManager.getAllServiceGroups().size() + "&7 Service Groups!");
+
+        platformDownloader = new PlatformDownloader(Path.of(config.getPlatformsFolder()), logger);
     }
 
     public static Node getInstance() {

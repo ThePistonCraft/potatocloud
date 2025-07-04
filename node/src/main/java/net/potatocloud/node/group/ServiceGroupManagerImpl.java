@@ -46,14 +46,13 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
         final List<String> templates = new ArrayList<>();
         templates.add("every");
         templates.add(name);
-        //todo
-        /*
+
         if (platform.isProxy()) {
             templates.add("every_proxy");
         } else {
             templates.add("every_service");
         }
-         */
+
         final ServiceGroup group = new ServiceGroupImpl(
                 name,
                 minOnlineCount,
