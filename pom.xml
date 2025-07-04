@@ -11,10 +11,8 @@
 
     <modules>
         <module>core</module>
-        <module>manager</module>
         <module>node</module>
         <module>api</module>
-        <module>launcher</module>
     </modules>
 
     <properties>

@@ -1,4 +1,4 @@
-package net.potatocloud.core.console;
+package net.potatocloud.node.console;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;

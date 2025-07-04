@@ -1,4 +1,4 @@
-package net.potatocloud.manager.group;
+package net.potatocloud.node.group;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;

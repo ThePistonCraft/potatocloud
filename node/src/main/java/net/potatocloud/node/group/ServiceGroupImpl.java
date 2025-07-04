@@ -1,4 +1,4 @@
-package net.potatocloud.manager.group;
+package net.potatocloud.node.group;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,7 +7,7 @@ import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.service.Service;
-import net.potatocloud.manager.Manager;
+import net.potatocloud.node.Node;
 import org.simpleyaml.configuration.file.YamlFile;
 
 import java.io.File;
@@ -54,7 +54,7 @@ public class ServiceGroupImpl implements ServiceGroup {
         this.platform = platform;
         this.serviceTemplates = new ArrayList<>(serviceTemplates);
 
-        final Path groupsFolder = Path.of(Manager.getInstance().getConfig().getGroupsFolder());
+        final Path groupsFolder = Path.of(Node.getInstance().getConfig().getGroupsFolder());
 
         this.configPath = groupsFolder.resolve(name + ".yml");
         groupsFolder.toFile().mkdirs();

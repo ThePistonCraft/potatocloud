@@ -1,4 +1,4 @@
-package net.potatocloud.core.command;
+package net.potatocloud.node.command;
 
 import java.util.List;
 

@@ -1,9 +1,9 @@
-package net.potatocloud.core.console;
+package net.potatocloud.node.console;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
-import net.potatocloud.core.command.CommandManager;
-import net.potatocloud.core.shutdown.ShutdownHandler;
+import net.potatocloud.node.Node;
+import net.potatocloud.node.command.CommandManager;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.terminal.Terminal;
@@ -21,7 +21,7 @@ public class Console {
     private ConsoleReader consoleReader;
 
     @SneakyThrows
-    public Console(String prompt, CommandManager commandManager, ShutdownHandler shutdownHandler) {
+    public Console(String prompt, CommandManager commandManager, Node node) {
         terminal = TerminalBuilder.builder()
                 .name("potatocloud-console")
                 .system(true)
@@ -32,7 +32,7 @@ public class Console {
                 .terminal(terminal)
                 .build();
 
-        consoleReader = new ConsoleReader(this, commandManager, shutdownHandler);
+        consoleReader = new ConsoleReader(this, commandManager, node);
 
         this.prompt = ConsoleColor.format(prompt.replace("%user%", System.getProperty("user.name")));
     }

@@ -1,8 +1,8 @@
-package net.potatocloud.core.console;
+package net.potatocloud.node.console;
 
 import lombok.RequiredArgsConstructor;
-import net.potatocloud.core.command.CommandManager;
-import net.potatocloud.core.shutdown.ShutdownHandler;
+import net.potatocloud.node.Node;
+import net.potatocloud.node.command.CommandManager;
 import org.jline.reader.EndOfFileException;
 import org.jline.reader.UserInterruptException;
 
@@ -11,7 +11,7 @@ public class ConsoleReader extends Thread {
 
     private final Console console;
     private final CommandManager commandManager;
-    private final ShutdownHandler shutdownHandler;
+    private final Node node;
 
     @Override
     public void run() {
@@ -24,7 +24,7 @@ public class ConsoleReader extends Thread {
                 }
             }
         } catch (UserInterruptException | EndOfFileException e) {
-            shutdownHandler.shutdown();
+            node.shutdown();
         }
     }
 }

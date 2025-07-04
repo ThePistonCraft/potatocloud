@@ -10,8 +10,8 @@ public interface ServiceManager {
 
     List<Service> getAllOnlineServices();
 
-    void startService(ServiceGroup group);
+    void startService(ServiceGroup serviceGroup);
 
-    void startServices(ServiceGroup group, int count);
+    void startServices(ServiceGroup serviceGroup, int count);
 
 }

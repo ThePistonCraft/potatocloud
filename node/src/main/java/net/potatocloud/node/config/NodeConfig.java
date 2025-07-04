@@ -1,4 +1,4 @@
-package net.potatocloud.manager.config;
+package net.potatocloud.node.config;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -8,12 +8,12 @@ import org.simpleyaml.configuration.file.YamlFile;
 import java.io.File;
 
 @Getter
-public class ManagerConfig {
+public class NodeConfig {
 
     private int serviceStartPort = 30000;
     private int proxyStartPort = 25565;
 
-    private String prompt = "%user%@manager &8> ";
+    private String prompt = "%user%@node &8> ";
     private String splitter = "-";
 
     private String groupsFolder = "groups";
@@ -23,11 +23,11 @@ public class ManagerConfig {
     private String platformsFolder = "platforms";
     private String logsFolder = "logs";
 
-    private String controllerHost = "127.0.0.1";
-    private int controllerPort = 9000;
+    private String nodeHost = "127.0.0.1";
+    private int nodePort = 9000;
 
     @SneakyThrows
-    public ManagerConfig() {
+    public NodeConfig() {
         final File file = new File("config.yml");
         final YamlFile yaml = new YamlFile(file);
 
@@ -50,8 +50,8 @@ public class ManagerConfig {
         this.platformsFolder = yaml.getString("folders.platforms", platformsFolder);
         this.logsFolder = yaml.getString("folders.logs", logsFolder);
 
-        this.controllerHost = yaml.getString("manager.host", controllerHost);
-        this.controllerPort = yaml.getInt("manager.port", controllerPort);
+        this.nodeHost = yaml.getString("node.host", nodeHost);
+        this.nodePort = yaml.getInt("node.port", nodePort);
     }
 
     @SneakyThrows
@@ -72,8 +72,8 @@ public class ManagerConfig {
         yaml.set("folders.platforms", platformsFolder);
         yaml.set("folders.logs", logsFolder);
 
-        yaml.set("manager.host", controllerHost);
-        yaml.set("manager.port", controllerPort);
+        yaml.set("node.host", nodeHost);
+        yaml.set("node.port", nodePort);
 
         yaml.save();
     }
