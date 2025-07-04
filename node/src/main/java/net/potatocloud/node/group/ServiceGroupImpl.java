@@ -6,6 +6,7 @@ import lombok.SneakyThrows;
 import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.platform.Platform;
+import net.potatocloud.api.platform.PlatformVersions;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.node.Node;
 import org.simpleyaml.configuration.file.YamlFile;
@@ -61,7 +62,7 @@ public class ServiceGroupImpl implements ServiceGroup {
 
         // create template folders
         for (String templateName : serviceTemplates) {
-            //todo
+            Node.getInstance().getTemplateManager().createTemplate(templateName);
         }
 
         this.config = new YamlFile(configPath.toFile());
@@ -74,7 +75,6 @@ public class ServiceGroupImpl implements ServiceGroup {
         final YamlFile config = new YamlFile(file);
         config.load();
 
-        //todo read platform
         return new ServiceGroupImpl(
                 config.getString("name"),
                 config.getInt("minOnlineCount"),
@@ -83,7 +83,7 @@ public class ServiceGroupImpl implements ServiceGroup {
                 config.getInt("maxMemory"),
                 config.getBoolean("fallback"),
                 config.getBoolean("static"),
-                null,
+                PlatformVersions.getPlatformByName(config.getString("platform")),
                 config.getStringList("templates")
         );
     }
@@ -128,7 +128,7 @@ public class ServiceGroupImpl implements ServiceGroup {
         config.set("maxMemory", maxMemory);
         config.set("fallback", fallback);
         config.set("static", isStatic);
-        // todo config.set("platform", platform.getName());
+        config.set("platform", platform.getFullName());
         config.set("templates", serviceTemplates);
         config.save();
     }

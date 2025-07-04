@@ -1,6 +1,7 @@
 package net.potatocloud.api.platform;
 
 import lombok.Getter;
+import lombok.experimental.Accessors;
 import net.potatocloud.api.platform.impl.PandaSpigotVersion;
 import net.potatocloud.api.platform.impl.PaperMCPlatformVersion;
 import net.potatocloud.api.platform.impl.PurpurPlatformVersion;
@@ -49,17 +50,17 @@ public enum PlatformVersions {
     VELOCITY_3_30(new PaperMCPlatformVersion("velocity", "3.4.0-SNAPSHOT"));
 
     @Getter
-    private final Platform platformVersion;
+    @Accessors(fluent = true)
+    private final Platform platform;
 
-    PlatformVersions(Platform platformVersion) {
-        this.platformVersion = platformVersion;
+    PlatformVersions(Platform platform) {
+        this.platform = platform;
     }
 
     public static Platform getPlatformByName(String name) {
         for (PlatformVersions platform : values()) {
-            String fullPlatformName = platform.getPlatformVersion().getPlatformName() + "-" + platform.getPlatformVersion().getVersion();
-            if (fullPlatformName.equalsIgnoreCase(name.toLowerCase())) {
-                return platform.getPlatformVersion();
+            if (platform.platform().getFullName().equalsIgnoreCase(name.toLowerCase())) {
+                return platform.platform();
             }
         }
         return null;

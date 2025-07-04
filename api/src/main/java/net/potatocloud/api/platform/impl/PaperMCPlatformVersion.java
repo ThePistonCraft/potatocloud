@@ -19,9 +19,9 @@ public class PaperMCPlatformVersion implements Platform {
 
     private final String platformName;
     private final String version;
+    private final List<String> recommendedFlags = new ArrayList<>();
     private String downloadUrl = "";
     private String fileHash;
-    private final List<String> recommendedFlags = new ArrayList<>();
 
     @Override
     public String getDownloadUrl() {
