@@ -8,6 +8,7 @@ import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.PlatformVersions;
 import net.potatocloud.api.service.Service;
+import net.potatocloud.api.service.ServiceState;
 import net.potatocloud.node.Node;
 import org.simpleyaml.configuration.file.YamlFile;
 
@@ -95,7 +96,7 @@ public class ServiceGroupImpl implements ServiceGroup {
                 .getAllOnlineServices()
                 .stream()
                 .filter(service -> service.getServiceGroup().getName().equals(name))
-                .filter(Service::isOnline)
+                .filter(service -> service.getState().equals(ServiceState.RUNNING) || service.getState().equals(ServiceState.STARTING))
                 .toList();
     }
 

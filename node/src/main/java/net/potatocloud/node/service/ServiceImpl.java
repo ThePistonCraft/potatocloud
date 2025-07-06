@@ -179,7 +179,7 @@ public class ServiceImpl implements Service {
             return;
         }
 
-        logger.info("Stopping service &9" + getName() + "&7...");
+        logger.info("Stopping service &a" + getName() + "&7...");
 
         state = ServiceState.STOPPING;
 
@@ -190,10 +190,12 @@ public class ServiceImpl implements Service {
             processWriter = null;
         }
 
-        if (serverProcess.waitFor(10, TimeUnit.SECONDS)) {
-            serverProcess.toHandle().destroyForcibly();
-            serverProcess = null;
-            return;
+        if (serverProcess != null) {
+            if (serverProcess.waitFor(10, TimeUnit.SECONDS)) {
+                serverProcess.toHandle().destroyForcibly();
+                serverProcess = null;
+                return;
+            }
         }
 
         state = ServiceState.STOPPED;
@@ -205,7 +207,7 @@ public class ServiceImpl implements Service {
             FileUtils.deleteDirectory(directory.toFile());
         }
 
-        logger.info("Service &9" + getName() + " &7has been stopped.");
+        logger.info("Service &a" + getName() + " &7has been stopped.");
     }
 
     @Override

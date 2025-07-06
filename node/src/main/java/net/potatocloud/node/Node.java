@@ -7,6 +7,7 @@ import net.potatocloud.api.group.ServiceGroupManager;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.node.command.CommandManager;
+import net.potatocloud.node.command.commands.GroupCommand;
 import net.potatocloud.node.config.NodeConfig;
 import net.potatocloud.node.console.Console;
 import net.potatocloud.node.console.ExceptionMessageHandler;
@@ -45,12 +46,24 @@ public class Node extends CloudAPI {
 
         templateManager = new TemplateManager(logger, Path.of(config.getTemplatesFolder()));
         groupManager = new ServiceGroupManagerImpl(Path.of(config.getGroupsFolder()));
+
+        ((ServiceGroupManagerImpl) groupManager).loadGroups();
         logger.info("Found &a" + groupManager.getAllServiceGroups().size() + "&7 Service Groups!");
 
         platformDownloader = new PlatformDownloader(Path.of(config.getPlatformsFolder()), logger);
-        serviceManager = new ServiceManagerImpl(config);
+        serviceManager = new ServiceManagerImpl(config, logger);
+        serviceManager.getAllOnlineServices().clear();
+
+        registerCommands();
+
+        logger.info("Successfully started the potatocloud node &8(&7Took &a"+ (System.currentTimeMillis() - Long.parseLong(System.getProperty("nodeStartupTime"))) + "ms&8)");
+
         serviceStartQueue = new ServiceStartQueue();
         serviceStartQueue.start();
+    }
+
+    private void registerCommands() {
+        commandManager.registerCommand(new GroupCommand(logger, groupManager));
     }
 
     public static Node getInstance() {
@@ -64,13 +77,13 @@ public class Node extends CloudAPI {
 
     @Override
     public ServiceManager getServiceManager() {
-        return null;
+        return serviceManager;
     }
 
     @SneakyThrows
     public void shutdown() {
         logger.info("&cShutting down node...");
-        serviceStartQueue.close();
+        serviceStartQueue.shutdown();
 
         for (Service service : serviceManager.getAllOnlineServices()) {
             service.shutdown();
