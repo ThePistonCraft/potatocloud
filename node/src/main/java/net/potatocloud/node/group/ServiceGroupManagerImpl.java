@@ -53,7 +53,7 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
             templates.add("every_service");
         }
 
-        final ServiceGroup group = new ServiceGroupImpl(
+        final ServiceGroup serviceGroup = new ServiceGroupImpl(
                 name,
                 minOnlineCount,
                 maxOnlineCount,
@@ -63,23 +63,23 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
                 isStatic,
                 platform,
                 templates);
-        serviceGroups.add(group);
-        return group;
+        serviceGroups.add(serviceGroup);
+        return serviceGroup;
     }
 
     @Override
-    public boolean deleteServiceGroup(ServiceGroup group) {
-        if (group == null || !serviceGroups.contains(group)) {
+    public boolean deleteServiceGroup(ServiceGroup serviceGroup) {
+        if (serviceGroup == null || !serviceGroups.contains(serviceGroup)) {
             return false;
         }
 
-        for (Service service : group.getOnlineServices()) {
+        for (Service service : serviceGroup.getOnlineServices()) {
             service.shutdown();
         }
 
-        serviceGroups.remove(group);
+        serviceGroups.remove(serviceGroup);
 
-        final Path filePath = groupsPath.resolve(group.getName() + ".yml");
+        final Path filePath = groupsPath.resolve(serviceGroup.getName() + ".yml");
         try {
             Files.deleteIfExists(filePath);
         } catch (IOException e) {

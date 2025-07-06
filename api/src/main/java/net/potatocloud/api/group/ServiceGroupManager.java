@@ -12,7 +12,7 @@ public interface ServiceGroupManager {
 
     ServiceGroup createServiceGroup(String name, int minOnlineCount, int maxOnlineCount, int maxPlayers, int maxMemory, boolean fallback, boolean isStatic, Platform platform);
 
-    boolean deleteServiceGroup(ServiceGroup group);
+    boolean deleteServiceGroup(ServiceGroup serviceGroup);
 
     boolean existsServiceGroup(String groupName);
 

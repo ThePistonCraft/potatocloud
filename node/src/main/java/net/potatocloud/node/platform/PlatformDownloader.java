@@ -42,7 +42,6 @@ public class PlatformDownloader {
             }
         }
 
-
         if (needsDownload) {
             logger.info("&7Downloading platform: &a" + platform.getFullName());
             final URL url = URI.create(platform.getDownloadUrl()).toURL();
