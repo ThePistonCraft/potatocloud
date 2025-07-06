@@ -1,0 +1,165 @@
+package net.potatocloud.node.command.commands;
+
+import lombok.RequiredArgsConstructor;
+import net.potatocloud.api.group.ServiceGroup;
+import net.potatocloud.api.group.ServiceGroupManager;
+import net.potatocloud.api.service.Service;
+import net.potatocloud.api.service.ServiceManager;
+import net.potatocloud.node.command.Command;
+import net.potatocloud.node.console.Logger;
+
+import java.util.Arrays;
+import java.util.List;
+
+@RequiredArgsConstructor
+public class ServiceCommand implements Command {
+
+    private final Logger logger;
+    private final ServiceManager serviceManager;
+    private final ServiceGroupManager groupManager;
+
+    @Override
+    public void execute(final String[] args) {
+        if (args.length == 0) {
+            sendHelp();
+            return;
+        }
+
+        final String sub = args[0].toLowerCase();
+
+        switch (sub) {
+            case "list" -> {
+                final List<Service> services = serviceManager.getAllOnlineServices();
+                if (services.isEmpty()) {
+                    logger.info("There are &cno &7running services");
+                    return;
+                }
+                for (final Service service : services) {
+                    logger.info("&8» &a" + service.getName() + " &7- Group: &a" + service.getServiceGroup().getName() + " &7- State: &a" + service.getState());
+                }
+            }
+
+            case "start" -> {
+                if (args.length < 2) {
+                    logger.info("&cUsage&8: &7service start &8[&agroupName&8] [&aamount&8]");
+                    return;
+                }
+
+                final String groupName = args[1];
+                if (!groupManager.existsServiceGroup(groupName)) {
+                    logger.info("&cNo service group found with the name &a" + groupName);
+                    return;
+                }
+
+                int amount = 1;
+                if (args.length >= 3) {
+                    try {
+                        amount = Integer.parseInt(args[2]);
+                        if (amount <= 0) {
+                            logger.info("&cUsage&8: &7service start &8[&agroupName&8] [&aamount&8]");
+                            return;
+                        }
+                    } catch (NumberFormatException e) {
+                        logger.info("&cUsage&8: &7service start &8[&agroupName&8] [&aamount&8]");
+                        return;
+                    }
+                }
+
+                final ServiceGroup group = groupManager.getServiceGroup(groupName);
+                serviceManager.startServices(group, amount);
+
+                logger.info("&7Starting " + amount + " new service(s) of group &a" + groupName);
+            }
+
+            case "stop" -> {
+                if (args.length < 2) {
+                    logger.info("&cUsage&8: &7service stop &8[&aserviceName&8]");
+                    return;
+                }
+                final String serviceName = args[1];
+                final Service service = serviceManager.getService(serviceName);
+                if (service == null) {
+                    logger.info("&cNo service found with the name &a" + serviceName);
+                    return;
+                }
+                service.shutdown();
+            }
+
+            case "info" -> {
+                if (args.length < 2) {
+                    logger.info("&cUsage&8: &7service info &8[&aserviceName&8]");
+                    return;
+                }
+                final String serviceName = args[1];
+                final Service service = serviceManager.getService(serviceName);
+                if (service == null) {
+                    logger.info("&cNo service found with the name &a" + serviceName);
+                    return;
+                }
+                logger.info("Name: &a" + service.getName());
+                logger.info("Group: &a" + service.getServiceGroup().getName());
+                logger.info("Port: &a" + service.getPort());
+                logger.info("State: &a" + service.getState());
+                logger.info("Online players: &a" + service.getOnlinePlayers());
+                logger.info("Memory usage: &a" + service.getUsedMemory() + "MB");
+                logger.info("Host: &a" + service.getHost());
+                logger.info("Start Timestamp: &a" + service.getStartTimestamp());
+            }
+
+            case "execute" -> {
+                if (args.length < 3) {
+                    logger.info("&cUsage&8: &7service execute &8[&aname&8] [&acommand&8...]");
+                    return;
+                }
+                final String serviceName = args[1];
+                final Service service = serviceManager.getService(serviceName);
+                if (service == null) {
+                    logger.info("&cNo service found with the name &a" + serviceName);
+                    return;
+                }
+                if (!service.isOnline()) {
+                    logger.info("Service &a" + serviceName + " &7is &cno &7online");
+                    return;
+                }
+
+                final String commandToExecute = String.join(" ", Arrays.copyOfRange(args, 2, args.length));
+
+                if (service.executeCommand(commandToExecute)) {
+                    logger.info("&7Executed command on service &a" + serviceName + "&8: &7" + commandToExecute);
+                } else {
+                    logger.info("&cFailed to execute command on service &a" + serviceName);
+                }
+            }
+
+            default -> sendHelp();
+        }
+    }
+
+    private void sendHelp() {
+        logger.info("service list &8- &7List all running services");
+        logger.info("service start &8[&agroupName&8] [&aamount&8] - &7Start new service(s)");
+        logger.info("service stop &8[&aname&8] - &7Stop a running service");
+        logger.info("service info &8[&aname&8] - &7Show details of a service");
+        logger.info("service execute &8[&aname&8] [&acommand&8...] - &7Execute a command on a service");
+    }
+
+    @Override
+    public String getName() {
+        return "service";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Manage services";
+    }
+
+    @Override
+    public List<String> getAliases() {
+        return List.of("services", "ser");
+    }
+
+    @Override
+    public List<String> complete(String[] args) {
+        return List.of();
+    }
+}

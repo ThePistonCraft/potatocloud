@@ -8,6 +8,8 @@ import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.node.command.CommandManager;
 import net.potatocloud.node.command.commands.GroupCommand;
+import net.potatocloud.node.command.commands.ServiceCommand;
+import net.potatocloud.node.command.commands.ShutdownCommand;
 import net.potatocloud.node.config.NodeConfig;
 import net.potatocloud.node.console.Console;
 import net.potatocloud.node.console.ExceptionMessageHandler;
@@ -64,6 +66,8 @@ public class Node extends CloudAPI {
 
     private void registerCommands() {
         commandManager.registerCommand(new GroupCommand(logger, groupManager));
+        commandManager.registerCommand(new ServiceCommand(logger, serviceManager, groupManager));
+        commandManager.registerCommand(new ShutdownCommand(this));
     }
 
     public static Node getInstance() {
@@ -83,7 +87,7 @@ public class Node extends CloudAPI {
     @SneakyThrows
     public void shutdown() {
         logger.info("&cShutting down node...");
-        serviceStartQueue.shutdown();
+        serviceStartQueue.close();
 
         for (Service service : serviceManager.getAllOnlineServices()) {
             service.shutdown();
