@@ -55,7 +55,9 @@ public class PaperMCPlatformVersion implements Platform {
     @SneakyThrows
     private void getLatestVersion() {
         if (getVersion().equalsIgnoreCase("latest")) {
-            final JsonObject projectJson = RequestUtil.request("https://fill.papermc.io/v3/projects/%s".formatted(getPlatformName()));
+            final JsonObject projectJson = RequestUtil.request(
+                    "https://fill.papermc.io/v3/projects/" + getPlatformName()
+            );
             final JsonObject versionsObject = projectJson.getAsJsonObject("versions");
 
             final List<String> minecraftVersions = new ArrayList<>();
@@ -74,7 +76,7 @@ public class PaperMCPlatformVersion implements Platform {
 
     @SneakyThrows
     private void getLatestVersion(String version) {
-        final JsonObject versionsJson = RequestUtil.request("https://fill.papermc.io/v3/projects/%s/versions/%s".formatted(getPlatformName(), version));
+        final JsonObject versionsJson = RequestUtil.request("https://fill.papermc.io/v3/projects/" + getPlatformName() + "/versions/" + version);
         final int latestBuild = versionsJson.getAsJsonArray("builds").get(0).getAsInt();
 
         final JsonArray recommendedFlagsArray = versionsJson.getAsJsonObject("version")
@@ -82,12 +84,16 @@ public class PaperMCPlatformVersion implements Platform {
                 .getAsJsonObject("flags")
                 .getAsJsonArray("recommended");
 
-        for (JsonElement element : recommendedFlagsArray) {
-            recommendedFlags.add(element.getAsString());
+        if (recommendedFlagsArray != null) {
+            for (JsonElement element : recommendedFlagsArray) {
+                recommendedFlags.add(element.getAsString());
+            }
         }
 
         final JsonObject buildJson = RequestUtil.request(
-                "https://fill.papermc.io/v3/projects/%s/versions/%s/builds/%d".formatted(getPlatformName(), version, latestBuild)
+                "https://fill.papermc.io/v3/projects/" + getPlatformName() +
+                        "/versions/" + version +
+                        "/builds/" + latestBuild
         );
 
         final JsonObject serverDefault = buildJson.getAsJsonObject("downloads").getAsJsonObject("server:default");

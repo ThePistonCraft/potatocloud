@@ -9,11 +9,12 @@ import net.potatocloud.node.console.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @RequiredArgsConstructor
 public class ServiceManagerImpl implements ServiceManager {
 
-    private final List<Service> onlineServices = new ArrayList<>();
+    private final List<Service> onlineServices = new CopyOnWriteArrayList<>();
 
     private final NodeConfig config;
     private final Logger logger;

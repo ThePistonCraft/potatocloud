@@ -5,8 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.platform.Platform;
-import net.potatocloud.api.platform.impl.PaperMCPlatformVersion;
-import net.potatocloud.api.platform.impl.PurpurPlatformVersion;
+import net.potatocloud.api.platform.impl.PandaSpigotVersion;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceState;
 import net.potatocloud.node.Node;
@@ -14,10 +13,7 @@ import net.potatocloud.node.config.NodeConfig;
 import net.potatocloud.node.console.Logger;
 import org.apache.commons.io.FileUtils;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -118,7 +114,7 @@ public class ServiceImpl implements Service {
 
         } else {
             // velocity
-
+            /*
             Path velocityConfigFile = directory.resolve("velocity.toml");
             if (!velocityConfigFile.toFile().exists()) {
                 velocityConfigFile = Path.of(getClass().getResourceAsStream("/default-files/velocity.toml").toString());
@@ -128,6 +124,8 @@ public class ServiceImpl implements Service {
             fileContent = fileContent.replace("bind = \"0.0.0.0:25565\"", "bind = \"0.0.0.0:" + port + "\"");
 
             Files.writeString(velocityConfigFile, fileContent);
+
+             */
         }
 
         final Path jarPath = Path.of(config.getPlatformsFolder()).resolve(platform.getFullName() + ".jar");
@@ -152,7 +150,7 @@ public class ServiceImpl implements Service {
         args.add("-jar");
         args.add(serverJarPath.toAbsolutePath().toString());
 
-        if (platform instanceof PaperMCPlatformVersion || platform instanceof PurpurPlatformVersion) {
+        if (!platform.isProxy() && !(platform instanceof PandaSpigotVersion)) {
             args.add("-nogui");
         }
 
@@ -163,6 +161,7 @@ public class ServiceImpl implements Service {
         processWriter = new BufferedWriter(new OutputStreamWriter(serverProcess.getOutputStream()));
 
         logger.info("Service &a" + getName() + "&7 is now starting... &8 [&7Port&8: &a" + port + ", &7Group&8: &a" + serviceGroup.getName() + "&8]");
+        state = ServiceState.RUNNING; // todo
     }
 
     public void shutdownInBackground() {
@@ -180,7 +179,6 @@ public class ServiceImpl implements Service {
         }
 
         logger.info("Stopping service &a" + getName() + "&7...");
-
         state = ServiceState.STOPPING;
 
         executeCommand(serviceGroup.getPlatform().isProxy() ? "end" : "stop");
@@ -204,11 +202,16 @@ public class ServiceImpl implements Service {
         ((ServiceManagerImpl) Node.getInstance().getServiceManager()).removeService(this);
 
         if (!serviceGroup.isStatic()) {
-            FileUtils.deleteDirectory(directory.toFile());
+            try {
+                FileUtils.deleteDirectory(directory.toFile());
+            } catch (IOException e) {
+                logger.error("The temp directory for " + getName() + "could not be deleted! The service might still be running");
+            }
         }
 
         logger.info("Service &a" + getName() + " &7has been stopped.");
     }
+
 
     @Override
     @SneakyThrows

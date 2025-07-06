@@ -59,7 +59,7 @@ public class PlatformDownloader {
         try (FileInputStream stream = new FileInputStream(currentPlatformFile)) {
             String currentFileHash = "";
             if (platform instanceof PaperMCPlatformVersion) {
-                currentFileHash = DigestUtils.sha256Hex(stream);
+               currentFileHash = DigestUtils.sha256Hex(stream);
             } else {
                 //used by purpermc
                 currentFileHash = DigestUtils.md5Hex(stream);
