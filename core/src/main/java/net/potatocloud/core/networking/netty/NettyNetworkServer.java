@@ -66,8 +66,8 @@ public class NettyNetworkServer implements NetworkServer {
     }
 
     @Override
-    public <T extends Packet> void registerPacketListener(Class<T> packetClass, PacketListener<T> listener) {
-        packetManager.registerListener(packetClass, listener);
+    public <T extends Packet> void registerPacketListener(String packetType, PacketListener<T> listener) {
+        packetManager.registerListener(packetType, listener);
     }
 
     @Override

@@ -2,6 +2,7 @@ package net.potatocloud.core.networking.netty;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
+import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.nio.NioIoHandler;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -19,7 +20,7 @@ public class NettyNetworkClient implements NetworkClient {
     public void connect(String host, int port) {
         PacketRegistry.registerPackets(packetManager);
 
-        group = new MultiThreadIoEventLoopGroup(NioIoHandler.newFactory());
+        group = new NioEventLoopGroup();
 
         final Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(group)
@@ -50,7 +51,7 @@ public class NettyNetworkClient implements NetworkClient {
     }
 
     @Override
-    public <T extends Packet> void registerPacketListener(Class<T> packetClass, PacketListener<T> listener) {
-        packetManager.registerListener(packetClass, listener);
+    public <T extends Packet> void registerPacketListener(String packetType, PacketListener<T> listener) {
+        packetManager.registerListener(packetType, listener);
     }
 }

@@ -3,24 +3,21 @@ package net.potatocloud.core.networking;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import lombok.Getter;
-
 import java.util.HashMap;
 import java.util.Map;
 
-@Getter
 public class PacketManager {
 
     private final Map<String, Class<? extends Packet>> packets = new HashMap<>();
-    private final Map<Class<? extends Packet>, PacketListener<?>> listeners = new HashMap<>();
+    private final Map<String, PacketListener<? extends Packet>> listeners = new HashMap<>();
     private final Gson gson = new Gson();
 
     public void register(String type, Class<? extends Packet> clazz) {
         packets.put(type, clazz);
     }
 
-    public <T extends Packet> void registerListener(Class<T> clazz, PacketListener<T> listener) {
-        listeners.put(clazz, listener);
+    public <T extends Packet> void registerListener(String packetType, PacketListener<T> listener) {
+        listeners.put(packetType, listener);
     }
 
     public Packet decode(String json) {
@@ -36,10 +33,11 @@ public class PacketManager {
         return gson.toJson(obj);
     }
 
-    public void onPacket(NetworkConnection connection, Packet packet) {
-        PacketListener listener = listeners.get(packet.getClass());
+    @SuppressWarnings("unchecked")
+    public <T extends Packet> void onPacket(NetworkConnection connection, Packet packet) {
+        PacketListener<T> listener = (PacketListener<T>) listeners.get(packet.getType());
         if (listener != null) {
-            listener.onPacket(connection, packet);
+            listener.onPacket(connection, (T) packet);
         }
     }
 }

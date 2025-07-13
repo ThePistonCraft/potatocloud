@@ -8,6 +8,6 @@ public interface NetworkClient {
 
     void disconnect();
 
-    <T extends Packet> void registerPacketListener(Class<T> packetClass, PacketListener<T> listener);
+    <T extends Packet> void registerPacketListener(String packetType, PacketListener<T> listener);
 
 }
