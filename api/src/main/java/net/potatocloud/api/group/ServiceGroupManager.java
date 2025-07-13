@@ -6,14 +6,16 @@ import java.util.List;
 
 public interface ServiceGroupManager {
 
-    ServiceGroup getServiceGroup(String groupName);
+    ServiceGroup getServiceGroup(String name);
 
     List<ServiceGroup> getAllServiceGroups();
 
-    ServiceGroup createServiceGroup(String name, int minOnlineCount, int maxOnlineCount, int maxPlayers, int maxMemory, boolean fallback, boolean isStatic, Platform platform);
+    ServiceGroup createServiceGroup(String name, int minOnlineCount, int maxOnlineCount, int maxPlayers, int maxMemory, boolean fallback, boolean isStatic, String platformName);
 
-    boolean deleteServiceGroup(ServiceGroup serviceGroup);
+    boolean deleteServiceGroup(ServiceGroup group);
 
-    boolean existsServiceGroup(String groupName);
+    void updateServiceGroup(ServiceGroup group);
+
+    boolean existsServiceGroup(String name);
 
 }

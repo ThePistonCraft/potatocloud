@@ -74,7 +74,7 @@ public class GroupCommand implements Command {
                     Integer.parseInt(args[5]),
                     Boolean.parseBoolean(args[6]),
                     Boolean.parseBoolean(args[7]),
-                    platform
+                    platformName
             );
 
             logger.info("&7Service group &a" + name + " &7was created &asuccessfully");

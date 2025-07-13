@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.platform.Platform;
-import net.potatocloud.core.utils.RequestUtil;
+import net.potatocloud.api.utils.RequestUtil;
 
 import java.util.List;
 

@@ -7,6 +7,7 @@ import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.node.command.Command;
 import net.potatocloud.node.console.Logger;
+import net.potatocloud.node.service.ServiceImpl;
 
 import java.util.Arrays;
 import java.util.List;
@@ -102,7 +103,6 @@ public class ServiceCommand implements Command {
                 logger.info("State: &a" + service.getState());
                 logger.info("Online players: &a" + service.getOnlinePlayers());
                 logger.info("Memory usage: &a" + service.getUsedMemory() + "MB");
-                logger.info("Host: &a" + service.getHost());
                 logger.info("Start Timestamp: &a" + service.getStartTimestamp());
             }
 
@@ -131,6 +131,37 @@ public class ServiceCommand implements Command {
                 }
             }
 
+            case "logs" -> {
+                if (args.length < 2) {
+                    logger.info("&cUsage&8: &7service logs &8[&aserviceName&8]");
+                    return;
+                }
+                final String serviceName = args[1];
+                final Service service = serviceManager.getService(serviceName);
+                if (service == null) {
+                    logger.info("&cNo service found with the name &a" + serviceName);
+                    return;
+                }
+
+                try {
+                    if (service instanceof ServiceImpl serviceImpl) {
+                        List<String> logs = serviceImpl.getLogs();
+                        if (logs.isEmpty()) {
+                            logger.info("No logs found for service &a" + serviceName);
+                        } else {
+                            logger.info("Logs for service &a" + serviceName + ":");
+                            for (String logLine : logs) {
+                                logger.info(logLine);
+                            }
+                        }
+                    } else {
+                        logger.info("&cCannot read logs from this service implementation.");
+                    }
+                } catch (Exception e) {
+                    logger.info("&cFailed to read logs for service &a" + serviceName);
+                }
+            }
+
             default -> sendHelp();
         }
     }
@@ -141,6 +172,7 @@ public class ServiceCommand implements Command {
         logger.info("service stop &8[&aname&8] - &7Stop a running service");
         logger.info("service info &8[&aname&8] - &7Show details of a service");
         logger.info("service execute &8[&aname&8] [&acommand&8...] - &7Execute a command on a service");
+        logger.info("service logs &8[&aname&8] - &7Print all logs of a service");
     }
 
     @Override

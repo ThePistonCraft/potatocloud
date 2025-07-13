@@ -2,12 +2,14 @@ package net.potatocloud.node.service;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.impl.PandaSpigotVersion;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceState;
+import net.potatocloud.core.networking.packets.service.ServiceRemovePacket;
 import net.potatocloud.node.Node;
 import net.potatocloud.node.config.NodeConfig;
 import net.potatocloud.node.console.Logger;
@@ -16,12 +18,15 @@ import org.apache.commons.io.FileUtils;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
+import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
 @Getter
-@RequiredArgsConstructor
 public class ServiceImpl implements Service {
 
     private final int serviceId;
@@ -30,12 +35,28 @@ public class ServiceImpl implements Service {
     private final NodeConfig config;
     private final Logger logger;
 
+    @Setter
+    private int maxPlayers;
+
+    @Setter
     private ServiceState state = ServiceState.STOPPED;
     private long startTimestamp;
     private Path directory;
     private Process serverProcess;
 
     private BufferedWriter processWriter;
+    private BufferedReader processReader;
+    private final List<String> logs = new ArrayList<>();
+
+    public ServiceImpl(int serviceId, int port, ServiceGroup serviceGroup, NodeConfig config, Logger logger) {
+        this.serviceId = serviceId;
+        this.port = port;
+        this.serviceGroup = serviceGroup;
+        this.config = config;
+        this.logger = logger;
+
+        maxPlayers = serviceGroup.getMaxPlayers();
+    }
 
     @Override
     public String getName() {
@@ -49,12 +70,6 @@ public class ServiceImpl implements Service {
     public int getUsedMemory() {
         // todo
         return 0;
-    }
-
-    @Override
-    public String getHost() {
-        // todo
-        return "";
     }
 
     @Override
@@ -94,7 +109,7 @@ public class ServiceImpl implements Service {
 
         // download and configure the platform of the service
         final Platform platform = getServiceGroup().getPlatform();
-        Node.getInstance().getPlatformDownloader().download(platform);
+        Node.getInstance().getPlatformManager().downloadPlatform(platform);
 
         if (!platform.isProxy()) {
             final Properties properties = new Properties();
@@ -112,23 +127,36 @@ public class ServiceImpl implements Service {
             final Path serverPropertiesPath = directory.resolve("server.properties");
             properties.store(Files.newOutputStream(serverPropertiesPath), null);
 
+            // spigot config
+            final Path spigotConfigFile = directory.resolve("spigot.yml");
+
+            if (!Files.exists(spigotConfigFile)) {
+                Files.copy(getClass().getResourceAsStream("/default-files/spigot.yml"), spigotConfigFile);
+            }
+
         } else {
-            // velocity
-            /*
-            Path velocityConfigFile = directory.resolve("velocity.toml");
-            if (!velocityConfigFile.toFile().exists()) {
-                velocityConfigFile = Path.of(getClass().getResourceAsStream("/default-files/velocity.toml").toString());
+            final Path velocityConfigFile = directory.resolve("velocity.toml");
+
+            if (!Files.exists(velocityConfigFile)) {
+                Files.copy(getClass().getResourceAsStream("/default-files/velocity.toml"), velocityConfigFile);
             }
 
             String fileContent = Files.readString(velocityConfigFile);
-            fileContent = fileContent.replace("bind = \"0.0.0.0:25565\"", "bind = \"0.0.0.0:" + port + "\"");
+            fileContent = fileContent.replace(
+                    "bind = \"0.0.0.0:25565\"",
+                    "bind = \"0.0.0.0:" + port + "\""
+            );
 
             Files.writeString(velocityConfigFile, fileContent);
 
-             */
+            // a forwarding secret file has to be created or else velocity will throw an error
+            Files.writeString(directory.resolve("forwarding.secret"), UUID.randomUUID().toString(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
         }
 
-        final Path jarPath = Path.of(config.getPlatformsFolder()).resolve(platform.getFullName() + ".jar");
+        final Path jarPath = Path.of(config.getPlatformsFolder())
+                .resolve(platform.getFullName())
+                .resolve(platform.getFullName() + ".jar");
+
         final Path serverJarPath = directory.resolve("server.jar");
         FileUtils.copyFile(jarPath.toFile(), serverJarPath.toFile());
 
@@ -159,9 +187,20 @@ public class ServiceImpl implements Service {
         serverProcess = processBuilder.start();
 
         processWriter = new BufferedWriter(new OutputStreamWriter(serverProcess.getOutputStream()));
+        processReader = new BufferedReader(new InputStreamReader(serverProcess.getInputStream()));
 
-        logger.info("Service &a" + getName() + "&7 is now starting... &8 [&7Port&8: &a" + port + ", &7Group&8: &a" + serviceGroup.getName() + "&8]");
-        state = ServiceState.RUNNING; // todo
+        new Thread(() -> {
+            try {
+                String line;
+                while ((line = processReader.readLine()) != null) {
+                    logs.add(line);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }, "processReader-" + getName()).start();
+
+        logger.info("The Service &a" + getName() + "&7 is now starting... &8[&7Port&8: &a" + port + ", &7Group&8: &a" + serviceGroup.getName() + "&8]");
     }
 
     public void shutdownInBackground() {
@@ -201,15 +240,20 @@ public class ServiceImpl implements Service {
 
         ((ServiceManagerImpl) Node.getInstance().getServiceManager()).removeService(this);
 
+        // broadcast remove service packet to all connected clients
+        if (Node.getInstance().getServer() != null) {
+            Node.getInstance().getServer().broadcastPacket(new ServiceRemovePacket(this.getName()));
+        }
+
         if (!serviceGroup.isStatic()) {
             try {
                 FileUtils.deleteDirectory(directory.toFile());
             } catch (IOException e) {
-                logger.error("The temp directory for " + getName() + "could not be deleted! The service might still be running");
+                logger.error("The temp directory for " + getName() + " could not be deleted! The service might still be running");
             }
         }
 
-        logger.info("Service &a" + getName() + " &7has been stopped.");
+        logger.info("The Service &a" + getName() + " &7has been stopped.");
     }
 
 
@@ -223,5 +267,17 @@ public class ServiceImpl implements Service {
         processWriter.newLine();
         processWriter.flush();
         return true;
+    }
+
+    @Override
+    public void update() {
+
+    }
+
+    @SneakyThrows
+    public List<String> getLogs()  {
+        synchronized (logs) {
+            return new ArrayList<>(logs);
+        }
     }
 }

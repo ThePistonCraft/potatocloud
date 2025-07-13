@@ -1,23 +1,31 @@
 package net.potatocloud.node.service;
 
-import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
+import net.potatocloud.core.networking.packets.service.ServiceAddPacket;
+import net.potatocloud.node.Node;
 import net.potatocloud.node.config.NodeConfig;
 import net.potatocloud.node.console.Logger;
+import net.potatocloud.node.service.listener.ServicePacketListeners;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-@RequiredArgsConstructor
 public class ServiceManagerImpl implements ServiceManager {
 
     private final List<Service> onlineServices = new CopyOnWriteArrayList<>();
 
     private final NodeConfig config;
     private final Logger logger;
+
+    public ServiceManagerImpl(NodeConfig config, Logger logger) {
+        this.config = config;
+        this.logger = logger;
+
+        new ServicePacketListeners();
+    }
 
     @Override
     public Service getService(String serviceName) {
@@ -39,6 +47,10 @@ public class ServiceManagerImpl implements ServiceManager {
         final ServiceImpl service = new ServiceImpl(serviceId, port, serviceGroup, config, logger);
 
         onlineServices.add(service);
+
+        // broadcast add service packet to all connected clients
+        Node.getInstance().getServer().broadcastPacket(new ServiceAddPacket(service.getName(), service.getServiceId(), service.getPort(),  service.getStartTimestamp(), service.getServiceGroup().getName(), service.getState().name(), service.getOnlinePlayers(), service.getUsedMemory()));
+
         service.start();
     }
 

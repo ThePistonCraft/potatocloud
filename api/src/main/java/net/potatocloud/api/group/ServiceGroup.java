@@ -31,6 +31,8 @@ public interface ServiceGroup {
 
     boolean isStatic();
 
+    String getPlatformName();
+
     Platform getPlatform();
 
     List<String> getServiceTemplates();
@@ -44,4 +46,5 @@ public interface ServiceGroup {
     int getOnlineServiceCount();
 
     void update();
+
 }

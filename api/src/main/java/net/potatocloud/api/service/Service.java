@@ -12,13 +12,17 @@ public interface Service {
 
     ServiceState getState();
 
+    void setState(ServiceState state);
+
     long getStartTimestamp();
 
     int getOnlinePlayers();
 
-    int getUsedMemory();
+    int getMaxPlayers();
 
-    String getHost();
+    void setMaxPlayers(int maxPlayers);
+
+    int getUsedMemory();
 
     int getPort();
 
@@ -28,4 +32,5 @@ public interface Service {
 
     boolean executeCommand(String command);
 
+    void update();
 }
