@@ -16,13 +16,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 @RequiredArgsConstructor
-public class PlatformDownloader {
+public class PlatformManager {
 
     private final Path platformsFolder;
     private final Logger logger;
 
     @SneakyThrows
-    public void download(Platform platform) {
+    public void downloadPlatform(Platform platform) {
         if (platform == null) {
             logger.info("&cThis platform does not exist.");
             return;
@@ -32,7 +32,10 @@ public class PlatformDownloader {
             Files.createDirectories(platformsFolder);
         }
 
-        final File platformFile = platformsFolder.resolve(platform.getFullName() + ".jar").toFile();
+        final File platformFile = platformsFolder
+                .resolve(platform.getFullName())
+                .resolve(platform.getFullName() + ".jar")
+                .toFile();
 
         boolean needsDownload = true;
         if (platformFile.exists()) {
@@ -59,7 +62,7 @@ public class PlatformDownloader {
         try (FileInputStream stream = new FileInputStream(currentPlatformFile)) {
             String currentFileHash = "";
             if (platform instanceof PaperMCPlatformVersion) {
-               currentFileHash = DigestUtils.sha256Hex(stream);
+                currentFileHash = DigestUtils.sha256Hex(stream);
             } else {
                 //used by purpermc
                 currentFileHash = DigestUtils.md5Hex(stream);
