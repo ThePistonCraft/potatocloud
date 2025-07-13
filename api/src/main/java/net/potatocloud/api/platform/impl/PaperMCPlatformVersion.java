@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import net.potatocloud.api.platform.Platform;
-import net.potatocloud.core.utils.RequestUtil;
+import net.potatocloud.api.utils.RequestUtil;
 
 import java.util.ArrayList;
 import java.util.List;
