@@ -1,6 +1,7 @@
 package net.potatocloud.api;
 
 import lombok.Getter;
+import net.potatocloud.api.event.EventManager;
 import net.potatocloud.api.group.ServiceGroupManager;
 import net.potatocloud.api.service.ServiceManager;
 
@@ -17,5 +18,7 @@ public abstract class CloudAPI {
     public abstract ServiceGroupManager getServiceGroupManager();
 
     public abstract ServiceManager getServiceManager();
+
+    public abstract EventManager getEventManager();
 
 }
