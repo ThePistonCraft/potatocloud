@@ -1,4 +1,4 @@
-package net.potatocloud.core.utils;
+package net.potatocloud.api.utils;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
