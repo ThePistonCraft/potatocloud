@@ -43,6 +43,7 @@ public class ServiceImpl implements Service {
     private Process serverProcess;
     private BufferedWriter processWriter;
     private BufferedReader processReader;
+    private final ServiceProcessChecker processChecker;
 
     public ServiceImpl(int serviceId, int port, ServiceGroup serviceGroup, NodeConfig config, Logger logger) {
         this.serviceId = serviceId;
@@ -50,8 +51,8 @@ public class ServiceImpl implements Service {
         this.serviceGroup = serviceGroup;
         this.config = config;
         this.logger = logger;
-
         maxPlayers = serviceGroup.getMaxPlayers();
+        processChecker = new ServiceProcessChecker(this);
     }
 
     @Override
@@ -238,6 +239,10 @@ public class ServiceImpl implements Service {
             serverProcess = null;
         }
 
+        cleanup();
+    }
+
+    public void cleanup() {
         startTimestamp = 0L;
 
         ((ServiceManagerImpl) Node.getInstance().getServiceManager()).removeService(this);
@@ -282,4 +287,6 @@ public class ServiceImpl implements Service {
             return new ArrayList<>(logs);
         }
     }
+
+
 }

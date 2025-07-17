@@ -10,6 +10,7 @@ import net.potatocloud.core.networking.NetworkConnection;
 import net.potatocloud.core.networking.PacketListener;
 import net.potatocloud.core.networking.packets.service.ServiceStartedPacket;
 import net.potatocloud.node.console.Logger;
+import net.potatocloud.node.service.ServiceImpl;
 
 @RequiredArgsConstructor
 public class ServiceStartedListener implements PacketListener<ServiceStartedPacket> {
@@ -29,5 +30,10 @@ public class ServiceStartedListener implements PacketListener<ServiceStartedPack
 
         // call service started event
         eventManager.call(new ServiceStartedEvent(packet.getServiceName()));
+
+        //start process checker
+        if (service instanceof ServiceImpl impl) {
+            impl.getProcessChecker().start();
+        }
     }
 }
