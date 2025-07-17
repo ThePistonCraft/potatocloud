@@ -21,8 +21,7 @@ public class ServiceStartQueue extends Thread {
     public void run() {
         while (running) {
             try {
-                final List<ServiceGroup> groups = new ArrayList<>(CloudAPI.getInstance().getServiceGroupManager().getAllServiceGroups());
-
+                List<ServiceGroup> groups = new ArrayList<>(CloudAPI.getInstance().getServiceGroupManager().getAllServiceGroups());
                 groups.sort(Comparator.comparingInt(ServiceGroup::getStartPriority).reversed());
 
                 for (ServiceGroup group : groups) {
@@ -30,21 +29,31 @@ public class ServiceStartQueue extends Thread {
                         continue;
                     }
 
-                    final long activeServices = CloudAPI.getInstance().getServiceManager().getAllServices().stream()
-                            .filter(service -> service.getServiceGroup().getName().equals(group.getName()))
-                            .filter(service -> service.getState() == ServiceState.RUNNING || service.getState() == ServiceState.STARTING || service.getState() == ServiceState.STOPPING)
+                    long activeServices = CloudAPI.getInstance().getServiceManager().getAllServices().stream()
+                            .filter(s -> s.getServiceGroup().getName().equals(group.getName()))
+                            .filter(s -> s.getState() == ServiceState.RUNNING || s.getState() == ServiceState.STARTING || s.getState() == ServiceState.STOPPING)
                             .count();
 
-                    if (activeServices < group.getMinOnlineCount()) {
+                    int onlinePlayersInGroup = CloudAPI.getInstance().getPlayerManager().getOnlinePlayersByGroup(group).size();
+                    int totalOnlinePlayers = CloudAPI.getInstance().getPlayerManager().getOnlinePlayers().size();
+
+                    if (totalOnlinePlayers == 0) {
+                        continue;
+                    }
+
+                    double onlinePercentage = (onlinePlayersInGroup / (double) totalOnlinePlayers) * 100;
+
+                    if (activeServices < group.getMinOnlineCount() || onlinePercentage >= group.getStartPercentage()) {
                         CloudAPI.getInstance().getServiceManager().startService(group);
                     }
                 }
 
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
+                running = false;
                 break;
-            } catch (Exception ex) {
-                ex.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
@@ -54,4 +63,3 @@ public class ServiceStartQueue extends Thread {
         interrupt();
     }
 }
-

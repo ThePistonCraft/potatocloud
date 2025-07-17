@@ -39,6 +39,8 @@ public interface ServiceGroup {
 
     int getStartPriority();
 
+    int getStartPercentage();
+
     String getJavaCommand();
 
     void addServiceTemplate(String template);

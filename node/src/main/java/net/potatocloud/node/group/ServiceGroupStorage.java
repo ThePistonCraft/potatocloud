@@ -24,6 +24,7 @@ public class ServiceGroupStorage {
         config.set("fallback", group.isFallback());
         config.set("static", group.isStatic());
         config.set("startPriority", group.getStartPriority());
+        config.set("startPercentage", group.getStartPercentage());
         config.set("javaCommand", group.getJavaCommand());
         config.save();
     }
@@ -44,6 +45,7 @@ public class ServiceGroupStorage {
                 config.getBoolean("fallback"),
                 config.getBoolean("static"),
                 config.getInt("startPriority"),
+                config.getInt("startPercentage"),
                 config.getString("javaCommand")
         );
     }
