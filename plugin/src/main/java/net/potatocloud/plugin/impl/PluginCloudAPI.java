@@ -24,8 +24,8 @@ public class PluginCloudAPI extends CloudAPI {
         packetManager = new PacketManager();
         client = new NettyNetworkClient(packetManager);
         client.connect("0.0.0.0", 9000);
-        serviceGroupManager = new ServiceGroupManagerImpl();
-        serviceManager = new ServiceManagerImpl();
+        serviceGroupManager = new ServiceGroupManagerImpl(client);
+        serviceManager = new ServiceManagerImpl(client);
     }
 
     public static PluginCloudAPI getInstance() {

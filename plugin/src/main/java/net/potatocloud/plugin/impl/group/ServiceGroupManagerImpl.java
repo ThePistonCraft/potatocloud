@@ -2,14 +2,12 @@ package net.potatocloud.plugin.impl.group;
 
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.group.ServiceGroupManager;
-import net.potatocloud.api.group.impl.ServiceGroupImpl;
 import net.potatocloud.core.networking.NetworkClient;
-import net.potatocloud.core.networking.NetworkConnection;
 import net.potatocloud.core.networking.PacketTypes;
-import net.potatocloud.core.networking.packets.group.AddGroupPacket;
 import net.potatocloud.core.networking.packets.group.RequestGroupsPacket;
 import net.potatocloud.core.networking.packets.group.UpdateGroupPacket;
-import net.potatocloud.plugin.impl.PluginCloudAPI;
+import net.potatocloud.plugin.impl.listener.group.AddGroupListener;
+import net.potatocloud.plugin.impl.listener.group.UpdateGroupListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,36 +16,19 @@ import java.util.List;
 public class ServiceGroupManagerImpl implements ServiceGroupManager {
 
     private final List<ServiceGroup> serviceGroups = new ArrayList<>();
+    private final NetworkClient client;
 
-    public ServiceGroupManagerImpl() {
-        final NetworkClient client = PluginCloudAPI.getInstance().getClient();
+    public ServiceGroupManagerImpl(NetworkClient client) {
+        this.client = client;
 
         client.send(new RequestGroupsPacket());
 
-        client.registerPacketListener(PacketTypes.GROUP_ADD, (NetworkConnection connection, AddGroupPacket packet) -> {
-            serviceGroups.add(new ServiceGroupImpl(
-                    packet.getName(),
-                    packet.getPlatformName(),
-                    packet.getServiceTemplates(),
-                    packet.getMinOnlineCount(),
-                    packet.getMaxOnlineCount(),
-                    packet.getMaxPlayers(),
-                    packet.getMaxMemory(),
-                    packet.isFallback(),
-                    packet.isStatic()
-            ));
-        });
+        client.registerPacketListener(PacketTypes.GROUP_ADD, new AddGroupListener(this));
+        client.registerPacketListener(PacketTypes.UPDATE_GROUP, new UpdateGroupListener(this));
+    }
 
-        client.registerPacketListener(PacketTypes.UPDATE_GROUP, (NetworkConnection connection, UpdateGroupPacket packet) -> {
-            final ServiceGroup group = getServiceGroup(packet.getGroupName());
-            group.setMinOnlineCount(packet.getMinOnlineCount());
-            group.setMaxOnlineCount(packet.getMaxOnlineCount());
-            group.setMaxPlayers(packet.getMaxPlayers());
-            group.setMaxMemory(packet.getMaxMemory());
-            group.setFallback(packet.isFallback());
-            packet.getServiceTemplates().forEach(group::addServiceTemplate);
-        });
-
+    public void addServiceGroup(ServiceGroup group) {
+        serviceGroups.add(group);
     }
 
     @Override
@@ -78,7 +59,7 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
 
     @Override
     public void updateServiceGroup(ServiceGroup group) {
-        PluginCloudAPI.getInstance().getClient().send(new UpdateGroupPacket(
+        client.send(new UpdateGroupPacket(
                 group.getName(),
                 group.getMinOnlineCount(),
                 group.getMaxOnlineCount(),

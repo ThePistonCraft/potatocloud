@@ -50,7 +50,7 @@ public class NodeConfig {
         templatesFolder = yaml.getString("folders.templates", templatesFolder);
         platformsFolder = yaml.getString("folders.platforms", platformsFolder);
         logsFolder = yaml.getString("folders.logs", logsFolder);
-        dataFolder =yaml.getString("folders.data", logsFolder);
+        dataFolder = yaml.getString("folders.data", logsFolder);
 
         nodeHost = yaml.getString("node.host", nodeHost);
         nodePort = yaml.getInt("node.port", nodePort);
