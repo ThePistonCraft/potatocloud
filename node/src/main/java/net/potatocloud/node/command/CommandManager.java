@@ -2,9 +2,7 @@ package net.potatocloud.node.command;
 
 import lombok.Getter;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Getter
 public class CommandManager {
@@ -44,5 +42,11 @@ public class CommandManager {
             return command;
         }
         return aliases.get(name);
+    }
+
+    public String[] getAllCommandNames() {
+        List<String> names = new ArrayList<>(commands.keySet());
+        aliases.keySet().stream().filter(alias -> !names.contains(alias)).forEach(names::add);
+        return names.toArray(new String[0]);
     }
 }

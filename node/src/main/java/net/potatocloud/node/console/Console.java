@@ -30,6 +30,7 @@ public class Console {
 
         lineReader = LineReaderBuilder.builder()
                 .terminal(terminal)
+                .completer(new ConsoleCommandCompleter(commandManager))
                 .build();
 
         consoleReader = new ConsoleReader(this, commandManager, node);

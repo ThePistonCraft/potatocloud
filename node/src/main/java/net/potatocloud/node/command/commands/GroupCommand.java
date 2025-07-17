@@ -8,6 +8,7 @@ import net.potatocloud.api.platform.PlatformVersions;
 import net.potatocloud.node.command.Command;
 import net.potatocloud.node.console.Logger;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -23,9 +24,7 @@ public class GroupCommand implements Command {
             return;
         }
 
-        final String sub = args[0].toLowerCase();
-
-        switch (sub) {
+        switch (args[0].toLowerCase()) {
             case "list" -> listGroups();
             case "create" -> createGroup(args);
             case "delete" -> deleteGroup(args);
@@ -35,7 +34,7 @@ public class GroupCommand implements Command {
     }
 
     private void listGroups() {
-        final List<ServiceGroup> groups = groupManager.getAllServiceGroups();
+        List<ServiceGroup> groups = groupManager.getAllServiceGroups();
         if (groups.isEmpty()) {
             logger.info("There are &cno &7service groups");
             return;
@@ -47,7 +46,7 @@ public class GroupCommand implements Command {
 
     private void createGroup(String[] args) {
         if (args.length < 9) {
-            logger.info("&cUsage&8: &7group create &8[&aname&8, &aminOnlineCount&8, &amaxOnlineCount&8, &amaxPlayers&8, &amaxMemory&8, &afallback&8, &astatic&8, &aplatformName&8]");
+            logger.info("&cUsage&8: &7group create &8[&aname&8, &aplatformName&8, &aminOnlineCount&8, &amaxOnlineCount&8, &amaxPlayers&8, &amaxMemory&8, &afallback&8, &astatic&8]");
             return;
         }
 
@@ -57,29 +56,36 @@ public class GroupCommand implements Command {
             return;
         }
 
-        try {
+        final String platformName = args[2];
+        final Platform platform = PlatformVersions.getPlatformByName(platformName);
+        if (platform == null) {
+            logger.info("&cThis platform does not exist!");
+            return;
+        }
 
-            final String platformName = args[8];
-            final Platform platform = PlatformVersions.getPlatformByName(platformName);
-            if (platform == null) {
-                logger.info("&cThis platform does not exist!");
-                return;
-            }
+        try {
+            int minOnline = Integer.parseInt(args[3]);
+            int maxOnline = Integer.parseInt(args[4]);
+            int maxPlayers = Integer.parseInt(args[5]);
+            int maxMemory = Integer.parseInt(args[6]);
+            boolean fallback = Boolean.parseBoolean(args[7]);
+            boolean isStatic = Boolean.parseBoolean(args[8]);
 
             groupManager.createServiceGroup(
                     name,
-                    Integer.parseInt(args[2]),
-                    Integer.parseInt(args[3]),
-                    Integer.parseInt(args[4]),
-                    Integer.parseInt(args[5]),
-                    Boolean.parseBoolean(args[6]),
-                    Boolean.parseBoolean(args[7]),
-                    platformName
+                    platformName,
+                    minOnline,
+                    maxOnline,
+                    maxPlayers,
+                    maxMemory,
+                    fallback,
+                    isStatic
             );
 
             logger.info("&7Service group &a" + name + " &7was created &asuccessfully");
+
         } catch (NumberFormatException e) {
-            logger.info("&cUsage&8: &7group create &8[&aname&8, &aminOnlineCount&8, &amaxOnlineCount&8, &amaxPlayers&8, &amaxMemory&8, &afallback&8, &astatic&8, &aplatformName&8]");
+            logger.info("&cInvalid number format. Use integers for min/max counts, players and memory.");
         }
     }
 
@@ -88,12 +94,14 @@ public class GroupCommand implements Command {
             logger.info("&cUsage&8: &7group delete &8[&aname&8]");
             return;
         }
+
         final String name = args[1];
         if (!groupManager.existsServiceGroup(name)) {
             logger.info("&cNo service group found with the name &a" + name);
             return;
         }
-        final ServiceGroup group = groupManager.getServiceGroup(name);
+
+        ServiceGroup group = groupManager.getServiceGroup(name);
         groupManager.deleteServiceGroup(group);
         logger.info("&aService group &a" + name + " &awas deleted");
     }
@@ -103,25 +111,27 @@ public class GroupCommand implements Command {
             logger.info("&cUsage&8: &7group info &8[&aname&8]");
             return;
         }
+
         final String name = args[1];
         if (!groupManager.existsServiceGroup(name)) {
             logger.info("&cNo service group found with the name &a" + name);
             return;
         }
+
         final ServiceGroup group = groupManager.getServiceGroup(name);
         logger.info("Name: &a" + group.getName());
+        logger.info("Platform: &a" + group.getPlatform().getFullName());
+        logger.info("Templates: &a" + String.join(", ", group.getServiceTemplates()));
         logger.info("Min Online Count: &a" + group.getMinOnlineCount());
         logger.info("Max Online Count: &a" + group.getMaxOnlineCount());
         logger.info("Max Players: &a" + group.getMaxPlayers());
         logger.info("Max Memory: &a" + group.getMaxMemory() + "MB");
         logger.info("&7Fallback: " + (group.isFallback() ? "&aYes" : "&cNo"));
         logger.info("&7Static: " + (group.isStatic() ? "&aYes" : "&cNo"));
-        logger.info("Platform: &a" + group.getPlatform().getFullName());
-        logger.info("Templates: &a" + String.join(", ", group.getServiceTemplates()));
     }
 
     private void sendHelp() {
-        logger.info("group create &8[&aname&8, &aminOnlineCount&8, &amaxOnlineCount&8, &amaxPlayers&8, &amaxMemory&8, &afallback&8, &astatic&8, &aplatformName&8] - &7Create a new service group");
+        logger.info("group create &8[&aname&8, &aplatformName&8, &aminOnlineCount&8, &amaxOnlineCount&8, &amaxPlayers&8, &amaxMemory&8, &afallback&8, &astatic&8] - &7Create a new service group");
         logger.info("group delete &8[&aname&8] - &7Delete a service group");
         logger.info("group list &8- &7List all service groups");
         logger.info("group info &8[&aname&8] - &7Show details of a service group");
@@ -144,7 +154,27 @@ public class GroupCommand implements Command {
 
     @Override
     public List<String> complete(String[] args) {
-        return List.of("");
-    }
+        if (args.length == 1) {
+            return List.of("list", "create", "delete", "info").stream()
+                    .filter(input -> input.startsWith(args[0].toLowerCase()))
+                    .toList();
+        }
 
+        String sub = args[0].toLowerCase();
+
+        if (sub.equals("create") && args.length == 3) {
+            return Arrays.stream(PlatformVersions.values())
+                    .map(platform -> platform.platform().getFullName())
+                    .toList();
+        }
+
+        if ((sub.equals("info") || sub.equals("delete")) && args.length == 2) {
+            return groupManager.getAllServiceGroups().stream()
+                    .map(ServiceGroup::getName)
+                    .filter(name -> name.startsWith(args[1]))
+                    .toList();
+        }
+
+        return List.of();
+    }
 }

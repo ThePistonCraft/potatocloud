@@ -8,13 +8,16 @@ import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.node.command.Command;
 import net.potatocloud.node.console.Logger;
 import net.potatocloud.node.service.ServiceImpl;
+import net.potatocloud.node.utils.DurationUtil;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
 
 @RequiredArgsConstructor
 public class ServiceCommand implements Command {
 
+    private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
     private final Logger logger;
     private final ServiceManager serviceManager;
     private final ServiceGroupManager groupManager;
@@ -103,7 +106,8 @@ public class ServiceCommand implements Command {
                 logger.info("State: &a" + service.getState());
                 logger.info("Online players: &a" + service.getOnlinePlayers());
                 logger.info("Memory usage: &a" + service.getUsedMemory() + "MB");
-                logger.info("Start Timestamp: &a" + service.getStartTimestamp());
+                logger.info("Start Timestamp: &a" + TIME_FORMAT.format(service.getStartTimestamp()));
+                logger.info("Online Time: &a" + DurationUtil.formatDuration(System.currentTimeMillis() - service.getStartTimestamp()));
             }
 
             case "execute" -> {
@@ -184,6 +188,22 @@ public class ServiceCommand implements Command {
 
     @Override
     public List<String> complete(String[] args) {
+        if (args.length == 1) {
+            return List.of("list", "start", "stop", "info", "execute", "logs").stream()
+                    .filter(input -> input.startsWith(args[0].toLowerCase()))
+                    .toList();
+        }
+
+        String sub = args[0].toLowerCase();
+
+        if (sub.equalsIgnoreCase("start") || sub.equalsIgnoreCase("stop") || sub.equalsIgnoreCase("info")
+                || sub.equalsIgnoreCase("execute") || sub.equalsIgnoreCase("logs")) {
+            if (args.length == 2) {
+                return serviceManager.getAllServices().stream().map(Service::getName)
+                        .toList().stream().filter(input -> input.startsWith(args[1])).toList();
+            }
+        }
+
         return List.of();
     }
 }
