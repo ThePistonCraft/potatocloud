@@ -126,7 +126,7 @@ public class Node extends CloudAPI {
         commandManager.registerCommand(new PlatformCommand(logger, Path.of(config.getPlatformsFolder()), platformManager));
         commandManager.registerCommand(new ClearCommand(console));
         commandManager.registerCommand(new HelpCommand(logger, commandManager));
-        commandManager.registerCommand(new PlayerCommand());
+        commandManager.registerCommand(new PlayerCommand(logger, playerManager, serviceManager));
     }
 
     @Override
