@@ -7,12 +7,14 @@ import net.potatocloud.core.networking.PacketTypes;
 
 @Data
 @AllArgsConstructor
-public class ServiceRemovePacket implements Packet {
+public class UpdateServicePacket implements Packet {
 
     private String serviceName;
+    private String stateName;
+    private int maxPlayers;
 
     @Override
     public String getType() {
-        return PacketTypes.SERVICE_REMOVE;
+        return PacketTypes.UPDATE_SERVICE;
     }
 }

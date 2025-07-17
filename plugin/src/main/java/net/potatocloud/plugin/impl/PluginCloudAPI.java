@@ -28,12 +28,12 @@ public class PluginCloudAPI extends CloudAPI {
         serviceManager = new ServiceManagerImpl();
     }
 
-    public void shutdown() {
-        client.disconnect();
-    }
-
     public static PluginCloudAPI getInstance() {
         return (PluginCloudAPI) CloudAPI.getInstance();
+    }
+
+    public void shutdown() {
+        client.disconnect();
     }
 
     @Override

@@ -11,6 +11,7 @@ import net.potatocloud.core.networking.PacketTypes;
 import net.potatocloud.core.networking.packets.service.RequestServicesPacket;
 import net.potatocloud.core.networking.packets.service.ServiceAddPacket;
 import net.potatocloud.core.networking.packets.service.ServiceRemovePacket;
+import net.potatocloud.core.networking.packets.service.UpdateServicePacket;
 import net.potatocloud.plugin.impl.PluginCloudAPI;
 
 import java.util.List;
@@ -18,7 +19,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ServiceManagerImpl implements ServiceManager {
 
-    private final List<Service> onlineServices = new CopyOnWriteArrayList<>();
+    private final List<Service> services = new CopyOnWriteArrayList<>();
     private final NetworkClient client;
 
     public ServiceManagerImpl() {
@@ -35,29 +36,45 @@ public class ServiceManagerImpl implements ServiceManager {
                     packet.getOnlinePlayers(),
                     packet.getUsedMemory());
 
-            if (!onlineServices.contains(service)) {
-                onlineServices.add(service);
+            if (!services.contains(service)) {
+                services.add(service);
             }
         });
 
         client.send(new RequestServicesPacket());
 
         client.registerPacketListener(PacketTypes.SERVICE_REMOVE, (NetworkConnection connection, ServiceRemovePacket packet) -> {
-            onlineServices.remove(getService(packet.getServiceName()));
+            services.remove(getService(packet.getServiceName()));
         });
+
+        client.registerPacketListener(PacketTypes.UPDATE_SERVICE, (NetworkConnection connection, UpdateServicePacket packet) -> {
+            final Service service = getService(packet.getServiceName());
+            service.setState(ServiceState.valueOf(packet.getStateName()));
+            service.setMaxPlayers(packet.getMaxPlayers());
+        });
+
     }
 
     @Override
     public Service getService(String serviceName) {
-        return onlineServices.stream()
+        return services.stream()
                 .filter(service -> service.getName().equalsIgnoreCase(serviceName))
                 .findFirst()
                 .orElse(null);
     }
 
     @Override
-    public List<Service> getAllOnlineServices() {
-        return onlineServices;
+    public List<Service> getAllServices() {
+        return services;
+    }
+
+    @Override
+    public void updateService(Service service) {
+        PluginCloudAPI.getInstance().getClient().send(new UpdateServicePacket(
+                service.getName(),
+                service.getState().name(),
+                service.getMaxPlayers()
+        ));
     }
 
     @Override

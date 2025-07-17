@@ -17,7 +17,7 @@ public class GroupCommand implements Command {
     private final ServiceGroupManager groupManager;
 
     @Override
-    public void execute(final String[] args) {
+    public void execute(String[] args) {
         if (args.length == 0) {
             sendHelp();
             return;
@@ -40,12 +40,12 @@ public class GroupCommand implements Command {
             logger.info("There are &cno &7service groups");
             return;
         }
-        for (final ServiceGroup group : groups) {
+        for (ServiceGroup group : groups) {
             logger.info("&8» &a" + group.getName());
         }
     }
 
-    private void createGroup(final String[] args) {
+    private void createGroup(String[] args) {
         if (args.length < 9) {
             logger.info("&cUsage&8: &7group create &8[&aname&8, &aminOnlineCount&8, &amaxOnlineCount&8, &amaxPlayers&8, &amaxMemory&8, &afallback&8, &astatic&8, &aplatformName&8]");
             return;
@@ -78,12 +78,12 @@ public class GroupCommand implements Command {
             );
 
             logger.info("&7Service group &a" + name + " &7was created &asuccessfully");
-        } catch (final NumberFormatException e) {
+        } catch (NumberFormatException e) {
             logger.info("&cUsage&8: &7group create &8[&aname&8, &aminOnlineCount&8, &amaxOnlineCount&8, &amaxPlayers&8, &amaxMemory&8, &afallback&8, &astatic&8, &aplatformName&8]");
         }
     }
 
-    private void deleteGroup(final String[] args) {
+    private void deleteGroup(String[] args) {
         if (args.length < 2) {
             logger.info("&cUsage&8: &7group delete &8[&aname&8]");
             return;
@@ -98,7 +98,7 @@ public class GroupCommand implements Command {
         logger.info("&aService group &a" + name + " &awas deleted");
     }
 
-    private void infoGroup(final String[] args) {
+    private void infoGroup(String[] args) {
         if (args.length < 2) {
             logger.info("&cUsage&8: &7group info &8[&aname&8]");
             return;

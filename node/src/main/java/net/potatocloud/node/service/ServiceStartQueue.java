@@ -2,6 +2,7 @@ package net.potatocloud.node.service;
 
 import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.group.ServiceGroup;
+import net.potatocloud.api.service.ServiceState;
 
 import java.util.List;
 
@@ -18,21 +19,28 @@ public class ServiceStartQueue extends Thread {
     public void run() {
         while (running) {
             try {
-                final List<ServiceGroup> serviceGroups = CloudAPI.getInstance().getServiceGroupManager().getAllServiceGroups();
-                if (serviceGroups != null) {
-                    for (ServiceGroup serviceGroup : serviceGroups) {
-                        if (!CloudAPI.getInstance().getServiceGroupManager().existsServiceGroup(serviceGroup.getName())) {
-                            continue;
-                        }
-                        if (serviceGroup.getOnlineServiceCount() < serviceGroup.getMinOnlineCount()) {
-                            CloudAPI.getInstance().getServiceManager().startService(serviceGroup);
-                        }
+                List<ServiceGroup> groups = CloudAPI.getInstance().getServiceGroupManager().getAllServiceGroups();
+
+                for (ServiceGroup group : groups) {
+                    if (!CloudAPI.getInstance().getServiceGroupManager().existsServiceGroup(group.getName())) {
+                        continue;
+                    }
+
+                    long services = CloudAPI.getInstance().getServiceManager().getAllServices().stream()
+                            .filter(service -> service.getServiceGroup().getName().equals(group.getName()))
+                            .filter(service -> service.getState() == ServiceState.RUNNING || service.getState() == ServiceState.STARTING || service.getState() == ServiceState.STOPPING)
+                            .count();
+
+                    if (services < group.getMinOnlineCount()) {
+                        CloudAPI.getInstance().getServiceManager().startService(group);
                     }
                 }
 
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
                 break;
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
         }
     }
@@ -42,3 +50,4 @@ public class ServiceStartQueue extends Thread {
         interrupt();
     }
 }
+

@@ -1,13 +1,18 @@
 package net.potatocloud.node.service;
 
+import net.potatocloud.api.event.EventManager;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
+import net.potatocloud.core.networking.NetworkServer;
+import net.potatocloud.core.networking.PacketTypes;
 import net.potatocloud.core.networking.packets.service.ServiceAddPacket;
-import net.potatocloud.node.Node;
+import net.potatocloud.core.networking.packets.service.UpdateServicePacket;
 import net.potatocloud.node.config.NodeConfig;
 import net.potatocloud.node.console.Logger;
-import net.potatocloud.node.service.listener.ServicePacketListeners;
+import net.potatocloud.node.listeners.service.RequestServicesListener;
+import net.potatocloud.node.listeners.service.ServiceStartedListener;
+import net.potatocloud.node.listeners.service.UpdateServiceListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,29 +20,44 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ServiceManagerImpl implements ServiceManager {
 
-    private final List<Service> onlineServices = new CopyOnWriteArrayList<>();
+    private final List<Service> services = new CopyOnWriteArrayList<>();
 
     private final NodeConfig config;
     private final Logger logger;
+    private final NetworkServer server;
+    private final EventManager eventManager;
 
-    public ServiceManagerImpl(NodeConfig config, Logger logger) {
+    public ServiceManagerImpl(NodeConfig config, Logger logger, NetworkServer server, EventManager eventManager) {
         this.config = config;
         this.logger = logger;
+        this.server = server;
+        this.eventManager = eventManager;
 
-        new ServicePacketListeners();
+        server.registerPacketListener(PacketTypes.REQUEST_SERVICES, new RequestServicesListener(this));
+        server.registerPacketListener(PacketTypes.SERVICE_STARTED, new ServiceStartedListener(this, logger, eventManager));
+        server.registerPacketListener(PacketTypes.UPDATE_SERVICE, new UpdateServiceListener(this));
     }
 
     @Override
     public Service getService(String serviceName) {
-        return onlineServices.stream()
+        return services.stream()
                 .filter(service -> service.getName().equalsIgnoreCase(serviceName))
                 .findFirst()
                 .orElse(null);
     }
 
     @Override
-    public List<Service> getAllOnlineServices() {
-        return onlineServices;
+    public List<Service> getAllServices() {
+        return services;
+    }
+
+    @Override
+    public void updateService(Service service) {
+        server.broadcastPacket(new UpdateServicePacket(
+                service.getName(),
+                service.getState().name(),
+                service.getMaxPlayers()
+        ));
     }
 
     @Override
@@ -46,10 +66,10 @@ public class ServiceManagerImpl implements ServiceManager {
         final int port = getServicePort(serviceGroup);
         final ServiceImpl service = new ServiceImpl(serviceId, port, serviceGroup, config, logger);
 
-        onlineServices.add(service);
+        services.add(service);
 
         // broadcast add service packet to all connected clients
-        Node.getInstance().getServer().broadcastPacket(new ServiceAddPacket(service.getName(), service.getServiceId(), service.getPort(),  service.getStartTimestamp(), service.getServiceGroup().getName(), service.getState().name(), service.getOnlinePlayers(), service.getUsedMemory()));
+        server.broadcastPacket(new ServiceAddPacket(service.getName(), service.getServiceId(), service.getPort(), service.getStartTimestamp(), service.getServiceGroup().getName(), service.getState().name(), service.getOnlinePlayers(), service.getUsedMemory()));
 
         service.start();
     }
@@ -62,13 +82,13 @@ public class ServiceManagerImpl implements ServiceManager {
     }
 
     public void removeService(Service service) {
-        onlineServices.remove(service);
+        services.remove(service);
     }
 
     private int getFreeServiceId(ServiceGroup serviceGroup) {
         List<Integer> usedIds = new ArrayList<>();
 
-        for (Service service : onlineServices) {
+        for (Service service : services) {
             if (service.getServiceGroup().equals(serviceGroup)) {
                 usedIds.add(service.getServiceId());
             }
@@ -84,7 +104,7 @@ public class ServiceManagerImpl implements ServiceManager {
 
     private int getServicePort(ServiceGroup serviceGroup) {
         List<Integer> usedPorts = new ArrayList<>();
-        for (Service service : onlineServices) {
+        for (Service service : services) {
             usedPorts.add(service.getPort());
         }
 

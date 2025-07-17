@@ -8,6 +8,7 @@ import net.potatocloud.core.networking.NetworkConnection;
 import net.potatocloud.core.networking.PacketTypes;
 import net.potatocloud.core.networking.packets.group.AddGroupPacket;
 import net.potatocloud.core.networking.packets.group.RequestGroupsPacket;
+import net.potatocloud.core.networking.packets.group.UpdateGroupPacket;
 import net.potatocloud.plugin.impl.PluginCloudAPI;
 
 import java.util.ArrayList;
@@ -26,16 +27,27 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
         client.registerPacketListener(PacketTypes.GROUP_ADD, (NetworkConnection connection, AddGroupPacket packet) -> {
             serviceGroups.add(new ServiceGroupImpl(
                     packet.getName(),
+                    packet.getPlatformName(),
+                    packet.getServiceTemplates(),
                     packet.getMinOnlineCount(),
                     packet.getMaxOnlineCount(),
                     packet.getMaxPlayers(),
                     packet.getMaxMemory(),
                     packet.isFallback(),
-                    packet.isStatic(),
-                    packet.getPlatformName(),
-                    packet.getServiceTemplates()
+                    packet.isStatic()
             ));
         });
+
+        client.registerPacketListener(PacketTypes.UPDATE_GROUP, (NetworkConnection connection, UpdateGroupPacket packet) -> {
+            final ServiceGroup group = getServiceGroup(packet.getGroupName());
+            group.setMinOnlineCount(packet.getMinOnlineCount());
+            group.setMaxOnlineCount(packet.getMaxOnlineCount());
+            group.setMaxPlayers(packet.getMaxPlayers());
+            group.setMaxMemory(packet.getMaxMemory());
+            group.setFallback(packet.isFallback());
+            packet.getServiceTemplates().forEach(group::addServiceTemplate);
+        });
+
     }
 
     @Override
@@ -66,7 +78,15 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
 
     @Override
     public void updateServiceGroup(ServiceGroup group) {
-        //todo
+        PluginCloudAPI.getInstance().getClient().send(new UpdateGroupPacket(
+                group.getName(),
+                group.getMinOnlineCount(),
+                group.getMaxOnlineCount(),
+                group.getMaxPlayers(),
+                group.getMaxMemory(),
+                group.isFallback(),
+                group.getServiceTemplates()
+        ));
     }
 
     @Override

@@ -18,14 +18,14 @@ import java.util.List;
 public class ServiceGroupImpl implements ServiceGroup {
 
     private final String name;
+    private final String platformName;
+    private final List<String> serviceTemplates;
     private int minOnlineCount;
     private int maxOnlineCount;
     private int maxPlayers;
     private int maxMemory;
     private boolean fallback;
     private boolean isStatic;
-    private final String platformName;
-    private final List<String> serviceTemplates;
 
     @Override
     public Platform getPlatform() {
@@ -34,11 +34,17 @@ public class ServiceGroupImpl implements ServiceGroup {
 
     @Override
     public void addServiceTemplate(String template) {
+        if (serviceTemplates.contains(template)) {
+            return;
+        }
         serviceTemplates.add(template);
     }
 
     @Override
     public void removeServiceTemplate(String template) {
+        if (!serviceTemplates.contains(template)) {
+            return;
+        }
         serviceTemplates.remove(template);
     }
 
@@ -46,10 +52,10 @@ public class ServiceGroupImpl implements ServiceGroup {
     public List<Service> getOnlineServices() {
         return CloudAPI.getInstance()
                 .getServiceManager()
-                .getAllOnlineServices()
+                .getAllServices()
                 .stream()
                 .filter(service -> service.getServiceGroup().getName().equals(name))
-                .filter(service -> service.getState().equals(ServiceState.RUNNING) || service.getState().equals(ServiceState.STARTING))
+                .filter(service -> service.getState().equals(ServiceState.RUNNING))
                 .toList();
     }
 

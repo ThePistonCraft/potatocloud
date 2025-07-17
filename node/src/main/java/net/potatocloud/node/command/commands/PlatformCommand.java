@@ -58,14 +58,14 @@ public class PlatformCommand implements Command {
 
         platformManager.downloadPlatform(PlatformVersions.getPlatformByName(args[1]));
     }
-    
+
     private void removePlatform(String[] args) {
         if (args.length < 2) {
             logger.info("&cUsage&8: platform remove &8[&aname&8]");
             return;
         }
 
-        Platform platform = PlatformVersions.getPlatformByName(args[1]);
+        final Platform platform = PlatformVersions.getPlatformByName(args[1]);
         if (platform == null) {
             logger.info("&cThis platform does not exist.");
             return;

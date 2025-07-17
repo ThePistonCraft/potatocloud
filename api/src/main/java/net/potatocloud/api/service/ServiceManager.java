@@ -8,7 +8,9 @@ public interface ServiceManager {
 
     Service getService(String serviceName);
 
-    List<Service> getAllOnlineServices();
+    List<Service> getAllServices();
+
+    void updateService(Service service);
 
     void startService(ServiceGroup serviceGroup);
 

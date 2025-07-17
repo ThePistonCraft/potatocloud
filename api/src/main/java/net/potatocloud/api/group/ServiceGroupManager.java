@@ -1,7 +1,5 @@
 package net.potatocloud.api.group;
 
-import net.potatocloud.api.platform.Platform;
-
 import java.util.List;
 
 public interface ServiceGroupManager {

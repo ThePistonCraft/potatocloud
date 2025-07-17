@@ -1,9 +1,9 @@
 package net.potatocloud.node.service;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.impl.PandaSpigotVersion;
@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
 @Getter
@@ -34,19 +33,16 @@ public class ServiceImpl implements Service {
     private final ServiceGroup serviceGroup;
     private final NodeConfig config;
     private final Logger logger;
-
+    private final List<String> logs = new ArrayList<>();
     @Setter
     private int maxPlayers;
-
     @Setter
     private ServiceState state = ServiceState.STOPPED;
     private long startTimestamp;
     private Path directory;
     private Process serverProcess;
-
     private BufferedWriter processWriter;
     private BufferedReader processReader;
-    private final List<String> logs = new ArrayList<>();
 
     public ServiceImpl(int serviceId, int port, ServiceGroup serviceGroup, NodeConfig config, Logger logger) {
         this.serviceId = serviceId;
@@ -107,6 +103,12 @@ public class ServiceImpl implements Service {
             Node.getInstance().getTemplateManager().copyTemplate(templateName, directory);
         }
 
+        // copy cloud plugin into plugins folder
+        final Path pluginsFolder = directory.resolve("plugins");
+        Files.createDirectories(pluginsFolder);
+
+        FileUtils.copyFile(Path.of(config.getDataFolder(), "potatocloud-plugin.jar").toFile(), pluginsFolder.resolve("potatocloud-plugin.jar").toFile());
+
         // download and configure the platform of the service
         final Platform platform = getServiceGroup().getPlatform();
         Node.getInstance().getPlatformManager().downloadPlatform(platform);
@@ -116,7 +118,7 @@ public class ServiceImpl implements Service {
             final File file = directory.resolve("server.properties").toFile();
 
             if (!file.exists()) {
-                properties.load(getClass().getResourceAsStream("/default-files/server.properties"));
+                properties.load(Files.newInputStream(Path.of(config.getDataFolder(), "server.properties")));
             } else {
                 properties.load(new FileInputStream(file));
             }
@@ -131,14 +133,14 @@ public class ServiceImpl implements Service {
             final Path spigotConfigFile = directory.resolve("spigot.yml");
 
             if (!Files.exists(spigotConfigFile)) {
-                Files.copy(getClass().getResourceAsStream("/default-files/spigot.yml"), spigotConfigFile);
+                Files.copy(Path.of(config.getDataFolder(), "spigot.yml"), spigotConfigFile);
             }
 
         } else {
             final Path velocityConfigFile = directory.resolve("velocity.toml");
 
             if (!Files.exists(velocityConfigFile)) {
-                Files.copy(getClass().getResourceAsStream("/default-files/velocity.toml"), velocityConfigFile);
+                Files.copy(Path.of(config.getDataFolder(), "velocity.toml"), velocityConfigFile);
             }
 
             String fileContent = Files.readString(velocityConfigFile);
@@ -203,16 +205,16 @@ public class ServiceImpl implements Service {
         logger.info("The Service &a" + getName() + "&7 is now starting... &8[&7Port&8: &a" + port + ", &7Group&8: &a" + serviceGroup.getName() + "&8]");
     }
 
-    public void shutdownInBackground() {
+    @Override
+    public void shutdown() {
         if (state == ServiceState.STOPPED || state == ServiceState.STOPPING) {
             return;
         }
-        new Thread(this::shutdown, "Shutdown-" + getName()).start();
+        new Thread(this::shutdownBlocking, "Shutdown-" + getName()).start();
     }
 
-    @Override
     @SneakyThrows
-    public void shutdown() {
+    public void shutdownBlocking() {
         if (state == ServiceState.STOPPED || state == ServiceState.STOPPING) {
             return;
         }
@@ -228,19 +230,18 @@ public class ServiceImpl implements Service {
         }
 
         if (serverProcess != null) {
-            if (serverProcess.waitFor(10, TimeUnit.SECONDS)) {
+            boolean finished = serverProcess.waitFor(10, TimeUnit.SECONDS);
+            if (!finished) {
                 serverProcess.toHandle().destroyForcibly();
-                serverProcess = null;
-                return;
+                serverProcess.waitFor();
             }
+            serverProcess = null;
         }
 
-        state = ServiceState.STOPPED;
         startTimestamp = 0L;
 
         ((ServiceManagerImpl) Node.getInstance().getServiceManager()).removeService(this);
 
-        // broadcast remove service packet to all connected clients
         if (Node.getInstance().getServer() != null) {
             Node.getInstance().getServer().broadcastPacket(new ServiceRemovePacket(this.getName()));
         }
@@ -253,6 +254,7 @@ public class ServiceImpl implements Service {
             }
         }
 
+        state = ServiceState.STOPPED;
         logger.info("The Service &a" + getName() + " &7has been stopped.");
     }
 
@@ -271,11 +273,11 @@ public class ServiceImpl implements Service {
 
     @Override
     public void update() {
-
+        CloudAPI.getInstance().getServiceManager().updateService(this);
     }
 
     @SneakyThrows
-    public List<String> getLogs()  {
+    public List<String> getLogs() {
         synchronized (logs) {
             return new ArrayList<>(logs);
         }

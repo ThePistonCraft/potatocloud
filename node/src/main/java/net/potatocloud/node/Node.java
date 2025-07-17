@@ -20,6 +20,7 @@ import net.potatocloud.node.console.ExceptionMessageHandler;
 import net.potatocloud.node.console.Logger;
 import net.potatocloud.node.group.ServiceGroupManagerImpl;
 import net.potatocloud.node.platform.PlatformManager;
+import net.potatocloud.node.service.ServiceImpl;
 import net.potatocloud.node.service.ServiceManagerImpl;
 import net.potatocloud.node.service.ServiceStartQueue;
 import net.potatocloud.node.template.TemplateManager;
@@ -27,7 +28,10 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 @Getter
 public class Node extends CloudAPI {
@@ -45,6 +49,7 @@ public class Node extends CloudAPI {
     private final ServiceManagerImpl serviceManager;
     private final ServiceStartQueue serviceStartQueue;
 
+    @SneakyThrows
     public Node() {
         config = new NodeConfig();
         try {
@@ -66,22 +71,40 @@ public class Node extends CloudAPI {
         logger = new Logger(console, new File(config.getLogsFolder()));
         new ExceptionMessageHandler(logger);
 
+        // copy default service files into data folder
+        final Path dataFolder = Path.of(config.getDataFolder());
+        final List<String> files = List.of("server.properties", "spigot.yml", "velocity.toml", "potatocloud-plugin.jar");
+
+        Files.createDirectories(dataFolder);
+        for (String name : files) {
+            try (InputStream stream = getClass().getClassLoader().getResourceAsStream("default-files/" + name)) {
+                if (stream != null)
+                    FileUtils.copyInputStreamToFile(stream, dataFolder.resolve(name).toFile());
+            } catch (Exception e) {
+                logger.warn("Failed to copy default service file: " + name);
+            }
+        }
+
         templateManager = new TemplateManager(logger, Path.of(config.getTemplatesFolder()));
-        groupManager = new ServiceGroupManagerImpl(Path.of(config.getGroupsFolder()));
+        groupManager = new ServiceGroupManagerImpl(Path.of(config.getGroupsFolder()), server);
 
         ((ServiceGroupManagerImpl) groupManager).loadGroups();
         logger.info("Found &a" + groupManager.getAllServiceGroups().size() + "&7 Service Groups!");
 
         platformManager = new PlatformManager(Path.of(config.getPlatformsFolder()), logger);
-        serviceManager = new ServiceManagerImpl(config, logger);
-        serviceManager.getAllOnlineServices().clear();
+        serviceManager = new ServiceManagerImpl(config, logger, server, eventManager);
+        serviceManager.getAllServices().clear();
 
         registerCommands();
 
-        logger.info("Successfully started the potatocloud node &8(&7Took &a"+ (System.currentTimeMillis() - Long.parseLong(System.getProperty("nodeStartupTime"))) + "ms&8)");
+        logger.info("Successfully started the potatocloud node &8(&7Took &a" + (System.currentTimeMillis() - Long.parseLong(System.getProperty("nodeStartupTime"))) + "ms&8)");
 
         serviceStartQueue = new ServiceStartQueue();
         serviceStartQueue.start();
+    }
+
+    public static Node getInstance() {
+        return (Node) CloudAPI.getInstance();
     }
 
     private void registerCommands() {
@@ -91,10 +114,6 @@ public class Node extends CloudAPI {
         commandManager.registerCommand(new PlatformCommand(logger, Path.of(config.getPlatformsFolder()), platformManager));
         commandManager.registerCommand(new ClearCommand(console));
         commandManager.registerCommand(new HelpCommand(logger, commandManager));
-    }
-
-    public static Node getInstance() {
-        return (Node) CloudAPI.getInstance();
     }
 
     @Override
@@ -117,15 +136,14 @@ public class Node extends CloudAPI {
         logger.info("&cShutting down node...");
         serviceStartQueue.close();
 
-        for (Service service : serviceManager.getAllOnlineServices()) {
-            service.shutdown();
+        for (Service service : serviceManager.getAllServices()) {
+            ((ServiceImpl) service).shutdownBlocking();
         }
 
         for (NetworkConnection connectedSession : server.getConnectedSessions()) {
             connectedSession.close();
         }
         server.shutdown();
-
 
         FileUtils.deleteDirectory(Path.of(config.getTempServicesFolder()).toFile());
 

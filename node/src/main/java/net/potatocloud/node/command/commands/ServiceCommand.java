@@ -20,7 +20,7 @@ public class ServiceCommand implements Command {
     private final ServiceGroupManager groupManager;
 
     @Override
-    public void execute(final String[] args) {
+    public void execute(String[] args) {
         if (args.length == 0) {
             sendHelp();
             return;
@@ -30,7 +30,7 @@ public class ServiceCommand implements Command {
 
         switch (sub) {
             case "list" -> {
-                final List<Service> services = serviceManager.getAllOnlineServices();
+                final List<Service> services = serviceManager.getAllServices();
                 if (services.isEmpty()) {
                     logger.info("There are &cno &7running services");
                     return;
@@ -143,22 +143,14 @@ public class ServiceCommand implements Command {
                     return;
                 }
 
-                try {
-                    if (service instanceof ServiceImpl serviceImpl) {
-                        List<String> logs = serviceImpl.getLogs();
-                        if (logs.isEmpty()) {
-                            logger.info("No logs found for service &a" + serviceName);
-                        } else {
-                            logger.info("Logs for service &a" + serviceName + ":");
-                            for (String logLine : logs) {
-                                logger.info(logLine);
-                            }
-                        }
-                    } else {
-                        logger.info("&cCannot read logs from this service implementation.");
+                List<String> logs = ((ServiceImpl) service).getLogs();
+                if (logs.isEmpty()) {
+                    logger.info("No logs found for service &a" + serviceName);
+                } else {
+                    logger.info("Logs for service &a" + serviceName + ":");
+                    for (String logLine : logs) {
+                        logger.info(logLine);
                     }
-                } catch (Exception e) {
-                    logger.info("&cFailed to read logs for service &a" + serviceName);
                 }
             }
 

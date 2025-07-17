@@ -2,6 +2,7 @@ package net.potatocloud.plugin.impl.service;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceState;
@@ -51,6 +52,6 @@ public class ServiceImpl implements Service {
 
     @Override
     public void update() {
-        // todo: send update packet
+        CloudAPI.getInstance().getServiceManager().updateService(this);
     }
 }

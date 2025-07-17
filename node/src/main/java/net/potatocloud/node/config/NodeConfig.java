@@ -22,6 +22,7 @@ public class NodeConfig {
     private String templatesFolder = "templates";
     private String platformsFolder = "platforms";
     private String logsFolder = "logs";
+    private String dataFolder = "data";
 
     private String nodeHost = "127.0.0.1";
     private int nodePort = 9000;
@@ -38,20 +39,21 @@ public class NodeConfig {
 
         yaml.load();
 
-        this.serviceStartPort = yaml.getInt("service-start-port", serviceStartPort);
-        this.proxyStartPort = yaml.getInt("proxy-start-port", proxyStartPort);
-        this.prompt = yaml.getString("prompt", prompt);
-        this.splitter = yaml.getString("splitter", splitter);
+        serviceStartPort = yaml.getInt("service-start-port", serviceStartPort);
+        proxyStartPort = yaml.getInt("proxy-start-port", proxyStartPort);
+        prompt = yaml.getString("prompt", prompt);
+        splitter = yaml.getString("splitter", splitter);
 
-        this.groupsFolder = yaml.getString("folders.groups", groupsFolder);
-        this.staticFolder = yaml.getString("folders.static", staticFolder);
-        this.tempServicesFolder = yaml.getString("folders.temp-services", tempServicesFolder);
-        this.templatesFolder = yaml.getString("folders.templates", templatesFolder);
-        this.platformsFolder = yaml.getString("folders.platforms", platformsFolder);
-        this.logsFolder = yaml.getString("folders.logs", logsFolder);
+        groupsFolder = yaml.getString("folders.groups", groupsFolder);
+        staticFolder = yaml.getString("folders.static", staticFolder);
+        tempServicesFolder = yaml.getString("folders.temp-services", tempServicesFolder);
+        templatesFolder = yaml.getString("folders.templates", templatesFolder);
+        platformsFolder = yaml.getString("folders.platforms", platformsFolder);
+        logsFolder = yaml.getString("folders.logs", logsFolder);
+        dataFolder =yaml.getString("folders.data", logsFolder);
 
-        this.nodeHost = yaml.getString("node.host", nodeHost);
-        this.nodePort = yaml.getInt("node.port", nodePort);
+        nodeHost = yaml.getString("node.host", nodeHost);
+        nodePort = yaml.getInt("node.port", nodePort);
     }
 
     @SneakyThrows
@@ -71,6 +73,7 @@ public class NodeConfig {
         yaml.set("folders.templates", templatesFolder);
         yaml.set("folders.platforms", platformsFolder);
         yaml.set("folders.logs", logsFolder);
+        yaml.set("folders.data", dataFolder);
 
         yaml.set("node.host", nodeHost);
         yaml.set("node.port", nodePort);

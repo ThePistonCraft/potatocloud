@@ -2,13 +2,18 @@ package net.potatocloud.node.group;
 
 import lombok.SneakyThrows;
 import net.potatocloud.api.group.ServiceGroup;
-import net.potatocloud.api.group.impl.ServiceGroupImpl;
 import net.potatocloud.api.group.ServiceGroupManager;
+import net.potatocloud.api.group.impl.ServiceGroupImpl;
 import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.PlatformVersions;
 import net.potatocloud.api.service.Service;
+import net.potatocloud.core.networking.NetworkServer;
+import net.potatocloud.core.networking.PacketTypes;
 import net.potatocloud.core.networking.packets.group.AddGroupPacket;
+import net.potatocloud.core.networking.packets.group.UpdateGroupPacket;
 import net.potatocloud.node.Node;
+import net.potatocloud.node.listeners.group.RequestGroupsListener;
+import net.potatocloud.node.listeners.group.UpdateGroupListener;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,10 +27,14 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
 
     private final List<ServiceGroup> serviceGroups = new ArrayList<>();
     private final Path groupsPath;
+    private final NetworkServer server;
 
-    public ServiceGroupManagerImpl(Path groupsPath) {
+    public ServiceGroupManagerImpl(Path groupsPath, NetworkServer server) {
         this.groupsPath = groupsPath;
-        new ServiceGroupPacketListeners();
+        this.server = server;
+
+        server.registerPacketListener(PacketTypes.REQUEST_GROUPS, new RequestGroupsListener(this));
+        server.registerPacketListener(PacketTypes.UPDATE_GROUP, new UpdateGroupListener(this));
     }
 
     @Override
@@ -70,18 +79,18 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
 
         final ServiceGroup serviceGroup = new ServiceGroupImpl(
                 name,
+                platformName,
+                templates,
                 minOnlineCount,
                 maxOnlineCount,
                 maxPlayers,
                 maxMemory,
                 fallback,
-                isStatic,
-                platformName,
-                templates
+                isStatic
         );
 
         // send group add packet to clients
-        Node.getInstance().getServer().broadcastPacket(new AddGroupPacket(
+        server.broadcastPacket(new AddGroupPacket(
                 name,
                 minOnlineCount,
                 maxOnlineCount,
@@ -120,7 +129,16 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
     @Override
     public void updateServiceGroup(ServiceGroup group) {
         ServiceGroupStorage.saveToFile(group, groupsPath);
-        // todo send update packet
+
+        server.broadcastPacket(new UpdateGroupPacket(
+                group.getName(),
+                group.getMinOnlineCount(),
+                group.getMaxOnlineCount(),
+                group.getMaxPlayers(),
+                group.getMaxMemory(),
+                group.isFallback(),
+                group.getServiceTemplates()
+        ));
     }
 
     @Override

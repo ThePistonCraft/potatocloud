@@ -2,7 +2,6 @@ package net.potatocloud.core.networking.packets.service;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import net.potatocloud.api.service.Service;
 import net.potatocloud.core.networking.Packet;
 import net.potatocloud.core.networking.PacketTypes;
 
