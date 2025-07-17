@@ -8,10 +8,10 @@ import net.potatocloud.core.networking.NetworkConnection;
 import net.potatocloud.core.networking.PacketTypes;
 import net.potatocloud.core.networking.packets.EventPacket;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ClientEventManager implements EventManager {
 
@@ -30,23 +30,25 @@ public class ClientEventManager implements EventManager {
     }
 
     public <T extends Event> void on(Class<T> eventClass, EventListener<T> listener) {
-        listeners.computeIfAbsent(eventClass, key -> new CopyOnWriteArrayList<>()).add(listener);
+        final List<EventListener<? extends Event>> eventListeners = listeners.computeIfAbsent(eventClass, k -> new ArrayList<>());
+        eventListeners.add(listener);
     }
 
     @SuppressWarnings("unchecked")
     public <T extends Event> void callLocal(T event) {
-        for (EventListener<?> listener : listeners.get(event.getClass())) {
+        final List<EventListener<? extends Event>> eventListeners = listeners.get(event.getClass());
+        if (eventListeners == null || eventListeners.isEmpty()) {
+            return;
+        }
+        for (EventListener<?> listener : eventListeners) {
             ((EventListener<T>) listener).onEvent(event);
         }
     }
 
-
     @SuppressWarnings("unchecked")
     public <T extends Event> void call(T event) {
         callLocal(event);
-
-        // send the event packet to call listeners in other jvm processes as well
-        EventPacket packet = EventSerializer.serialize(event);
+        final EventPacket packet = EventSerializer.serialize(event);
         client.send(packet);
     }
 }
