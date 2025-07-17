@@ -18,14 +18,14 @@ public class RequestGroupsListener implements PacketListener<RequestGroupsPacket
         for (ServiceGroup group : groupManager.getAllServiceGroups()) {
             connection.send(new AddGroupPacket(
                     group.getName(),
+                    group.getPlatformName(),
+                    group.getServiceTemplates(),
                     group.getMinOnlineCount(),
                     group.getMaxOnlineCount(),
                     group.getMaxPlayers(),
                     group.getMaxMemory(),
                     group.isFallback(),
-                    group.isStatic(),
-                    group.getPlatformName(),
-                    group.getServiceTemplates()
+                    group.isStatic()
             ));
         }
     }

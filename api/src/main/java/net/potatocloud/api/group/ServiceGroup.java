@@ -9,6 +9,12 @@ public interface ServiceGroup {
 
     String getName();
 
+    String getPlatformName();
+
+    Platform getPlatform();
+
+    List<String> getServiceTemplates();
+
     int getMinOnlineCount();
 
     void setMinOnlineCount(int minOnlineCount);
@@ -31,11 +37,7 @@ public interface ServiceGroup {
 
     boolean isStatic();
 
-    String getPlatformName();
-
-    Platform getPlatform();
-
-    List<String> getServiceTemplates();
+    int getStartPriority();
 
     void addServiceTemplate(String template);
 

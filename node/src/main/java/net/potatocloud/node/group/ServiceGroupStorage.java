@@ -23,6 +23,7 @@ public class ServiceGroupStorage {
         config.set("maxMemory", group.getMaxMemory());
         config.set("fallback", group.isFallback());
         config.set("static", group.isStatic());
+        config.set("startPriority", group.getStartPriority());
         config.save();
     }
 
@@ -40,6 +41,8 @@ public class ServiceGroupStorage {
                 config.getInt("maxPlayers"),
                 config.getInt("maxMemory"),
                 config.getBoolean("fallback"),
-                config.getBoolean("static"));
+                config.getBoolean("static"),
+                config.getInt("startPriority")
+        );
     }
 }

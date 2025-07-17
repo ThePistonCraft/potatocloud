@@ -26,6 +26,21 @@ public class ServiceGroupImpl implements ServiceGroup {
     private int maxMemory;
     private boolean fallback;
     private boolean isStatic;
+    private int startPriority;
+
+    public ServiceGroupImpl(String name, String platformName, List<String> serviceTemplates, int minOnlineCount, int maxOnlineCount, int maxPlayers, int maxMemory, boolean fallback, boolean isStatic) {
+        this.name = name;
+        this.platformName = platformName;
+        this.serviceTemplates = serviceTemplates;
+        this.minOnlineCount = minOnlineCount;
+        this.maxOnlineCount = maxOnlineCount;
+        this.maxPlayers = maxPlayers;
+        this.maxMemory = maxMemory;
+        this.fallback = fallback;
+        this.isStatic = isStatic;
+
+        startPriority = 0;
+    }
 
     @Override
     public Platform getPlatform() {

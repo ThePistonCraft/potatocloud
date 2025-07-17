@@ -46,7 +46,7 @@ public class GroupCommand implements Command {
 
     private void createGroup(String[] args) {
         if (args.length < 9) {
-            logger.info("&cUsage&8: group create &8[&aname&8] [&aplatformName&8] [&aminOnlineCount&8] [&amaxOnlineCount&8] [&amaxPlayers&8] [&amaxMemory&8] [&afallback&8] [&astatic&8]");
+            logger.info("&cUsage&8: &7group create &8[&aname&8] [&aplatformName&8] [&aminOnlineCount&8] [&amaxOnlineCount&8] [&amaxPlayers&8] [&amaxMemory&8] [&afallback&8] [&astatic&8]");
             return;
         }
 
@@ -78,7 +78,7 @@ public class GroupCommand implements Command {
             logger.info("&7Service group &a" + name + " &7was created &asuccessfully");
 
         } catch (NumberFormatException e) {
-            logger.info("&cUsage&8: group create &8[&aname&8] [&aplatformName&8] [&aminOnlineCount&8] [&amaxOnlineCount&8] [&amaxPlayers&8] [&amaxMemory&8] [&afallback&8] [&astatic&8]");
+            logger.info("&cUsage&8: &7group create &8[&aname&8] [&aplatformName&8] [&aminOnlineCount&8] [&amaxOnlineCount&8] [&amaxPlayers&8] [&amaxMemory&8] [&afallback&8] [&astatic&8]");
         }
     }
 
