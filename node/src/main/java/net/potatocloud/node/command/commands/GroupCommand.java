@@ -114,8 +114,8 @@ public class GroupCommand implements Command {
         logger.info("Max Online Count: &a" + group.getMaxOnlineCount());
         logger.info("Max Players: &a" + group.getMaxPlayers());
         logger.info("Max Memory: &a" + group.getMaxMemory() + "MB");
-        logger.info("Fallback: &a" + group.isFallback());
-        logger.info("Static: &a" + group.isStatic());
+        logger.info("&7Fallback: " + (group.isFallback() ? "&aYes" : "&cNo"));
+        logger.info("&7Static: " + (group.isStatic() ? "&aYes" : "&cNo"));
         logger.info("Platform: &a" + group.getPlatform().getFullName());
         logger.info("Templates: &a" + String.join(", ", group.getServiceTemplates()));
     }

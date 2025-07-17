@@ -16,7 +16,7 @@ public class HelpCommand implements Command {
     @Override
     public void execute(String[] args) {
         for (Command command : commandManager.getCommands().values()) {
-            logger.info("&7" + command.getName() + getAliases(command) + " &8- " + "&7" + command.getDescription());
+            logger.info("&8» &a" + command.getName() + getAliases(command) + " &8- " + "&7" + command.getDescription());
         }
     }
 
@@ -24,7 +24,7 @@ public class HelpCommand implements Command {
         if (command.getAliases().isEmpty()) {
             return "";
         }
-        return "&8[&7" + String.join(", ", command.getAliases()) + "&8]&7";
+        return " &8[&7" + String.join(", ", command.getAliases()) + "&8]&7";
     }
 
 

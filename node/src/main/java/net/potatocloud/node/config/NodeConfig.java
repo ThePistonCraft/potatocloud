@@ -13,7 +13,7 @@ public class NodeConfig {
     private int serviceStartPort = 30000;
     private int proxyStartPort = 25565;
 
-    private String prompt = "%user%@node &8> ";
+    private String prompt = "&7&a%user%&7@cloud ~> ";
     private String splitter = "-";
 
     private String groupsFolder = "groups";

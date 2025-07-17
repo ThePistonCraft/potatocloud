@@ -22,8 +22,8 @@ public class CommandManager {
             return;
         }
 
-        String[] parts = line.trim().split(" ");
-        String input = parts[0].toLowerCase();
+        final String[] parts = line.trim().split(" ");
+        final String input = parts[0].toLowerCase();
 
         Command command = commands.get(input);
         if (command == null) {
@@ -34,7 +34,7 @@ public class CommandManager {
             return;
         }
 
-        String[] args = parts.length > 1 ? Arrays.copyOfRange(parts, 1, parts.length) : new String[0];
+        final String[] args = parts.length > 1 ? Arrays.copyOfRange(parts, 1, parts.length) : new String[0];
         command.execute(args);
     }
 

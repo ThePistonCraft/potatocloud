@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.event.EventManager;
+import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.group.ServiceGroupManager;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
@@ -55,14 +56,7 @@ public class Node extends CloudAPI {
         try {
             FileUtils.deleteDirectory(new File(config.getTempServicesFolder()));
         } catch (IOException ignored) {
-
         }
-
-        packetManager = new PacketManager();
-        server = new NettyNetworkServer(packetManager);
-        eventManager = new ServerEventManager(server);
-
-        server.start(config.getNodeHost(), config.getNodePort());
 
         commandManager = new CommandManager();
         console = new Console(config.getPrompt(), commandManager, this);
@@ -71,7 +65,14 @@ public class Node extends CloudAPI {
         logger = new Logger(console, new File(config.getLogsFolder()));
         new ExceptionMessageHandler(logger);
 
-        // copy default service files into data folder
+        packetManager = new PacketManager();
+        server = new NettyNetworkServer(packetManager);
+
+        server.start(config.getNodeHost(), config.getNodePort());
+        logger.info("NetworkServer started using &aNetty &7on &a" + config.getNodeHost() + "&8:&a" + config.getNodePort());
+
+        eventManager = new ServerEventManager(server);
+
         final Path dataFolder = Path.of(config.getDataFolder());
         final List<String> files = List.of("server.properties", "spigot.yml", "velocity.toml", "potatocloud-plugin.jar");
 
@@ -89,7 +90,13 @@ public class Node extends CloudAPI {
         groupManager = new ServiceGroupManagerImpl(Path.of(config.getGroupsFolder()), server);
 
         ((ServiceGroupManagerImpl) groupManager).loadGroups();
-        logger.info("Found &a" + groupManager.getAllServiceGroups().size() + "&7 Service Groups!");
+
+        if (!groupManager.getAllServiceGroups().isEmpty()) {
+            logger.info("Found &a" + groupManager.getAllServiceGroups().size() + "&7 Service Groups:");
+            for (ServiceGroup group : groupManager.getAllServiceGroups()) {
+                logger.info("&8» &a" + group.getName());
+            }
+        }
 
         platformManager = new PlatformManager(Path.of(config.getPlatformsFolder()), logger);
         serviceManager = new ServiceManagerImpl(config, logger, server, eventManager);

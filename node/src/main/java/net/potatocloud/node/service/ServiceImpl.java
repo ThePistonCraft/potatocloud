@@ -43,7 +43,9 @@ public class ServiceImpl implements Service {
     private Process serverProcess;
     private BufferedWriter processWriter;
     private BufferedReader processReader;
-    private final ServiceProcessChecker processChecker;
+
+    @Setter
+    private ServiceProcessChecker processChecker;
 
     public ServiceImpl(int serviceId, int port, ServiceGroup serviceGroup, NodeConfig config, Logger logger) {
         this.serviceId = serviceId;
@@ -52,7 +54,6 @@ public class ServiceImpl implements Service {
         this.config = config;
         this.logger = logger;
         maxPlayers = serviceGroup.getMaxPlayers();
-        processChecker = new ServiceProcessChecker(this);
     }
 
     @Override
@@ -220,6 +221,11 @@ public class ServiceImpl implements Service {
             return;
         }
 
+        if (processChecker != null) {
+            processChecker.interrupt();
+            processChecker = null;
+        }
+
         logger.info("Stopping service &a" + getName() + "&7...");
         state = ServiceState.STOPPING;
 
@@ -243,6 +249,12 @@ public class ServiceImpl implements Service {
     }
 
     public void cleanup() {
+        if (state == ServiceState.STOPPED) {
+            return;
+        }
+
+
+        state = ServiceState.STOPPED;
         startTimestamp = 0L;
 
         ((ServiceManagerImpl) Node.getInstance().getServiceManager()).removeService(this);
@@ -259,7 +271,6 @@ public class ServiceImpl implements Service {
             }
         }
 
-        state = ServiceState.STOPPED;
         logger.info("The Service &a" + getName() + " &7has been stopped.");
     }
 

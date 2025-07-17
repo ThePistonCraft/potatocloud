@@ -11,14 +11,20 @@ public class ServiceProcessChecker extends Thread {
         setDaemon(true);
     }
 
-    @SneakyThrows
+
     @Override
     public void run() {
-        while (service.isOnline() && service.getServerProcess() != null && service.getServerProcess().isAlive()) {
+        while (!isInterrupted() && service.isOnline() && service.getServerProcess() != null && service.getServerProcess().isAlive()) {
             // if everything is fine, check again after 2 seconds
-            Thread.sleep(2000);
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException ignored) {
+                return;
+            }
         }
-        service.getLogger().info("The service &a" + service.getName() + " &7seems to be offline...");
-        service.cleanup();
+        if (!isInterrupted()) {
+            service.getLogger().info("The service &a" + service.getName() + " &7seems to be offline...");
+            service.cleanup();
+        }
     }
 }
