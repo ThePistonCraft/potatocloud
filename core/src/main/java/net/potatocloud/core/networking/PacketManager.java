@@ -3,13 +3,16 @@ package net.potatocloud.core.networking;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class PacketManager {
 
     private final Map<String, Class<? extends Packet>> packets = new HashMap<>();
-    private final Map<String, PacketListener<? extends Packet>> listeners = new HashMap<>();
+    private final Map<String, List<PacketListener<? extends Packet>>> listeners = new HashMap<>();
     private final Gson gson = new Gson();
 
     public void register(String type, Class<? extends Packet> clazz) {
@@ -17,7 +20,7 @@ public class PacketManager {
     }
 
     public <T extends Packet> void registerListener(String packetType, PacketListener<T> listener) {
-        listeners.put(packetType, listener);
+        listeners.computeIfAbsent(packetType, key -> new CopyOnWriteArrayList<>()).add(listener);
     }
 
     public Packet decode(String json) {
@@ -35,9 +38,11 @@ public class PacketManager {
 
     @SuppressWarnings("unchecked")
     public <T extends Packet> void onPacket(NetworkConnection connection, Packet packet) {
-        PacketListener<T> listener = (PacketListener<T>) listeners.get(packet.getType());
-        if (listener != null) {
-            listener.onPacket(connection, (T) packet);
+        List<PacketListener<? extends Packet>> listenerList = listeners.get(packet.getType());
+        if (listenerList != null) {
+            for (PacketListener<? extends Packet> listener : listenerList) {
+                ((PacketListener<T>) listener).onPacket(connection, (T) packet);
+            }
         }
     }
 }
