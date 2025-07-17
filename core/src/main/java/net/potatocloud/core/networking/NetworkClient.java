@@ -10,4 +10,6 @@ public interface NetworkClient {
 
     <T extends Packet> void registerPacketListener(String packetType, PacketListener<T> listener);
 
+    boolean isConnected();
+
 }

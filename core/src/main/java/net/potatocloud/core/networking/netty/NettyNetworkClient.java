@@ -3,7 +3,6 @@ package net.potatocloud.core.networking.netty;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.nio.NioIoHandler;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import lombok.RequiredArgsConstructor;
@@ -53,5 +52,10 @@ public class NettyNetworkClient implements NetworkClient {
     @Override
     public <T extends Packet> void registerPacketListener(String packetType, PacketListener<T> listener) {
         packetManager.registerListener(packetType, listener);
+    }
+
+    @Override
+    public boolean isConnected() {
+        return channel != null && channel.isActive();
     }
 }
