@@ -70,7 +70,7 @@ public class PlayerCommand implements Command {
 
     private void sendHelp() {
         logger.info("player list &8- &7List all online players");
-        logger.info("player connect &8[&aplayerName&8] [&aserviceName&8] - &7Connect a player to a service\"");
+        logger.info("player connect &8[&aplayerName&8] [&aserviceName&8] - &7Connect a player to a service");
     }
 
     @Override

@@ -183,7 +183,7 @@ public class ServiceImpl implements Service {
 
         // create start arguments
         final ArrayList<String> args = new ArrayList<>();
-        args.add("java");
+        args.add(getServiceGroup().getJavaCommand());
         args.add("-Xms" + serviceGroup.getMaxMemory() + "M");
         args.add("-Xmx" + serviceGroup.getMaxMemory() + "M");
         args.add("-Dpotatocloud.service.name=" + getName());

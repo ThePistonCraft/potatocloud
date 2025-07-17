@@ -27,6 +27,7 @@ public class ServiceGroupImpl implements ServiceGroup {
     private boolean fallback;
     private boolean isStatic;
     private int startPriority;
+    private String javaCommand;
 
     public ServiceGroupImpl(String name, String platformName, List<String> serviceTemplates, int minOnlineCount, int maxOnlineCount, int maxPlayers, int maxMemory, boolean fallback, boolean isStatic) {
         this.name = name;
@@ -40,6 +41,7 @@ public class ServiceGroupImpl implements ServiceGroup {
         this.isStatic = isStatic;
 
         startPriority = 0;
+        javaCommand = "java";
     }
 
     @Override
