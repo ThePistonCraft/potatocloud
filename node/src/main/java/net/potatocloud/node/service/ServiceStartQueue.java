@@ -38,6 +38,9 @@ public class ServiceStartQueue extends Thread {
                     int totalOnlinePlayers = CloudAPI.getInstance().getPlayerManager().getOnlinePlayers().size();
 
                     if (totalOnlinePlayers == 0) {
+                        if (activeServices < group.getMinOnlineCount()) {
+                            CloudAPI.getInstance().getServiceManager().startService(group);
+                        }
                         continue;
                     }
 
