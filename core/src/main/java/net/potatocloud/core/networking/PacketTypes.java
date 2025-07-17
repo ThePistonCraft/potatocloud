@@ -16,6 +16,8 @@ public class PacketTypes {
     public static final String REQUEST_GROUPS = "request_groups";
     public static final String GROUP_ADD = "group_add";
     public static final String UPDATE_GROUP = "update_group";
+    public static final String CREATE_GROUP = "create_group";
+    public static final String DELETE_GROUP = "delete_group";
 
     public static final String EVENT = "event";
 
@@ -23,4 +25,5 @@ public class PacketTypes {
     public static final String PLAYER_REMOVE = "player_remove";
     public static final String UPDATE_PLAYER = "update_player";
     public static final String CONNECT_PLAYER = "connect_player";
+
 }

@@ -5,15 +5,12 @@ import lombok.Data;
 import net.potatocloud.core.networking.Packet;
 import net.potatocloud.core.networking.PacketTypes;
 
-import java.util.List;
-
 @Data
 @AllArgsConstructor
-public class AddGroupPacket implements Packet {
+public class CreateGroupPacket implements Packet {
 
     private String name;
     private String platformName;
-    private List<String> serviceTemplates;
     private int minOnlineCount;
     private int maxOnlineCount;
     private int maxPlayers;
@@ -23,6 +20,6 @@ public class AddGroupPacket implements Packet {
 
     @Override
     public String getType() {
-        return PacketTypes.GROUP_ADD;
+        return PacketTypes.CREATE_GROUP;
     }
 }

@@ -12,6 +12,8 @@ import net.potatocloud.core.networking.PacketTypes;
 import net.potatocloud.core.networking.packets.group.AddGroupPacket;
 import net.potatocloud.core.networking.packets.group.UpdateGroupPacket;
 import net.potatocloud.node.Node;
+import net.potatocloud.node.listeners.group.CreateGroupListener;
+import net.potatocloud.node.listeners.group.DeleteGroupListener;
 import net.potatocloud.node.listeners.group.RequestGroupsListener;
 import net.potatocloud.node.listeners.group.UpdateGroupListener;
 
@@ -35,6 +37,8 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
 
         server.registerPacketListener(PacketTypes.REQUEST_GROUPS, new RequestGroupsListener(this));
         server.registerPacketListener(PacketTypes.UPDATE_GROUP, new UpdateGroupListener(this));
+        server.registerPacketListener(PacketTypes.CREATE_GROUP, new CreateGroupListener(this));
+        server.registerPacketListener(PacketTypes.DELETE_GROUP, new DeleteGroupListener(this));
     }
 
     @Override
@@ -92,14 +96,14 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
         // send group add packet to clients
         server.broadcastPacket(new AddGroupPacket(
                 name,
+                platformName,
+                templates,
                 minOnlineCount,
                 maxOnlineCount,
                 maxPlayers,
                 maxMemory,
                 fallback,
-                isStatic,
-                platformName,
-                templates
+                isStatic
         ));
 
         ServiceGroupStorage.saveToFile(serviceGroup, groupsPath);

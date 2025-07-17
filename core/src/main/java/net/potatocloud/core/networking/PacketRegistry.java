@@ -2,9 +2,7 @@ package net.potatocloud.core.networking;
 
 import net.potatocloud.core.networking.packets.EventPacket;
 import net.potatocloud.core.networking.packets.MessagePacket;
-import net.potatocloud.core.networking.packets.group.AddGroupPacket;
-import net.potatocloud.core.networking.packets.group.RequestGroupsPacket;
-import net.potatocloud.core.networking.packets.group.UpdateGroupPacket;
+import net.potatocloud.core.networking.packets.group.*;
 import net.potatocloud.core.networking.packets.player.AddCloudPlayerPacket;
 import net.potatocloud.core.networking.packets.player.ConnectCloudPlayerWithServicePacket;
 import net.potatocloud.core.networking.packets.player.RemoveCloudPlayerPacket;
@@ -28,6 +26,8 @@ public class PacketRegistry {
         manager.register(PacketTypes.REQUEST_GROUPS, RequestGroupsPacket.class);
         manager.register(PacketTypes.GROUP_ADD, AddGroupPacket.class);
         manager.register(PacketTypes.UPDATE_GROUP, UpdateGroupPacket.class);
+        manager.register(PacketTypes.CREATE_GROUP, CreateGroupPacket.class);
+        manager.register(PacketTypes.DELETE_GROUP, DeleteGroupPacket.class);
 
         manager.register(PacketTypes.EVENT, EventPacket.class);
 

@@ -90,8 +90,11 @@ public class ServiceImpl implements Service {
     }
 
     public int getOnlinePlayers() {
-        // todo
-        return 0;
+        return CloudAPI.getInstance().getPlayerManager().getOnlinePlayers()
+                .stream()
+                .filter(player -> player.getConnectedServiceName().equals(getName()))
+                .toList()
+                .size();
     }
 
     @SneakyThrows

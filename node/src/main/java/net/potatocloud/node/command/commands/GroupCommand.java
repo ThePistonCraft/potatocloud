@@ -46,7 +46,7 @@ public class GroupCommand implements Command {
 
     private void createGroup(String[] args) {
         if (args.length < 9) {
-            logger.info("&cUsage&8: &7group create &8[&aname&8, &aplatformName&8, &aminOnlineCount&8, &amaxOnlineCount&8, &amaxPlayers&8, &amaxMemory&8, &afallback&8, &astatic&8]");
+            logger.info("&cUsage&8: group create &8[&aname&8] [&aplatformName&8] [&aminOnlineCount&8] [&amaxOnlineCount&8] [&amaxPlayers&8] [&amaxMemory&8] [&afallback&8] [&astatic&8]");
             return;
         }
 
@@ -64,28 +64,21 @@ public class GroupCommand implements Command {
         }
 
         try {
-            int minOnline = Integer.parseInt(args[3]);
-            int maxOnline = Integer.parseInt(args[4]);
-            int maxPlayers = Integer.parseInt(args[5]);
-            int maxMemory = Integer.parseInt(args[6]);
-            boolean fallback = Boolean.parseBoolean(args[7]);
-            boolean isStatic = Boolean.parseBoolean(args[8]);
-
             groupManager.createServiceGroup(
                     name,
                     platformName,
-                    minOnline,
-                    maxOnline,
-                    maxPlayers,
-                    maxMemory,
-                    fallback,
-                    isStatic
+                    Integer.parseInt(args[3]),
+                    Integer.parseInt(args[4]),
+                    Integer.parseInt(args[5]),
+                    Integer.parseInt(args[6]),
+                    Boolean.parseBoolean(args[7]),
+                    Boolean.parseBoolean(args[8])
             );
 
             logger.info("&7Service group &a" + name + " &7was created &asuccessfully");
 
         } catch (NumberFormatException e) {
-            logger.info("&cInvalid number format. Use integers for min/max counts, players and memory.");
+            logger.info("&cUsage&8: group create &8[&aname&8] [&aplatformName&8] [&aminOnlineCount&8] [&amaxOnlineCount&8] [&amaxPlayers&8] [&amaxMemory&8] [&afallback&8] [&astatic&8]");
         }
     }
 
@@ -131,7 +124,7 @@ public class GroupCommand implements Command {
     }
 
     private void sendHelp() {
-        logger.info("group create &8[&aname&8, &aplatformName&8, &aminOnlineCount&8, &amaxOnlineCount&8, &amaxPlayers&8, &amaxMemory&8, &afallback&8, &astatic&8] - &7Create a new service group");
+        logger.info("group create &8[&aname&8] [&aplatformName&8] [&aminOnlineCount&8] [&amaxOnlineCount&8] [&amaxPlayers&8] [&amaxMemory&8] [&afallback&8] [&astatic&8] - &7Create a new service group");
         logger.info("group delete &8[&aname&8] - &7Delete a service group");
         logger.info("group list &8- &7List all service groups");
         logger.info("group info &8[&aname&8] - &7Show details of a service group");

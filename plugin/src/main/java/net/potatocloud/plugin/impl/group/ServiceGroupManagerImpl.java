@@ -4,6 +4,8 @@ import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.group.ServiceGroupManager;
 import net.potatocloud.core.networking.NetworkClient;
 import net.potatocloud.core.networking.PacketTypes;
+import net.potatocloud.core.networking.packets.group.CreateGroupPacket;
+import net.potatocloud.core.networking.packets.group.DeleteGroupPacket;
 import net.potatocloud.core.networking.packets.group.RequestGroupsPacket;
 import net.potatocloud.core.networking.packets.group.UpdateGroupPacket;
 import net.potatocloud.plugin.impl.listener.group.AddGroupListener;
@@ -46,14 +48,23 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
 
     @Override
     public ServiceGroup createServiceGroup(String name, String platformName, int minOnlineCount, int maxOnlineCount, int maxPlayers, int maxMemory, boolean fallback, boolean isStatic) {
-        //todo
+        client.send(new CreateGroupPacket(
+                name,
+                platformName,
+                minOnlineCount,
+                maxOnlineCount,
+                maxPlayers,
+                maxMemory,
+                fallback,
+                isStatic
+        ));
         return null;
     }
 
 
     @Override
     public boolean deleteServiceGroup(ServiceGroup group) {
-        //todo
+        client.send(new DeleteGroupPacket(group.getName()));
         return false;
     }
 
