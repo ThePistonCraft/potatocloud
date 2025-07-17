@@ -8,6 +8,7 @@ import net.potatocloud.core.networking.NetworkConnection;
 import net.potatocloud.core.networking.PacketTypes;
 import net.potatocloud.core.networking.packets.service.RequestServicesPacket;
 import net.potatocloud.core.networking.packets.service.ServiceRemovePacket;
+import net.potatocloud.core.networking.packets.service.StartServicePacket;
 import net.potatocloud.core.networking.packets.service.UpdateServicePacket;
 import net.potatocloud.plugin.impl.listener.service.ServiceAddListener;
 import net.potatocloud.plugin.impl.listener.service.UpdateServiceListener;
@@ -63,7 +64,7 @@ public class ServiceManagerImpl implements ServiceManager {
 
     @Override
     public void startService(ServiceGroup serviceGroup) {
-        // todo
+        client.send(new StartServicePacket(serviceGroup.getName()));
     }
 
     @Override

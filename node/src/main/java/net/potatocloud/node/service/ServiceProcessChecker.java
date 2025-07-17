@@ -1,7 +1,5 @@
 package net.potatocloud.node.service;
 
-import lombok.SneakyThrows;
-
 public class ServiceProcessChecker extends Thread {
 
     private final ServiceImpl service;

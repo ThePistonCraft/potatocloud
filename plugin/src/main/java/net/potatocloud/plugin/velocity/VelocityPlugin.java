@@ -2,24 +2,35 @@ package net.potatocloud.plugin.velocity;
 
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
+import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.event.player.PlayerChooseInitialServerEvent;
+import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyPingEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
+import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.proxy.server.ServerInfo;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.potatocloud.api.event.events.ServiceStartedEvent;
+import net.potatocloud.api.player.CloudPlayer;
+import net.potatocloud.api.player.impl.CloudPlayerImpl;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceState;
+import net.potatocloud.core.networking.NetworkConnection;
+import net.potatocloud.core.networking.PacketTypes;
+import net.potatocloud.core.networking.packets.player.ConnectCloudPlayerWithServicePacket;
 import net.potatocloud.core.networking.packets.service.ServiceStartedPacket;
 import net.potatocloud.plugin.impl.PluginCloudAPI;
+import net.potatocloud.plugin.impl.event.LocalConnectPlayerWithServiceEvent;
+import net.potatocloud.plugin.impl.player.CloudPlayerManagerImpl;
 
 import java.net.InetSocketAddress;
 import java.util.Comparator;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
@@ -46,6 +57,28 @@ public class VelocityPlugin {
             final Service service = api.getServiceManager().getService(startedEvent.getServiceName());
             registerServer(service);
         });
+
+        api.getEventManager().on(LocalConnectPlayerWithServiceEvent.class, connectEvent -> {
+            connectPlayer(connectEvent.getPlayerUniqueId(), connectEvent.getServiceName());
+        });
+
+        api.getClient().registerPacketListener(PacketTypes.CONNECT_PLAYER, (NetworkConnection connection, ConnectCloudPlayerWithServicePacket packet) -> {
+            connectPlayer(packet.getPlayerUniqueId(), packet.getServiceName());
+        });
+    }
+
+    private void connectPlayer(UUID uniqueId, String serviceName) {
+        final Optional<Player> player = server.getPlayer(uniqueId);
+        if (player.isEmpty()) {
+            return;
+        }
+
+        final Optional<RegisteredServer> serverToConnectTo = server.getServer(serviceName);
+        if (serverToConnectTo.isEmpty()) {
+            return;
+        }
+
+        player.get().createConnectionRequest(serverToConnectTo.get()).fireAndForget();
     }
 
     private void initServices() {
@@ -78,7 +111,6 @@ public class VelocityPlugin {
 
     @Subscribe
     public void onPlayerChooseInitialServer(PlayerChooseInitialServerEvent event) {
-
         for (Service allOnlineService : api.getServiceManager().getAllServices()) {
             logger.info(allOnlineService.getName() + " " + allOnlineService.getState());
         }
@@ -113,12 +145,33 @@ public class VelocityPlugin {
         if (thisService == null) {
             return;
         }
-        if (server.getPlayerCount() < thisService.getMaxPlayers()) {
+
+        if (server.getPlayerCount() > thisService.getMaxPlayers()) {
+            if (event.getPlayer().hasPermission("potatocloud.maxplayers.bypass")) {
+                return;
+            }
+            event.getPlayer().disconnect(MiniMessage.miniMessage().deserialize("<red>The server has reached its maximum players!"));
             return;
         }
-        if (event.getPlayer().hasPermission("potatocloud.maxplayers.bypass")) {
-            return;
+
+        final CloudPlayerManagerImpl playerManager = (CloudPlayerManagerImpl) api.getPlayerManager();
+        playerManager.registerPlayer(
+                new CloudPlayerImpl(event.getPlayer().getUsername(), event.getPlayer().getUniqueId(), thisService.getName()));
+    }
+
+    @Subscribe
+    public void onServerConnect(ServerConnectedEvent event) {
+        final CloudPlayerImpl player = (CloudPlayerImpl) api.getPlayerManager().getCloudPlayer(event.getPlayer().getUniqueId());
+        player.setConnectedServiceName(event.getServer().getServerInfo().getName());
+        player.update();
+    }
+
+    @Subscribe
+    public void onDisconnect(DisconnectEvent event) {
+        final CloudPlayerManagerImpl playerManager = (CloudPlayerManagerImpl) api.getPlayerManager();
+        final CloudPlayer player = playerManager.getCloudPlayer(event.getPlayer().getUniqueId());
+        if (player != null) {
+            playerManager.unregisterPlayer(player);
         }
-        event.getPlayer().disconnect(MiniMessage.miniMessage().deserialize("<red>The server has reached its maximum players!"));
     }
 }

@@ -53,13 +53,13 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
     @Override
     public ServiceGroup createServiceGroup(
             String name,
+            String platformName,
             int minOnlineCount,
             int maxOnlineCount,
             int maxPlayers,
             int maxMemory,
             boolean fallback,
-            boolean isStatic,
-            String platformName
+            boolean isStatic
     ) {
         final List<String> templates = new ArrayList<>();
         templates.add("every");

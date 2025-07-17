@@ -6,6 +6,7 @@ import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.event.EventManager;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.group.ServiceGroupManager;
+import net.potatocloud.api.player.CloudPlayerManager;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.core.event.ServerEventManager;
@@ -21,6 +22,7 @@ import net.potatocloud.node.console.ExceptionMessageHandler;
 import net.potatocloud.node.console.Logger;
 import net.potatocloud.node.group.ServiceGroupManagerImpl;
 import net.potatocloud.node.platform.PlatformManager;
+import net.potatocloud.node.player.CloudPlayerManagerImpl;
 import net.potatocloud.node.service.ServiceImpl;
 import net.potatocloud.node.service.ServiceManagerImpl;
 import net.potatocloud.node.service.ServiceStartQueue;
@@ -38,12 +40,13 @@ import java.util.List;
 public class Node extends CloudAPI {
 
     private final NodeConfig config;
-    private final PacketManager packetManager;
-    private final NetworkServer server;
-    private final EventManager eventManager;
     private final CommandManager commandManager;
     private final Console console;
     private final Logger logger;
+    private final PacketManager packetManager;
+    private final NetworkServer server;
+    private final EventManager eventManager;
+    private final CloudPlayerManager playerManager;
     private final TemplateManager templateManager;
     private final ServiceGroupManager groupManager;
     private final PlatformManager platformManager;
@@ -73,6 +76,8 @@ public class Node extends CloudAPI {
 
         eventManager = new ServerEventManager(server);
 
+        playerManager = new CloudPlayerManagerImpl(server);
+
         final Path dataFolder = Path.of(config.getDataFolder());
         final List<String> files = List.of("server.properties", "spigot.yml", "velocity.toml", "potatocloud-plugin.jar");
 
@@ -99,7 +104,7 @@ public class Node extends CloudAPI {
         }
 
         platformManager = new PlatformManager(Path.of(config.getPlatformsFolder()), logger);
-        serviceManager = new ServiceManagerImpl(config, logger, server, eventManager);
+        serviceManager = new ServiceManagerImpl(config, logger, server, eventManager, groupManager);
         serviceManager.getAllServices().clear();
 
         registerCommands();
@@ -121,6 +126,7 @@ public class Node extends CloudAPI {
         commandManager.registerCommand(new PlatformCommand(logger, Path.of(config.getPlatformsFolder()), platformManager));
         commandManager.registerCommand(new ClearCommand(console));
         commandManager.registerCommand(new HelpCommand(logger, commandManager));
+        commandManager.registerCommand(new PlayerCommand());
     }
 
     @Override
@@ -136,6 +142,11 @@ public class Node extends CloudAPI {
     @Override
     public EventManager getEventManager() {
         return eventManager;
+    }
+
+    @Override
+    public CloudPlayerManager getPlayerManager() {
+        return playerManager;
     }
 
     @SneakyThrows

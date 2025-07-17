@@ -19,10 +19,4 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
             packetManager.onPacket(connection, packet);
         }
     }
-
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        cause.printStackTrace();
-        ctx.close();
-    }
 }

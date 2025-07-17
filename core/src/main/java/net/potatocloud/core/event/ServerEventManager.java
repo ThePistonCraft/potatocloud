@@ -34,6 +34,7 @@ public class ServerEventManager implements EventManager {
         eventListeners.add(listener);
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public <T extends Event> void callLocal(T event) {
         final List<EventListener<? extends Event>> eventListeners = listeners.get(event.getClass());
@@ -45,7 +46,7 @@ public class ServerEventManager implements EventManager {
         }
     }
 
-
+    @Override
     @SuppressWarnings("unchecked")
     public <T extends Event> void call(T event) {
         callLocal(event);

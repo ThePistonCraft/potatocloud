@@ -2,6 +2,7 @@ package net.potatocloud.node.service;
 
 import net.potatocloud.api.event.EventManager;
 import net.potatocloud.api.group.ServiceGroup;
+import net.potatocloud.api.group.ServiceGroupManager;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.core.networking.NetworkServer;
@@ -10,9 +11,7 @@ import net.potatocloud.core.networking.packets.service.ServiceAddPacket;
 import net.potatocloud.core.networking.packets.service.UpdateServicePacket;
 import net.potatocloud.node.config.NodeConfig;
 import net.potatocloud.node.console.Logger;
-import net.potatocloud.node.listeners.service.RequestServicesListener;
-import net.potatocloud.node.listeners.service.ServiceStartedListener;
-import net.potatocloud.node.listeners.service.UpdateServiceListener;
+import net.potatocloud.node.listeners.service.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,16 +25,21 @@ public class ServiceManagerImpl implements ServiceManager {
     private final Logger logger;
     private final NetworkServer server;
     private final EventManager eventManager;
+    private final ServiceGroupManager groupManager;
 
-    public ServiceManagerImpl(NodeConfig config, Logger logger, NetworkServer server, EventManager eventManager) {
+    public ServiceManagerImpl(NodeConfig config, Logger logger, NetworkServer server, EventManager eventManager, ServiceGroupManager groupManager) {
         this.config = config;
         this.logger = logger;
         this.server = server;
         this.eventManager = eventManager;
+        this.groupManager = groupManager;
 
         server.registerPacketListener(PacketTypes.REQUEST_SERVICES, new RequestServicesListener(this));
         server.registerPacketListener(PacketTypes.SERVICE_STARTED, new ServiceStartedListener(this, logger, eventManager));
         server.registerPacketListener(PacketTypes.UPDATE_SERVICE, new UpdateServiceListener(this));
+        server.registerPacketListener(PacketTypes.START_SERVICE, new StartServiceListener(this, groupManager));
+        server.registerPacketListener(PacketTypes.SHUTDOWN_SERVICE, new ShutdownServiceListener(this));
+        server.registerPacketListener(PacketTypes.SERVICE_EXECUTE_COMMAND, new ServiceExecuteCommandListener(this));
     }
 
     @Override
@@ -86,7 +90,7 @@ public class ServiceManagerImpl implements ServiceManager {
     }
 
     private int getFreeServiceId(ServiceGroup serviceGroup) {
-        List<Integer> usedIds = new ArrayList<>();
+        final List<Integer> usedIds = new ArrayList<>();
 
         for (Service service : services) {
             if (service.getServiceGroup().equals(serviceGroup)) {
@@ -103,7 +107,7 @@ public class ServiceManagerImpl implements ServiceManager {
     }
 
     private int getServicePort(ServiceGroup serviceGroup) {
-        List<Integer> usedPorts = new ArrayList<>();
+        final List<Integer> usedPorts = new ArrayList<>();
         for (Service service : services) {
             usedPorts.add(service.getPort());
         }

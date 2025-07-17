@@ -6,6 +6,10 @@ import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceState;
+import net.potatocloud.core.networking.NetworkClient;
+import net.potatocloud.core.networking.packets.service.ServiceExecuteCommandPacket;
+import net.potatocloud.core.networking.packets.service.ShutdownServicePacket;
+import net.potatocloud.plugin.impl.PluginCloudAPI;
 
 @Getter
 @Setter
@@ -16,7 +20,7 @@ public class ServiceImpl implements Service {
     private final int port;
     private final long startTimestamp;
     private final ServiceGroup serviceGroup;
-
+    private final NetworkClient client;
     private ServiceState state;
     private int onlinePlayers;
     private int usedMemory;
@@ -33,6 +37,7 @@ public class ServiceImpl implements Service {
         this.usedMemory = usedMemory;
 
         maxPlayers = serviceGroup.getMaxPlayers();
+        client = PluginCloudAPI.getInstance().getClient();
     }
 
     public boolean isOnline() {
@@ -41,12 +46,12 @@ public class ServiceImpl implements Service {
 
     @Override
     public void shutdown() {
-        // todo: send packet to node
+        client.send(new ShutdownServicePacket(name));
     }
 
     @Override
     public boolean executeCommand(String command) {
-        // todo: also, send packet to node
+        client.send(new ServiceExecuteCommandPacket(name, command));
         return false;
     }
 

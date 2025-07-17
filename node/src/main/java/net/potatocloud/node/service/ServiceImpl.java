@@ -9,11 +9,14 @@ import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.impl.PandaSpigotVersion;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceState;
+import net.potatocloud.core.networking.NetworkServer;
 import net.potatocloud.core.networking.packets.service.ServiceRemovePacket;
 import net.potatocloud.node.Node;
 import net.potatocloud.node.config.NodeConfig;
 import net.potatocloud.node.console.Logger;
 import org.apache.commons.io.FileUtils;
+import oshi.SystemInfo;
+import oshi.software.os.OSProcess;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -34,6 +37,7 @@ public class ServiceImpl implements Service {
     private final NodeConfig config;
     private final Logger logger;
     private final List<String> logs = new ArrayList<>();
+    private final NetworkServer server;
     @Setter
     private int maxPlayers;
     @Setter
@@ -43,7 +47,6 @@ public class ServiceImpl implements Service {
     private Process serverProcess;
     private BufferedWriter processWriter;
     private BufferedReader processReader;
-
     @Setter
     private ServiceProcessChecker processChecker;
 
@@ -54,6 +57,7 @@ public class ServiceImpl implements Service {
         this.config = config;
         this.logger = logger;
         maxPlayers = serviceGroup.getMaxPlayers();
+        server = Node.getInstance().getServer();
     }
 
     @Override
@@ -66,7 +70,17 @@ public class ServiceImpl implements Service {
     }
 
     public int getUsedMemory() {
-        // todo
+        if (serverProcess == null || !serverProcess.isAlive()) {
+            return 0;
+        }
+
+        final SystemInfo info = new SystemInfo();
+        final OSProcess process = info.getOperatingSystem().getProcess((int) serverProcess.pid());
+
+        if (process != null) {
+            long usedBytes = process.getResidentSetSize();
+            return (int) (usedBytes / 1024 / 1024);
+        }
         return 0;
     }
 
@@ -170,6 +184,7 @@ public class ServiceImpl implements Service {
         args.add("-Xms" + serviceGroup.getMaxMemory() + "M");
         args.add("-Xmx" + serviceGroup.getMaxMemory() + "M");
         args.add("-Dpotatocloud.service.name=" + getName());
+        args.add("-Dpotatocloud.node.port=" + config.getNodePort());
 
         if (!platform.isProxy()) {
             args.add("-Dcom.mojang.eula.agree=true");
@@ -259,8 +274,8 @@ public class ServiceImpl implements Service {
 
         ((ServiceManagerImpl) Node.getInstance().getServiceManager()).removeService(this);
 
-        if (Node.getInstance().getServer() != null) {
-            Node.getInstance().getServer().broadcastPacket(new ServiceRemovePacket(this.getName()));
+        if (server != null) {
+            server.broadcastPacket(new ServiceRemovePacket(this.getName()));
         }
 
         if (!serviceGroup.isStatic()) {

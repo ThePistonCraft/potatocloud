@@ -8,7 +8,7 @@ public interface ServiceGroupManager {
 
     List<ServiceGroup> getAllServiceGroups();
 
-    ServiceGroup createServiceGroup(String name, int minOnlineCount, int maxOnlineCount, int maxPlayers, int maxMemory, boolean fallback, boolean isStatic, String platformName);
+    ServiceGroup createServiceGroup(String name, String platformName, int minOnlineCount, int maxOnlineCount, int maxPlayers, int maxMemory, boolean fallback, boolean isStatic);
 
     boolean deleteServiceGroup(ServiceGroup group);
 
