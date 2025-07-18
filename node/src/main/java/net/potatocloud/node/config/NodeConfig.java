@@ -15,6 +15,7 @@ public class NodeConfig {
 
     private String prompt = "&7&a%user%&7@cloud ~> ";
     private String splitter = "-";
+    private boolean platformAutoUpdate = true;
 
     private String groupsFolder = "groups";
     private String staticFolder = "services/static";
@@ -43,6 +44,7 @@ public class NodeConfig {
         proxyStartPort = yaml.getInt("proxy-start-port", proxyStartPort);
         prompt = yaml.getString("prompt", prompt);
         splitter = yaml.getString("splitter", splitter);
+        platformAutoUpdate = yaml.getBoolean("platformAutoUpdate", platformAutoUpdate);
 
         groupsFolder = yaml.getString("folders.groups", groupsFolder);
         staticFolder = yaml.getString("folders.static", staticFolder);
@@ -50,7 +52,7 @@ public class NodeConfig {
         templatesFolder = yaml.getString("folders.templates", templatesFolder);
         platformsFolder = yaml.getString("folders.platforms", platformsFolder);
         logsFolder = yaml.getString("folders.logs", logsFolder);
-        dataFolder = yaml.getString("folders.data", logsFolder);
+        dataFolder = yaml.getString("folders.data", dataFolder);
 
         nodeHost = yaml.getString("node.host", nodeHost);
         nodePort = yaml.getInt("node.port", nodePort);
@@ -66,6 +68,7 @@ public class NodeConfig {
         yaml.set("prompt", prompt);
         yaml.setComment("splitter", "Separator between name and id of a service");
         yaml.set("splitter", splitter);
+        yaml.set("platformAutoUpdate", platformAutoUpdate);
 
         yaml.set("folders.groups", groupsFolder);
         yaml.set("folders.static", staticFolder);

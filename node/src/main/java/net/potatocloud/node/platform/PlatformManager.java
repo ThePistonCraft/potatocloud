@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.impl.PaperMCPlatformVersion;
+import net.potatocloud.node.Node;
 import net.potatocloud.node.console.Logger;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
@@ -36,6 +37,16 @@ public class PlatformManager {
                 .resolve(platform.getFullName())
                 .resolve(platform.getFullName() + ".jar")
                 .toFile();
+
+        if (!Node.getInstance().getConfig().isPlatformAutoUpdate()) {
+            if (!platformFile.exists()) {
+                logger.info("&7Downloading platform: &a" + platform.getFullName());
+                URL url = URI.create(platform.getDownloadUrl()).toURL();
+                FileUtils.copyURLToFile(url, platformFile, 5000, 5000);
+                logger.info("&7Finished downloading platform: &a" + platform.getFullName());
+            }
+            return;
+        }
 
         boolean needsDownload = true;
         if (platformFile.exists()) {
