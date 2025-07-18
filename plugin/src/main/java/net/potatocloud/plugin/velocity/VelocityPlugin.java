@@ -14,7 +14,9 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.proxy.server.ServerInfo;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.potatocloud.api.event.events.ServiceStartedEvent;
+import net.potatocloud.api.event.events.player.CloudPlayerDisconnectEvent;
+import net.potatocloud.api.event.events.player.CloudPlayerJoinEvent;
+import net.potatocloud.api.event.events.service.ServiceStartedEvent;
 import net.potatocloud.api.player.CloudPlayer;
 import net.potatocloud.api.player.impl.CloudPlayerImpl;
 import net.potatocloud.api.service.Service;
@@ -111,10 +113,6 @@ public class VelocityPlugin {
 
     @Subscribe
     public void onPlayerChooseInitialServer(PlayerChooseInitialServerEvent event) {
-        for (Service allOnlineService : api.getServiceManager().getAllServices()) {
-            logger.info(allOnlineService.getName() + " " + allOnlineService.getState());
-        }
-
         final Service bestFallbackService = api.getServiceManager().getAllServices().stream()
                 .filter(service -> service.getServiceGroup().isFallback())
                 .filter(service -> service.getState() == ServiceState.RUNNING)
@@ -157,6 +155,8 @@ public class VelocityPlugin {
         final CloudPlayerManagerImpl playerManager = (CloudPlayerManagerImpl) api.getPlayerManager();
         playerManager.registerPlayer(
                 new CloudPlayerImpl(event.getPlayer().getUsername(), event.getPlayer().getUniqueId(), thisService.getName()));
+
+        api.getEventManager().call(new CloudPlayerJoinEvent(event.getPlayer().getUniqueId(), event.getPlayer().getUsername()));
     }
 
     @Subscribe
@@ -172,6 +172,7 @@ public class VelocityPlugin {
         final CloudPlayer player = playerManager.getCloudPlayer(event.getPlayer().getUniqueId());
         if (player != null) {
             playerManager.unregisterPlayer(player);
+            api.getEventManager().call(new CloudPlayerDisconnectEvent(event.getPlayer().getUniqueId(), event.getPlayer().getUsername()));
         }
     }
 }

@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import net.potatocloud.api.CloudAPI;
+import net.potatocloud.api.event.events.service.ServiceStoppedEvent;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.impl.PandaSpigotVersion;
@@ -271,7 +272,6 @@ public class ServiceImpl implements Service {
             return;
         }
 
-
         state = ServiceState.STOPPED;
         startTimestamp = 0L;
 
@@ -279,6 +279,8 @@ public class ServiceImpl implements Service {
 
         if (server != null) {
             server.broadcastPacket(new ServiceRemovePacket(this.getName()));
+
+            Node.getInstance().getEventManager().call(new ServiceStoppedEvent(this.getName()));
         }
 
         if (!serviceGroup.isStatic()) {

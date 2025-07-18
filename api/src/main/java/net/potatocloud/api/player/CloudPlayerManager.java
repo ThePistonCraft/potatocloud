@@ -3,7 +3,6 @@ package net.potatocloud.api.player;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.service.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 

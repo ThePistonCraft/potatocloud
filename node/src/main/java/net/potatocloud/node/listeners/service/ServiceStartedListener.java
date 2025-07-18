@@ -2,7 +2,7 @@ package net.potatocloud.node.listeners.service;
 
 import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.event.EventManager;
-import net.potatocloud.api.event.events.ServiceStartedEvent;
+import net.potatocloud.api.event.events.service.ServiceStartedEvent;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.api.service.ServiceState;
