@@ -12,8 +12,15 @@ public interface ServiceManager {
 
     void updateService(Service service);
 
-    void startService(ServiceGroup serviceGroup);
+    void startService(String groupName);
 
-    void startServices(ServiceGroup serviceGroup, int count);
+    default void startService(ServiceGroup group) {
+        startService(group.getName());
+    }
 
+    void startServices(String groupName, int count);
+
+    default void startServices(ServiceGroup group, int count) {
+        startServices(group.getName(), count);
+    }
 }

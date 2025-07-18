@@ -1,14 +1,13 @@
 package net.potatocloud.plugin.impl.player;
 
 import lombok.RequiredArgsConstructor;
+import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.player.CloudPlayer;
 import net.potatocloud.api.player.CloudPlayerManager;
-import net.potatocloud.api.service.Service;
 import net.potatocloud.core.networking.NetworkClient;
 import net.potatocloud.core.networking.packets.player.AddCloudPlayerPacket;
 import net.potatocloud.core.networking.packets.player.RemoveCloudPlayerPacket;
 import net.potatocloud.core.networking.packets.player.UpdateCloudPlayerPacket;
-import net.potatocloud.plugin.impl.PluginCloudAPI;
 import net.potatocloud.plugin.impl.event.LocalConnectPlayerWithServiceEvent;
 
 import java.util.ArrayList;
@@ -56,8 +55,8 @@ public class CloudPlayerManagerImpl implements CloudPlayerManager {
     }
 
     @Override
-    public void connectPlayerWithService(CloudPlayer player, Service service) {
-        PluginCloudAPI.getInstance().getEventManager().callLocal(new LocalConnectPlayerWithServiceEvent(player.getUniqueId(), service.getName()));
+    public void connectPlayerWithService(CloudPlayer player, String serviceName) {
+        CloudAPI.getInstance().getEventManager().callLocal(new LocalConnectPlayerWithServiceEvent(player.getUniqueId(), serviceName));
     }
 
     @Override

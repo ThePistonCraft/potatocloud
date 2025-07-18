@@ -2,7 +2,6 @@ package net.potatocloud.node.player;
 
 import net.potatocloud.api.player.CloudPlayer;
 import net.potatocloud.api.player.CloudPlayerManager;
-import net.potatocloud.api.service.Service;
 import net.potatocloud.core.networking.NetworkServer;
 import net.potatocloud.core.networking.PacketTypes;
 import net.potatocloud.core.networking.packets.player.ConnectCloudPlayerWithServicePacket;
@@ -58,8 +57,8 @@ public class CloudPlayerManagerImpl implements CloudPlayerManager {
     }
 
     @Override
-    public void connectPlayerWithService(CloudPlayer player, Service service) {
-        server.broadcastPacket(new ConnectCloudPlayerWithServicePacket(player.getUniqueId(), service.getName()));
+    public void connectPlayerWithService(CloudPlayer player, String serviceName) {
+        server.broadcastPacket(new ConnectCloudPlayerWithServicePacket(player.getUniqueId(), serviceName));
     }
 
     @Override

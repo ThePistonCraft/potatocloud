@@ -20,7 +20,11 @@ public interface CloudPlayerManager {
                 .toList();
     }
 
-    void connectPlayerWithService(CloudPlayer player, Service service);
+    void connectPlayerWithService(CloudPlayer player, String serviceName);
+
+    default void connectPlayerWithService(CloudPlayer player, Service service) {
+        connectPlayerWithService(player, service.getName());
+    }
 
     void updatePlayer(CloudPlayer player);
 
