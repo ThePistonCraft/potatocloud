@@ -1,6 +1,7 @@
 package net.potatocloud.node.command.commands;
 
 import lombok.RequiredArgsConstructor;
+import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.group.ServiceGroupManager;
 import net.potatocloud.api.platform.Platform;
@@ -261,6 +262,7 @@ public class GroupCommand implements Command, TabCompleter {
         logger.info("Templates: &a" + String.join(", ", group.getServiceTemplates()));
         logger.info("Min Online Count: &a" + group.getMinOnlineCount());
         logger.info("Max Online Count: &a" + group.getMaxOnlineCount());
+        logger.info("Online Players: &a" + CloudAPI.getInstance().getPlayerManager().getOnlinePlayersByGroup(group).size());
         logger.info("Max Players: &a" + group.getMaxPlayers());
         logger.info("Max Memory: &a" + group.getMaxMemory() + "MB");
         logger.info("&7Fallback: " + (group.isFallback() ? "&aYes" : "&cNo"));
