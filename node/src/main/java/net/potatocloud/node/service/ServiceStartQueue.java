@@ -1,18 +1,28 @@
 package net.potatocloud.node.service;
 
-import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.group.ServiceGroup;
+import net.potatocloud.api.group.ServiceGroupManager;
+import net.potatocloud.api.player.CloudPlayerManager;
+import net.potatocloud.api.service.Service;
+import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.api.service.ServiceState;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 public class ServiceStartQueue extends Thread {
 
+    private final ServiceGroupManager groupManager;
+    private final ServiceManager serviceManager;
+    private final CloudPlayerManager playerManager;
+
     private boolean running = true;
 
-    public ServiceStartQueue() {
+    public ServiceStartQueue(ServiceGroupManager groupManager, ServiceManager serviceManager, CloudPlayerManager playerManager) {
+        this.groupManager = groupManager;
+        this.serviceManager = serviceManager;
+        this.playerManager = playerManager;
+
         setName("ServiceStartQueue");
         setDaemon(true);
     }
@@ -21,45 +31,60 @@ public class ServiceStartQueue extends Thread {
     public void run() {
         while (running) {
             try {
-                List<ServiceGroup> groups = new ArrayList<>(CloudAPI.getInstance().getServiceGroupManager().getAllServiceGroups());
-                groups.sort(Comparator.comparingInt(ServiceGroup::getStartPriority).reversed());
+                final List<ServiceGroup> groups = groupManager.getAllServiceGroups().stream()
+                        .sorted(Comparator.comparingInt(ServiceGroup::getStartPriority).reversed())
+                        .toList();
 
-                for (ServiceGroup group : groups) {
-                    if (!CloudAPI.getInstance().getServiceGroupManager().existsServiceGroup(group.getName())) {
+                for (final ServiceGroup group : groups) {
+                    if (!groupManager.existsServiceGroup(group.getName())) {
                         continue;
                     }
 
-                    long activeServices = CloudAPI.getInstance().getServiceManager().getAllServices().stream()
-                            .filter(s -> s.getServiceGroup().getName().equals(group.getName()))
+                    final List<Service> services = serviceManager.getAllServices().stream().
+                            filter(s -> s.getServiceGroup().getName().equals(group.getName()))
                             .filter(s -> s.getState() == ServiceState.RUNNING || s.getState() == ServiceState.STARTING || s.getState() == ServiceState.STOPPING)
-                            .count();
+                            .toList();
 
-                    int onlinePlayersInGroup = CloudAPI.getInstance().getPlayerManager().getOnlinePlayersByGroup(group).size();
-                    int totalOnlinePlayers = CloudAPI.getInstance().getPlayerManager().getOnlinePlayers().size();
-
-                    if (totalOnlinePlayers == 0) {
-                        if (activeServices < group.getMinOnlineCount()) {
-                            CloudAPI.getInstance().getServiceManager().startService(group);
-                        }
+                    if (services.size() < group.getMinOnlineCount()) {
+                        serviceManager.startServices(group, group.getMinOnlineCount() - services.size());
                         continue;
                     }
 
-                    double onlinePercentage = (onlinePlayersInGroup / (double) totalOnlinePlayers) * 100;
+                    final int onlinePlayersInGroup = playerManager.getOnlinePlayersByGroup(group).size();
+                    final int maxPlayersInGroup = services.stream().mapToInt(Service::getMaxPlayers).sum();
 
-                    if (activeServices < group.getMinOnlineCount() || onlinePercentage >= group.getStartPercentage()) {
-                        CloudAPI.getInstance().getServiceManager().startService(group);
+                    if (maxPlayersInGroup == 0) {
+                        continue;
+                    }
+
+                    int requiredServices = group.getMinOnlineCount();
+
+                    if (services.size() >= requiredServices) {
+                        requiredServices = services.size();
+                    }
+
+                    final double onlinePercentage = (double) onlinePlayersInGroup / maxPlayersInGroup * 100;
+
+                    if (onlinePercentage >= group.getStartPercentage()) {
+                        requiredServices = Math.min(requiredServices + 1, group.getMaxOnlineCount());
+                    }
+
+                    if (requiredServices - services.size() > 0) {
+                        serviceManager.startServices(group, requiredServices - services.size());
                     }
                 }
 
-                Thread.sleep(2000);
+                Thread.sleep(1000);
+
             } catch (InterruptedException e) {
                 running = false;
-                break;
+                Thread.currentThread().interrupt();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
+
 
     public void close() {
         running = false;
