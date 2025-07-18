@@ -65,6 +65,5 @@ public class CloudPlayerManagerImpl implements CloudPlayerManager {
     @Override
     public void updatePlayer(CloudPlayer player) {
     }
-
 }
 

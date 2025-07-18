@@ -39,7 +39,7 @@ public class PlayerCommand implements Command {
         }
 
         if (sub.equalsIgnoreCase("connect")) {
-            if (args.length < 2) {
+            if (args.length < 3) {
                 logger.info("&cUsage&8: &7player connect &8[&aplayerName&8] [&aserviceName&8]");
                 return;
             }
@@ -90,6 +90,28 @@ public class PlayerCommand implements Command {
 
     @Override
     public List<String> complete(String[] args) {
+        if (args.length == 1) {
+            return List.of("list", "connect").stream()
+                    .filter(input -> input.startsWith(args[0].toLowerCase()))
+                    .toList();
+        }
+
+        final String sub = args[0].toLowerCase();
+
+        if (sub.equalsIgnoreCase("connect")) {
+            if (args.length == 2) {
+                return playerManager.getOnlinePlayers().stream().map(CloudPlayer::getUsername).
+                        filter(input -> input.startsWith(args[1])).toList();
+            }
+            if (args.length == 3) {
+                return serviceManager.getAllServices().stream()
+                        .filter(service -> !service.getServiceGroup().getPlatform().isProxy())
+                        .map(Service::getName)
+                        .filter(name -> name.startsWith(args[2]))
+                        .toList();
+            }
+        }
+
         return List.of();
     }
 }
