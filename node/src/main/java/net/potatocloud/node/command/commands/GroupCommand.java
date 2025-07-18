@@ -68,7 +68,7 @@ public class GroupCommand implements Command, TabCompleter {
 
                 logger.info("Properties of group &a" + name + "&8:");
                 for (Property property : properties) {
-                    logger.info("&8» &a" + property.getName() + " &7-" + property.getValue());
+                    logger.info("&8» &a" + property.getName() + " &7- " + property.getValue());
                 }
             }
             case "remove" -> {
