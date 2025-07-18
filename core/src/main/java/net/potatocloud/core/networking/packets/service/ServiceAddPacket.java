@@ -15,7 +15,7 @@ public class ServiceAddPacket implements Packet {
     private final long startTimestamp;
     private final String groupName;
 
-    private String state;
+    private String status;
     private int onlinePlayers;
     private int usedMemory;
 

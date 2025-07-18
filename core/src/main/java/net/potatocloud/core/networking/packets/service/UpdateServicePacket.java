@@ -10,7 +10,7 @@ import net.potatocloud.core.networking.PacketTypes;
 public class UpdateServicePacket implements Packet {
 
     private String serviceName;
-    private String stateName;
+    private String statusName;
     private int maxPlayers;
 
     @Override

@@ -57,7 +57,7 @@ public class ServiceManagerImpl implements ServiceManager {
     public void updateService(Service service) {
         client.send(new UpdateServicePacket(
                 service.getName(),
-                service.getState().name(),
+                service.getStatus().name(),
                 service.getMaxPlayers()
         ));
     }

@@ -8,7 +8,7 @@ import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.PlatformVersions;
 import net.potatocloud.api.service.Service;
-import net.potatocloud.api.service.ServiceState;
+import net.potatocloud.api.service.ServiceStatus;
 
 import java.util.List;
 
@@ -74,7 +74,7 @@ public class ServiceGroupImpl implements ServiceGroup {
                 .getAllServices()
                 .stream()
                 .filter(service -> service.getServiceGroup().getName().equals(name))
-                .filter(service -> service.getState().equals(ServiceState.RUNNING))
+                .filter(service -> service.getStatus().equals(ServiceStatus.RUNNING))
                 .toList();
     }
 

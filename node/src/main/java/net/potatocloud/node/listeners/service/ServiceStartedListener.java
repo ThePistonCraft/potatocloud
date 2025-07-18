@@ -5,7 +5,7 @@ import net.potatocloud.api.event.EventManager;
 import net.potatocloud.api.event.events.service.ServiceStartedEvent;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
-import net.potatocloud.api.service.ServiceState;
+import net.potatocloud.api.service.ServiceStatus;
 import net.potatocloud.core.networking.NetworkConnection;
 import net.potatocloud.core.networking.PacketListener;
 import net.potatocloud.core.networking.packets.service.ServiceStartedPacket;
@@ -25,7 +25,7 @@ public class ServiceStartedListener implements PacketListener<ServiceStartedPack
         final Service service = serviceManager.getService(packet.getServiceName());
         logger.info("The Service &a" + packet.getServiceName() + "&7 is now &aonline");
 
-        service.setState(ServiceState.RUNNING);
+        service.setStatus(ServiceStatus.RUNNING);
         service.update();
         serviceManager.updateService(service);
 

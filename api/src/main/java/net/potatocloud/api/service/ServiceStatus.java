@@ -1,6 +1,6 @@
 package net.potatocloud.api.service;
 
-public enum ServiceState {
+public enum ServiceStatus {
 
     STARTING,
     RUNNING,

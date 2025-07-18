@@ -59,7 +59,7 @@ public class ServiceManagerImpl implements ServiceManager {
     public void updateService(Service service) {
         server.broadcastPacket(new UpdateServicePacket(
                 service.getName(),
-                service.getState().name(),
+                service.getStatus().name(),
                 service.getMaxPlayers()
         ));
     }
@@ -73,7 +73,7 @@ public class ServiceManagerImpl implements ServiceManager {
         services.add(service);
 
         // broadcast add service packet to all connected clients
-        server.broadcastPacket(new ServiceAddPacket(service.getName(), service.getServiceId(), service.getPort(), service.getStartTimestamp(), service.getServiceGroup().getName(), service.getState().name(), service.getOnlinePlayers(), service.getUsedMemory()));
+        server.broadcastPacket(new ServiceAddPacket(service.getName(), service.getServiceId(), service.getPort(), service.getStartTimestamp(), service.getServiceGroup().getName(), service.getStatus().name(), service.getOnlinePlayers(), service.getUsedMemory()));
 
         service.start();
     }

@@ -5,7 +5,7 @@ import net.potatocloud.api.group.ServiceGroupManager;
 import net.potatocloud.api.player.CloudPlayerManager;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
-import net.potatocloud.api.service.ServiceState;
+import net.potatocloud.api.service.ServiceStatus;
 
 import java.util.Comparator;
 import java.util.List;
@@ -42,7 +42,7 @@ public class ServiceStartQueue extends Thread {
 
                     final List<Service> services = serviceManager.getAllServices().stream().
                             filter(s -> s.getServiceGroup().getName().equals(group.getName()))
-                            .filter(s -> s.getState() == ServiceState.RUNNING || s.getState() == ServiceState.STARTING || s.getState() == ServiceState.STOPPING)
+                            .filter(s -> s.getStatus() == ServiceStatus.RUNNING || s.getStatus() == ServiceStatus.STARTING || s.getStatus() == ServiceStatus.STOPPING)
                             .toList();
 
                     if (services.size() < group.getMinOnlineCount()) {

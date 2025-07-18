@@ -20,7 +20,7 @@ import net.potatocloud.api.event.events.service.ServiceStartedEvent;
 import net.potatocloud.api.player.CloudPlayer;
 import net.potatocloud.api.player.impl.CloudPlayerImpl;
 import net.potatocloud.api.service.Service;
-import net.potatocloud.api.service.ServiceState;
+import net.potatocloud.api.service.ServiceStatus;
 import net.potatocloud.core.networking.NetworkConnection;
 import net.potatocloud.core.networking.PacketTypes;
 import net.potatocloud.core.networking.packets.player.ConnectCloudPlayerWithServicePacket;
@@ -115,7 +115,7 @@ public class VelocityPlugin {
     public void onPlayerChooseInitialServer(PlayerChooseInitialServerEvent event) {
         final Service bestFallbackService = api.getServiceManager().getAllServices().stream()
                 .filter(service -> service.getServiceGroup().isFallback())
-                .filter(service -> service.getState() == ServiceState.RUNNING)
+                .filter(service -> service.getStatus() == ServiceStatus.RUNNING)
                 .min(Comparator.comparingInt(Service::getOnlinePlayers))
                 .orElse(null);
 

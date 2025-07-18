@@ -5,7 +5,7 @@ import lombok.Setter;
 import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.service.Service;
-import net.potatocloud.api.service.ServiceState;
+import net.potatocloud.api.service.ServiceStatus;
 import net.potatocloud.core.networking.NetworkClient;
 import net.potatocloud.core.networking.packets.service.ServiceExecuteCommandPacket;
 import net.potatocloud.core.networking.packets.service.ShutdownServicePacket;
@@ -21,18 +21,18 @@ public class ServiceImpl implements Service {
     private final long startTimestamp;
     private final ServiceGroup serviceGroup;
     private final NetworkClient client;
-    private ServiceState state;
+    private ServiceStatus status;
     private int onlinePlayers;
     private int usedMemory;
     private int maxPlayers;
 
-    public ServiceImpl(String name, int serviceId, int port, long startTimestamp, ServiceGroup serviceGroup, ServiceState serviceState, int onlinePlayers, int usedMemory) {
+    public ServiceImpl(String name, int serviceId, int port, long startTimestamp, ServiceGroup serviceGroup, ServiceStatus status, int onlinePlayers, int usedMemory) {
         this.name = name;
         this.serviceId = serviceId;
         this.port = port;
         this.startTimestamp = startTimestamp;
         this.serviceGroup = serviceGroup;
-        this.state = serviceState;
+        this.status = status;
         this.onlinePlayers = onlinePlayers;
         this.usedMemory = usedMemory;
 
@@ -41,7 +41,7 @@ public class ServiceImpl implements Service {
     }
 
     public boolean isOnline() {
-        return state == ServiceState.RUNNING;
+        return status.equals(ServiceStatus.RUNNING);
     }
 
     @Override

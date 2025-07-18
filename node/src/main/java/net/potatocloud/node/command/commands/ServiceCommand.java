@@ -39,7 +39,7 @@ public class ServiceCommand implements Command {
                     return;
                 }
                 for (final Service service : services) {
-                    logger.info("&8» &a" + service.getName() + " &7- Group: &a" + service.getServiceGroup().getName() + " &7- State: &a" + service.getState());
+                    logger.info("&8» &a" + service.getName() + " &7- Group: &a" + service.getServiceGroup().getName() + " &7- Status: &a" + service.getStatus());
                 }
             }
 
@@ -103,7 +103,7 @@ public class ServiceCommand implements Command {
                 logger.info("Name: &a" + service.getName());
                 logger.info("Group: &a" + service.getServiceGroup().getName());
                 logger.info("Port: &a" + service.getPort());
-                logger.info("State: &a" + service.getState());
+                logger.info("Status: &a" + service.getStatus());
                 logger.info("Online players: &a" + service.getOnlinePlayers());
                 logger.info("Memory usage: &a" + service.getUsedMemory() + "MB");
                 logger.info("Start Timestamp: &a" + TIME_FORMAT.format(service.getStartTimestamp()));

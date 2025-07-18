@@ -9,7 +9,7 @@ import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.impl.PandaSpigotVersion;
 import net.potatocloud.api.service.Service;
-import net.potatocloud.api.service.ServiceState;
+import net.potatocloud.api.service.ServiceStatus;
 import net.potatocloud.core.networking.NetworkServer;
 import net.potatocloud.core.networking.packets.service.ServiceRemovePacket;
 import net.potatocloud.node.Node;
@@ -42,7 +42,7 @@ public class ServiceImpl implements Service {
     @Setter
     private int maxPlayers;
     @Setter
-    private ServiceState state = ServiceState.STOPPED;
+    private ServiceStatus status = ServiceStatus.STOPPED;
     private long startTimestamp;
     private Path directory;
     private Process serverProcess;
@@ -67,7 +67,7 @@ public class ServiceImpl implements Service {
     }
 
     public boolean isOnline() {
-        return state == ServiceState.RUNNING;
+        return status == ServiceStatus.RUNNING;
     }
 
     public int getUsedMemory() {
@@ -104,7 +104,7 @@ public class ServiceImpl implements Service {
             return;
         }
 
-        state = ServiceState.STARTING;
+        status = ServiceStatus.STARTING;
         startTimestamp = System.currentTimeMillis();
 
         // create service folder
@@ -228,7 +228,7 @@ public class ServiceImpl implements Service {
 
     @Override
     public void shutdown() {
-        if (state == ServiceState.STOPPED || state == ServiceState.STOPPING) {
+        if (status == ServiceStatus.STOPPED || status == ServiceStatus.STOPPING) {
             return;
         }
         new Thread(this::shutdownBlocking, "Shutdown-" + getName()).start();
@@ -236,7 +236,7 @@ public class ServiceImpl implements Service {
 
     @SneakyThrows
     public void shutdownBlocking() {
-        if (state == ServiceState.STOPPED || state == ServiceState.STOPPING) {
+        if (status == ServiceStatus.STOPPED || status == ServiceStatus.STOPPING) {
             return;
         }
 
@@ -246,7 +246,7 @@ public class ServiceImpl implements Service {
         }
 
         logger.info("Stopping service &a" + getName() + "&7...");
-        state = ServiceState.STOPPING;
+        status = ServiceStatus.STOPPING;
 
         executeCommand(serviceGroup.getPlatform().isProxy() ? "end" : "stop");
 
@@ -268,11 +268,11 @@ public class ServiceImpl implements Service {
     }
 
     public void cleanup() {
-        if (state == ServiceState.STOPPED) {
+        if (status == ServiceStatus.STOPPED) {
             return;
         }
 
-        state = ServiceState.STOPPED;
+        status = ServiceStatus.STOPPED;
         startTimestamp = 0L;
 
         ((ServiceManagerImpl) Node.getInstance().getServiceManager()).removeService(this);

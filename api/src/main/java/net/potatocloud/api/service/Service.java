@@ -10,9 +10,9 @@ public interface Service {
 
     boolean isOnline();
 
-    ServiceState getState();
+    ServiceStatus getStatus();
 
-    void setState(ServiceState state);
+    void setStatus(ServiceStatus status);
 
     long getStartTimestamp();
 
