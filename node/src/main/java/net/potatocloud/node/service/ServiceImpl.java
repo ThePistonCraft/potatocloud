@@ -280,7 +280,7 @@ public class ServiceImpl implements Service {
         ((ServiceManagerImpl) Node.getInstance().getServiceManager()).removeService(this);
 
         if (server != null) {
-            server.broadcastPacket(new ServiceRemovePacket(this.getName()));
+            server.broadcastPacket(new ServiceRemovePacket(this.getName(), this.getPort()));
 
             Node.getInstance().getEventManager().call(new ServiceStoppedEvent(this.getName()));
         }

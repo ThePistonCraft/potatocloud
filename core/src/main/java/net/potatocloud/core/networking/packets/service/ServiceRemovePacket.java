@@ -10,6 +10,7 @@ import net.potatocloud.core.networking.PacketTypes;
 public class ServiceRemovePacket implements Packet {
 
     private String serviceName;
+    private int servicePort;
 
     @Override
     public String getType() {
