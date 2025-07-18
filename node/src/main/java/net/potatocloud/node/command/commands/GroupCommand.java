@@ -7,6 +7,7 @@ import net.potatocloud.api.group.ServiceGroupManager;
 import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.PlatformVersions;
 import net.potatocloud.api.property.Property;
+import net.potatocloud.api.service.Service;
 import net.potatocloud.node.command.Command;
 import net.potatocloud.node.command.TabCompleter;
 import net.potatocloud.node.console.Logger;
@@ -36,7 +37,26 @@ public class GroupCommand implements Command, TabCompleter {
             case "info" -> infoGroup(args);
             case "edit" -> editGroup(args);
             case "property", "properties" -> propertyGroup(args);
+            case "shutdown" -> shutdownGroup(args);
             default -> sendHelp();
+        }
+    }
+
+    private void shutdownGroup(String[] args) {
+        if (args.length < 2) {
+            logger.info("&cUsage&8: &7group shutdown [&aname&8] ");
+            return;
+        }
+
+        final String name = args[1];
+        if (!groupManager.existsServiceGroup(name)) {
+            logger.info("&cNo service group found with the name &a" + name);
+            return;
+        }
+
+        final ServiceGroup group = groupManager.getServiceGroup(name);
+        for (Service service : group.getOnlineServices()) {
+            service.shutdown();
         }
     }
 
@@ -139,7 +159,8 @@ public class GroupCommand implements Command, TabCompleter {
                     logger.info("&cUsage&8: &7group property set &8[&aname&8] [&akey&8] [&avalue&8]");
                 }
             }
-            default -> logger.info("&cUsage&8: &7group property &8[&7list&8|&7set&8|&7remove&8] [&aname&8] [&akey&8] [&avalue&8]");
+            default ->
+                    logger.info("&cUsage&8: &7group property &8[&7list&8|&7set&8|&7remove&8] [&aname&8] [&akey&8] [&avalue&8]");
         }
     }
 
@@ -296,7 +317,7 @@ public class GroupCommand implements Command, TabCompleter {
     @Override
     public List<String> complete(String[] args) {
         if (args.length == 1) {
-            return List.of("list", "create", "delete", "info", "edit", "property").stream()
+            return List.of("list", "create", "delete", "info", "edit", "property", "shutdown").stream()
                     .filter(input -> input.startsWith(args[0].toLowerCase()))
                     .toList();
         }
