@@ -10,6 +10,7 @@ public enum PlatformVersions {
 
     // PAPER
     PAPER_LATEST(new PaperMCPlatformVersion("paper", "latest")),
+    PAPER_1_21_8(new PaperMCPlatformVersion("paper", "1.21.8")),
     PAPER_1_21_7(new PaperMCPlatformVersion("paper", "1.21.7")),
     PAPER_1_21_6(new PaperMCPlatformVersion("paper", "1.21.6")),
     PAPER_1_21_5(new PaperMCPlatformVersion("paper", "1.21.5")),
@@ -21,6 +22,7 @@ public enum PlatformVersions {
 
     // PURPUR
     PURPUR_LATEST(new PurpurPlatformVersion("latest")),
+    PURPUR_1_21_8(new PurpurPlatformVersion("1.21.8")),
     PURPUR_1_21_7(new PurpurPlatformVersion("1.21.7")),
     PURPUR_1_21_6(new PurpurPlatformVersion("1.21.6")),
     PURPUR_1_21_5(new PurpurPlatformVersion("1.21.5")),
