@@ -3,6 +3,7 @@ package net.potatocloud.node.console;
 import lombok.RequiredArgsConstructor;
 import net.potatocloud.node.command.Command;
 import net.potatocloud.node.command.CommandManager;
+import net.potatocloud.node.command.TabCompleter;
 import org.jline.reader.Candidate;
 import org.jline.reader.Completer;
 import org.jline.reader.LineReader;
@@ -33,11 +34,14 @@ public class ConsoleCommandCompleter implements Completer {
                 return;
             }
 
-            final String[] args = words.subList(1, words.size()).toArray(new String[0]);
+            if (command instanceof TabCompleter completer) {
 
-            for (String suggestion : command.complete(args)) {
-                if (suggestion.startsWith(currentWord)) {
-                    candidates.add(new Candidate(suggestion));
+                final String[] args = words.subList(1, words.size()).toArray(new String[0]);
+
+                for (String suggestion : completer.complete(args)) {
+                    if (suggestion.startsWith(currentWord)) {
+                        candidates.add(new Candidate(suggestion));
+                    }
                 }
             }
         }

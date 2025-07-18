@@ -14,6 +14,7 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.proxy.server.ServerInfo;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.event.events.player.CloudPlayerDisconnectEvent;
 import net.potatocloud.api.event.events.player.CloudPlayerJoinEvent;
 import net.potatocloud.api.event.events.service.ServiceStartedEvent;
@@ -84,7 +85,7 @@ public class VelocityPlugin {
     }
 
     private void initServices() {
-        thisService = api.getServiceManager().getService(System.getProperty("potatocloud.service.name"));
+        thisService = CloudAPI.getInstance().getThisService();
         // service manager is still null or the services have not finished loading
         if (thisService == null) {
             // retry after 1 second

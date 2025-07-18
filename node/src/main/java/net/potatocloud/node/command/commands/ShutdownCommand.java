@@ -31,8 +31,4 @@ public class ShutdownCommand implements Command {
         return List.of("stop", "end");
     }
 
-    @Override
-    public List<String> complete(String[] args) {
-        return List.of();
-    }
 }

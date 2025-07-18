@@ -7,6 +7,7 @@ import net.potatocloud.api.property.Property;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.node.command.Command;
+import net.potatocloud.node.command.TabCompleter;
 import net.potatocloud.node.console.Logger;
 import net.potatocloud.node.service.ServiceImpl;
 import net.potatocloud.node.utils.DurationUtil;
@@ -16,7 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @RequiredArgsConstructor
-public class ServiceCommand implements Command {
+public class ServiceCommand implements Command, TabCompleter {
 
     private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
     private final Logger logger;

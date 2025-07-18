@@ -5,14 +5,18 @@ import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.group.ServiceGroupManager;
 import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.PlatformVersions;
+import net.potatocloud.api.property.Property;
 import net.potatocloud.node.command.Command;
+import net.potatocloud.node.command.TabCompleter;
 import net.potatocloud.node.console.Logger;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
-public class GroupCommand implements Command {
+public class GroupCommand implements Command, TabCompleter {
 
     private final Logger logger;
     private final ServiceGroupManager groupManager;
@@ -29,7 +33,147 @@ public class GroupCommand implements Command {
             case "create" -> createGroup(args);
             case "delete" -> deleteGroup(args);
             case "info" -> infoGroup(args);
+            case "edit" -> editGroup(args);
+            case "property", "properties" -> propertyGroup(args);
             default -> sendHelp();
+        }
+    }
+
+    private void propertyGroup(String[] args) {
+        if (args.length < 2) {
+            logger.info("&cUsage&8: &7group property &8[&7list&8|&7set&8|&7remove&8] [&aname&8] [&akey&8] [&avalue&8]");
+            return;
+        }
+
+        switch (args[1].toLowerCase()) {
+            case "list" -> {
+                if (args.length < 3) {
+                    logger.info("&cUsage&8: &7group property list &8[&aname&8]");
+                    return;
+                }
+
+                final String name = args[2];
+                if (!groupManager.existsServiceGroup(name)) {
+                    logger.info("&cNo service group found with the name &a" + name);
+                    return;
+                }
+
+                final ServiceGroup group = groupManager.getServiceGroup(name);
+                final Set<Property> properties = group.getProperties();
+
+                if (properties.isEmpty()) {
+                    logger.info("No properties found for group &a" + name);
+                    return;
+                }
+
+                logger.info("Properties of group &a" + name + "&8:");
+                for (Property property : properties) {
+                    logger.info("&8» &a" + property.getName() + " &7-" + property.getValue());
+                }
+            }
+            case "remove" -> {
+                if (args.length < 4) {
+                    logger.info("&cUsage&8: &7group property remove &8[&aname&8] [&akey&8]");
+                    return;
+                }
+                final String name = args[2];
+                if (!groupManager.existsServiceGroup(name)) {
+                    logger.info("&cNo service group found with the name &a" + name);
+                    return;
+                }
+
+                final ServiceGroup group = groupManager.getServiceGroup(name);
+
+                final String key = args[3].toLowerCase();
+                final Property property = group.getProperty(key);
+                if (property == null) {
+                    logger.info("Property &a" + key + "&7 was &cnot found &7in group &a" + name);
+                    return;
+                }
+                group.getProperties().remove(property);
+                group.update();
+                logger.info("Property &a" + key + " &7was removed in group &a" + name);
+            }
+            case "set" -> {
+                if (args.length < 4) {
+                    logger.info("&cUsage&8: &7group property set &8[&aname&8] [&akey&8] [&avalue&8]");
+                    return;
+                }
+
+                final String name = args[2];
+                if (!groupManager.existsServiceGroup(name)) {
+                    logger.info("&cNo service group found with the name &a" + name);
+                    return;
+                }
+
+                final ServiceGroup group = groupManager.getServiceGroup(name);
+                final String key = args[3].toLowerCase();
+
+                // check if the property the user wants to add is a default property
+                final Property defaultProperty = Property.getDefaultProperties().stream()
+                        .filter(p -> p.getName().equalsIgnoreCase(key))
+                        .findFirst()
+                        .orElse(null);
+
+                // set default property
+                if (defaultProperty != null) {
+                    group.setProperty(new Property(defaultProperty.getName(), defaultProperty.getDefaultValue()));
+                    group.update();
+                    logger.info("Default Property &a" + key + " &7was set to &a" + defaultProperty.getDefaultValue() + " &7in group &a" + name);
+                    return;
+                }
+
+                if (args.length < 5) {
+                    logger.info("&cUsage&8: &7group property set &8[&aname&8] [&akey&8] [&avalue&8]");
+                    return;
+                }
+
+                //set custom property
+                try {
+                    final String value = args[4];
+                    group.setProperty(new Property(key, value));
+                    group.update();
+                    logger.info("Custom Property &a" + key + " &7was set to &a" + value + " &7in group &a" + name);
+                } catch (Exception e) {
+                    logger.info("&cUsage&8: &7group property set &8[&aname&8] [&akey&8] [&avalue&8]");
+                }
+            }
+            default -> logger.info("&cUsage&8: &7group property &8[&7list&8|&7set&8|&7remove&8] [&aname&8] [&akey&8] [&avalue&8]");
+        }
+    }
+
+    private void editGroup(String[] args) {
+        if (args.length < 4) {
+            logger.info("&cUsage&8: group edit &8[&aname&8] [&akey&8] [&avalue&8]");
+            return;
+        }
+
+        final String name = args[1];
+        if (!groupManager.existsServiceGroup(name)) {
+            logger.info("&cNo service group found with the name &a" + name);
+            return;
+        }
+
+        final ServiceGroup group = groupManager.getServiceGroup(name);
+        final String key = args[2].toLowerCase();
+        final String value = args[3];
+
+        try {
+            switch (key) {
+                case "minonlinecount" -> group.setMinOnlineCount(Integer.parseInt(value));
+                case "maxonlinecount" -> group.setMaxOnlineCount(Integer.parseInt(value));
+                case "maxplayers" -> group.setMaxPlayers(Integer.parseInt(value));
+                case "maxmemory" -> group.setMaxMemory(Integer.parseInt(value));
+                case "fallback" -> group.setFallback(Boolean.parseBoolean(value));
+                default -> {
+                    logger.info("&cUsage&8: group edit &8[&aname&8] [&akey&8] [&avalue&8]");
+                    return;
+                }
+            }
+            group.update();
+            logger.info("Updated &a" + key + " &7for group &a" + name + "&7 to &a" + value);
+        } catch (NumberFormatException ex) {
+            logger.info("&cUsage&8: group edit &8[&aname&8] [&akey&8] [&avalue&8]");
         }
     }
 
@@ -128,6 +272,8 @@ public class GroupCommand implements Command {
         logger.info("group delete &8[&aname&8] - &7Delete a service group");
         logger.info("group list &8- &7List all service groups");
         logger.info("group info &8[&aname&8] - &7Show details of a service group");
+        logger.info("group edit &8[&aname&8] [&akey&8] [&avalue&8] - &7Edit a service group");
+        logger.info("group property &8[&7list&8|&7set&8|&7remove&8] [&aname&8] [&akey&8] [&avalue&8] - &7Manage properties of a service group");
     }
 
     @Override
@@ -148,26 +294,91 @@ public class GroupCommand implements Command {
     @Override
     public List<String> complete(String[] args) {
         if (args.length == 1) {
-            return List.of("list", "create", "delete", "info").stream()
+            return List.of("list", "create", "delete", "info", "edit", "property").stream()
                     .filter(input -> input.startsWith(args[0].toLowerCase()))
                     .toList();
         }
 
-        String sub = args[0].toLowerCase();
+        final String sub = args[0].toLowerCase();
 
-        if (sub.equals("create") && args.length == 3) {
-            return Arrays.stream(PlatformVersions.values())
-                    .map(platform -> platform.platform().getFullName())
+        if (sub.equals("create")) {
+            if (args.length == 3) {
+                return Arrays.stream(PlatformVersions.values())
+                        .map(platform -> platform.platform().getFullName())
+                        .toList();
+            }
+
+            if (args.length == 7) {
+                return List.of("512", "1024", "2048", "4096", "8192", "16384").stream().filter(s -> s.startsWith(args[6])).toList();
+            }
+
+            if (args.length == 8) {
+                return List.of("true", "false").stream().filter(s -> s.startsWith(args[7])).toList();
+            }
+
+            if (args.length == 9) {
+                return List.of("true", "false").stream().filter(s -> s.startsWith(args[8])).toList();
+            }
+        }
+
+        if ((sub.equals("info") || sub.equals("delete") || sub.equals("edit"))) {
+            if (args.length == 2) {
+                return groupManager.getAllServiceGroups().stream()
+                        .map(ServiceGroup::getName)
+                        .filter(name -> name.startsWith(args[1]))
+                        .toList();
+            }
+        }
+
+        if (sub.equals("property")) {
+            if (args.length == 2) {
+                return List.of("list", "set", "remove").stream()
+                        .filter(c -> c.startsWith(args[1].toLowerCase()))
+                        .toList();
+            }
+        }
+
+        if (sub.equals("edit") && args.length == 3) {
+            return List.of("minonlinecount", "maxonlinecount", "maxplayers", "maxmemory", "fallback")
+                    .stream()
+                    .filter(key -> key.startsWith(args[2].toLowerCase()))
                     .toList();
         }
 
-        if ((sub.equals("info") || sub.equals("delete")) && args.length == 2) {
-            return groupManager.getAllServiceGroups().stream()
-                    .map(ServiceGroup::getName)
-                    .filter(name -> name.startsWith(args[1]))
-                    .toList();
-        }
+        if (sub.equals("property")) {
+            if (args.length == 2) {
+                return List.of("list", "set", "remove").stream()
+                        .filter(s -> s.startsWith(args[1].toLowerCase()))
+                        .toList();
+            }
 
+            if (args.length == 3) {
+                return groupManager.getAllServiceGroups().stream()
+                        .map(ServiceGroup::getName)
+                        .filter(name -> name.startsWith(args[2]))
+                        .toList();
+            }
+
+            if (args.length == 4 && args[1].equalsIgnoreCase("remove")) {
+                final String groupName = args[2];
+                if (groupManager.existsServiceGroup(groupName)) {
+                    return groupManager.getServiceGroup(groupName).getProperties().stream()
+                            .map(Property::getName)
+                            .filter(p -> p.startsWith(args[3]))
+                            .toList();
+                }
+            }
+
+            if (args.length == 4 && args[1].equalsIgnoreCase("set")) {
+                List<String> completions = new ArrayList<>();
+                completions.add("<custom>");
+                completions.addAll(Property.getDefaultProperties().stream()
+                        .map(Property::getName)
+                        .filter(s -> s.startsWith(args[3].toLowerCase()))
+                        .toList());
+                return completions;
+            }
+        }
         return List.of();
     }
 }

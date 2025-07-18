@@ -43,8 +43,4 @@ public class HelpCommand implements Command {
         return List.of("?");
     }
 
-    @Override
-    public List<String> complete(String[] args) {
-        return List.of();
-    }
 }

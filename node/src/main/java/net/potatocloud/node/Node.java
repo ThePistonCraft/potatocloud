@@ -149,6 +149,11 @@ public class Node extends CloudAPI {
         return playerManager;
     }
 
+    @Override
+    public Service getThisService() {
+        return null;
+    }
+
     @SneakyThrows
     public void shutdown() {
         logger.info("&cShutting down node...");

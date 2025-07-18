@@ -6,12 +6,13 @@ import net.potatocloud.api.player.CloudPlayerManager;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.node.command.Command;
+import net.potatocloud.node.command.TabCompleter;
 import net.potatocloud.node.console.Logger;
 
 import java.util.List;
 
 @RequiredArgsConstructor
-public class PlayerCommand implements Command {
+public class PlayerCommand implements Command, TabCompleter {
 
     private final Logger logger;
     private final CloudPlayerManager playerManager;

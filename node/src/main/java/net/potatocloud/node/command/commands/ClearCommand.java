@@ -30,9 +30,4 @@ public class ClearCommand implements Command {
     public List<String> getAliases() {
         return List.of("cls");
     }
-
-    @Override
-    public List<String> complete(String[] args) {
-        return List.of();
-    }
 }

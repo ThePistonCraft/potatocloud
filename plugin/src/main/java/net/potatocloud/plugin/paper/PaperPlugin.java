@@ -1,6 +1,7 @@
 package net.potatocloud.plugin.paper;
 
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.core.networking.packets.service.ServiceStartedPacket;
 import net.potatocloud.plugin.impl.PluginCloudAPI;
@@ -27,7 +28,7 @@ public class PaperPlugin extends JavaPlugin implements Listener {
     }
 
     private void initThisService() {
-        thisService = api.getServiceManager().getService(System.getProperty("potatocloud.service.name"));
+        thisService = CloudAPI.getInstance().getThisService();
         // service manager is still null or the services have not finished loading
         if (thisService == null) {
             // retry after 1 second

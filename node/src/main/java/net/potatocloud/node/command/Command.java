@@ -12,6 +12,4 @@ public interface Command {
 
     List<String> getAliases();
 
-    List<String> complete(String[] args);
-
 }

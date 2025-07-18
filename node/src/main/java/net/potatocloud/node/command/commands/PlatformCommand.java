@@ -5,6 +5,7 @@ import lombok.SneakyThrows;
 import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.PlatformVersions;
 import net.potatocloud.node.command.Command;
+import net.potatocloud.node.command.TabCompleter;
 import net.potatocloud.node.console.Logger;
 import net.potatocloud.node.platform.PlatformManager;
 import org.apache.commons.io.FileUtils;
@@ -20,7 +21,7 @@ import java.util.Collection;
 import java.util.List;
 
 @RequiredArgsConstructor
-public class PlatformCommand implements Command {
+public class PlatformCommand implements Command, TabCompleter {
 
     private final Logger logger;
     private final Path platformsFolder;
