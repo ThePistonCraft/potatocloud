@@ -23,6 +23,7 @@ public class ServiceGroupImpl implements ServiceGroup {
     private final String name;
     private final String platformName;
     private final List<String> serviceTemplates;
+    private final Set<Property> properties;
     private int minOnlineCount;
     private int maxOnlineCount;
     private int maxPlayers;
@@ -32,7 +33,6 @@ public class ServiceGroupImpl implements ServiceGroup {
     private int startPriority;
     private int startPercentage;
     private String javaCommand;
-    private final Set<Property> properties;
 
     public ServiceGroupImpl(String name, String platformName, List<String> serviceTemplates, int minOnlineCount, int maxOnlineCount, int maxPlayers, int maxMemory, boolean fallback, boolean isStatic) {
         this.name = name;

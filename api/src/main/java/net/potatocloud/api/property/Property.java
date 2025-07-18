@@ -11,6 +11,7 @@ import java.util.Set;
 @AllArgsConstructor
 public class Property {
 
+    public static final Property GAME_STATE = new Property("gameState", "INGAME");
     private final PropertyData data;
 
     public Property(String name, Object defaultValue) {
@@ -19,6 +20,14 @@ public class Property {
 
     public Property(String name, Object defaultValue, Object value) {
         this.data = new PropertyData(name, defaultValue, value);
+    }
+
+    public static Property fromData(PropertyData data) {
+        return new Property(data.getName(), data.getDefaultValue(), data.getValue());
+    }
+
+    public static Set<Property> getDefaultProperties() {
+        return Set.of(GAME_STATE);
     }
 
     public String getName() {
@@ -35,15 +44,5 @@ public class Property {
 
     public void setValue(Object value) {
         data.setValue(value);
-    }
-
-    public static Property fromData(PropertyData data) {
-        return new Property(data.getName(), data.getDefaultValue(), data.getValue());
-    }
-
-    public static final Property GAME_STATE = new Property("gameState", "INGAME");
-
-    public static Set<Property> getDefaultProperties() {
-        return Set.of(GAME_STATE);
     }
 }

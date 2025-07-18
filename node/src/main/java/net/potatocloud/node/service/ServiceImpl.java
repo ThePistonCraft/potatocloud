@@ -32,11 +32,12 @@ public class ServiceImpl implements Service {
 
     private final int serviceId;
     private final int port;
-    private final ServiceGroup serviceGroup;
+    private final ServiceGroup group;
     private final NodeConfig config;
     private final Logger logger;
     private final List<String> logs = new ArrayList<>();
     private final NetworkServer server;
+    private final Set<Property> properties;
     @Setter
     private int maxPlayers;
     @Setter
@@ -46,26 +47,23 @@ public class ServiceImpl implements Service {
     private Process serverProcess;
     private BufferedWriter processWriter;
     private BufferedReader processReader;
-
-    private final Set<Property> properties;
-
     @Setter
     private ServiceProcessChecker processChecker;
 
-    public ServiceImpl(int serviceId, int port, ServiceGroup serviceGroup, NodeConfig config, Logger logger) {
+    public ServiceImpl(int serviceId, int port, ServiceGroup group, NodeConfig config, Logger logger) {
         this.serviceId = serviceId;
         this.port = port;
-        this.serviceGroup = serviceGroup;
+        this.group = group;
         this.config = config;
         this.logger = logger;
-        maxPlayers = serviceGroup.getMaxPlayers();
+        maxPlayers = group.getMaxPlayers();
         server = Node.getInstance().getServer();
-        properties = new HashSet<>(serviceGroup.getProperties());
+        properties = new HashSet<>(group.getProperties());
     }
 
     @Override
     public String getName() {
-        return serviceGroup.getName() + config.getSplitter() + serviceId;
+        return group.getName() + config.getSplitter() + serviceId;
     }
 
     public boolean isOnline() {
@@ -92,6 +90,11 @@ public class ServiceImpl implements Service {
         return port;
     }
 
+    @Override
+    public ServiceGroup getServiceGroup() {
+        return group;
+    }
+
     public int getOnlinePlayers() {
         return CloudAPI.getInstance().getPlayerManager().getOnlinePlayers()
                 .stream()
@@ -112,16 +115,16 @@ public class ServiceImpl implements Service {
         // create service folder
         final Path staticFolder = Path.of(config.getStaticFolder());
         final Path tempFolder = Path.of(config.getTempServicesFolder());
-        directory = serviceGroup.isStatic() ? staticFolder.resolve(getName()) : tempFolder.resolve(getName());
+        directory = group.isStatic() ? staticFolder.resolve(getName()) : tempFolder.resolve(getName());
 
-        if (!serviceGroup.isStatic()) {
+        if (!group.isStatic()) {
             FileUtils.deleteDirectory(directory.toFile());
         }
 
         Files.createDirectories(directory);
 
         // copy templates
-        for (String templateName : serviceGroup.getServiceTemplates()) {
+        for (String templateName : group.getServiceTemplates()) {
             Node.getInstance().getTemplateManager().copyTemplate(templateName, directory);
         }
 
@@ -132,7 +135,7 @@ public class ServiceImpl implements Service {
         FileUtils.copyFile(Path.of(config.getDataFolder(), "potatocloud-plugin.jar").toFile(), pluginsFolder.resolve("potatocloud-plugin.jar").toFile());
 
         // download and configure the platform of the service
-        final Platform platform = getServiceGroup().getPlatform();
+        final Platform platform = getGroup().getPlatform();
         Node.getInstance().getPlatformManager().downloadPlatform(platform);
 
         if (!platform.isProxy()) {
@@ -186,9 +189,9 @@ public class ServiceImpl implements Service {
 
         // create start arguments
         final ArrayList<String> args = new ArrayList<>();
-        args.add(getServiceGroup().getJavaCommand());
-        args.add("-Xms" + serviceGroup.getMaxMemory() + "M");
-        args.add("-Xmx" + serviceGroup.getMaxMemory() + "M");
+        args.add(getGroup().getJavaCommand());
+        args.add("-Xms" + group.getMaxMemory() + "M");
+        args.add("-Xmx" + group.getMaxMemory() + "M");
         args.add("-Dpotatocloud.service.name=" + getName());
         args.add("-Dpotatocloud.node.port=" + config.getNodePort());
 
@@ -225,7 +228,7 @@ public class ServiceImpl implements Service {
             }
         }, "processReader-" + getName()).start();
 
-        logger.info("The Service &a" + getName() + "&7 is now starting... &8[&7Port&8: &a" + port + ", &7Group&8: &a" + serviceGroup.getName() + "&8]");
+        logger.info("The Service &a" + getName() + "&7 is now starting... &8[&7Port&8: &a" + port + ", &7Group&8: &a" + group.getName() + "&8]");
     }
 
     @Override
@@ -250,7 +253,7 @@ public class ServiceImpl implements Service {
         logger.info("Stopping service &a" + getName() + "&7...");
         status = ServiceStatus.STOPPING;
 
-        executeCommand(serviceGroup.getPlatform().isProxy() ? "end" : "stop");
+        executeCommand(group.getPlatform().isProxy() ? "end" : "stop");
 
         if (processWriter != null) {
             processWriter.close();
@@ -285,7 +288,7 @@ public class ServiceImpl implements Service {
             Node.getInstance().getEventManager().call(new ServiceStoppedEvent(this.getName()));
         }
 
-        if (!serviceGroup.isStatic()) {
+        if (!group.isStatic()) {
             try {
                 FileUtils.deleteDirectory(directory.toFile());
             } catch (IOException e) {

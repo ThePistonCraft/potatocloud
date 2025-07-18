@@ -1,6 +1,5 @@
 package net.potatocloud.plugin.impl.service;
 
-import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.property.Property;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
@@ -66,14 +65,14 @@ public class ServiceManagerImpl implements ServiceManager {
     }
 
     @Override
-    public void startService(ServiceGroup serviceGroup) {
-        client.send(new StartServicePacket(serviceGroup.getName()));
+    public void startService(String groupName) {
+        client.send(new StartServicePacket(groupName));
     }
 
     @Override
-    public void startServices(ServiceGroup serviceGroup, int count) {
+    public void startServices(String groupName, int count) {
         for (int i = 0; i < count; i++) {
-            startService(serviceGroup);
+            startService(groupName);
         }
     }
 }

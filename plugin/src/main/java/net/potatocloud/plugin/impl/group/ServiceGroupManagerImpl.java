@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 public class ServiceGroupManagerImpl implements ServiceGroupManager {
 
-    private final List<ServiceGroup> serviceGroups = new ArrayList<>();
+    private final List<ServiceGroup> groups = new ArrayList<>();
     private final NetworkClient client;
 
     public ServiceGroupManagerImpl(NetworkClient client) {
@@ -32,12 +32,12 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
     }
 
     public void addServiceGroup(ServiceGroup group) {
-        serviceGroups.add(group);
+        groups.add(group);
     }
 
     @Override
     public ServiceGroup getServiceGroup(String name) {
-        return serviceGroups.stream()
+        return groups.stream()
                 .filter(cloudServiceGroup -> cloudServiceGroup.getName().equalsIgnoreCase(name))
                 .findFirst()
                 .orElse(null);
@@ -45,7 +45,7 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
 
     @Override
     public List<ServiceGroup> getAllServiceGroups() {
-        return Collections.unmodifiableList(serviceGroups);
+        return Collections.unmodifiableList(groups);
     }
 
     @Override
@@ -89,6 +89,6 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
         if (groupName == null) {
             return false;
         }
-        return serviceGroups.stream().anyMatch(serviceGroup -> serviceGroup != null && serviceGroup.getName().equalsIgnoreCase(groupName));
+        return groups.stream().anyMatch(serviceGroup -> serviceGroup != null && serviceGroup.getName().equalsIgnoreCase(groupName));
     }
 }

@@ -68,23 +68,28 @@ public class ServiceManagerImpl implements ServiceManager {
     }
 
     @Override
-    public void startService(ServiceGroup serviceGroup) {
-        final int serviceId = getFreeServiceId(serviceGroup);
-        final int port = getServicePort(serviceGroup);
-        final ServiceImpl service = new ServiceImpl(serviceId, port, serviceGroup, config, logger);
+    public void startService(String groupName) {
+        final ServiceGroup group = groupManager.getServiceGroup(groupName);
+        if (group == null) {
+            return;
+        }
+
+        final int serviceId = getFreeServiceId(group);
+        final int port = getServicePort(group);
+        final ServiceImpl service = new ServiceImpl(serviceId, port, group, config, logger);
 
         services.add(service);
 
         // broadcast add service packet to all connected clients
-        server.broadcastPacket(new ServiceAddPacket(service.getName(), service.getServiceId(), service.getPort(), service.getStartTimestamp(), service.getServiceGroup().getName(), service.getStatus().name(), service.getOnlinePlayers(), service.getUsedMemory()));
+        server.broadcastPacket(new ServiceAddPacket(service.getName(), service.getServiceId(), service.getPort(), service.getStartTimestamp(), service.getGroup().getName(), service.getStatus().name(), service.getOnlinePlayers(), service.getUsedMemory()));
 
         service.start();
     }
 
     @Override
-    public void startServices(ServiceGroup serviceGroup, int count) {
+    public void startServices(String groupName, int count) {
         for (int i = 0; i < count; i++) {
-            startService(serviceGroup);
+            startService(groupName);
         }
     }
 

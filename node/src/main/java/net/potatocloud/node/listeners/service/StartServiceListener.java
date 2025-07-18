@@ -11,10 +11,10 @@ import net.potatocloud.core.networking.packets.service.StartServicePacket;
 public class StartServiceListener implements PacketListener<StartServicePacket> {
 
     private final ServiceManager serviceManager;
-    private final ServiceGroupManager serviceGroupManager;
+    private final ServiceGroupManager groupManager;
 
     @Override
     public void onPacket(NetworkConnection connection, StartServicePacket packet) {
-        serviceManager.startService(serviceGroupManager.getServiceGroup(packet.getGroupName()));
+        serviceManager.startService(groupManager.getServiceGroup(packet.getGroupName()));
     }
 }

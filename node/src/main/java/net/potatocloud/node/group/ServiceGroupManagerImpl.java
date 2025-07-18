@@ -29,7 +29,7 @@ import java.util.stream.Stream;
 
 public class ServiceGroupManagerImpl implements ServiceGroupManager {
 
-    private final List<ServiceGroup> serviceGroups = new ArrayList<>();
+    private final List<ServiceGroup> groups = new ArrayList<>();
     private final Path groupsPath;
     private final NetworkServer server;
 
@@ -45,7 +45,7 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
 
     @Override
     public ServiceGroup getServiceGroup(String name) {
-        return serviceGroups.stream()
+        return groups.stream()
                 .filter(cloudServiceGroup -> cloudServiceGroup.getName().equalsIgnoreCase(name))
                 .findFirst()
                 .orElse(null);
@@ -53,7 +53,7 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
 
     @Override
     public List<ServiceGroup> getAllServiceGroups() {
-        return Collections.unmodifiableList(serviceGroups);
+        return Collections.unmodifiableList(groups);
     }
 
     @Override
@@ -109,19 +109,19 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
         ));
 
         ServiceGroupStorage.saveToFile(serviceGroup, groupsPath);
-        serviceGroups.add(serviceGroup);
+        groups.add(serviceGroup);
         return serviceGroup;
     }
 
     @Override
     public boolean deleteServiceGroup(ServiceGroup serviceGroup) {
-        if (serviceGroup == null || !serviceGroups.contains(serviceGroup)) {
+        if (serviceGroup == null || !groups.contains(serviceGroup)) {
             return false;
         }
 
         serviceGroup.getOnlineServices().forEach(Service::shutdown);
 
-        serviceGroups.remove(serviceGroup);
+        groups.remove(serviceGroup);
 
         final Path filePath = groupsPath.resolve(serviceGroup.getName() + ".yml");
         try {
@@ -153,7 +153,7 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
         if (groupName == null) {
             return false;
         }
-        return serviceGroups.stream().anyMatch(serviceGroup -> serviceGroup != null && serviceGroup.getName().equalsIgnoreCase(groupName));
+        return groups.stream().anyMatch(serviceGroup -> serviceGroup != null && serviceGroup.getName().equalsIgnoreCase(groupName));
     }
 
 
@@ -164,7 +164,7 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
         }
 
         try (Stream<Path> paths = Files.list(groupsPath)) {
-            paths.filter(path -> path.toString().endsWith(".yml")).forEach(path -> serviceGroups.add(ServiceGroupStorage.loadFromFile(path)));
+            paths.filter(path -> path.toString().endsWith(".yml")).forEach(path -> groups.add(ServiceGroupStorage.loadFromFile(path)));
         }
     }
 }

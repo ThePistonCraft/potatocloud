@@ -10,11 +10,11 @@ import net.potatocloud.plugin.impl.group.ServiceGroupManagerImpl;
 @RequiredArgsConstructor
 public class AddGroupListener implements PacketListener<AddGroupPacket> {
 
-    private final ServiceGroupManagerImpl serviceGroupManager;
+    private final ServiceGroupManagerImpl groupManager;
 
     @Override
     public void onPacket(NetworkConnection connection, AddGroupPacket packet) {
-        serviceGroupManager.addServiceGroup(new ServiceGroupImpl(
+        groupManager.addServiceGroup(new ServiceGroupImpl(
                 packet.getName(),
                 packet.getPlatformName(),
                 packet.getServiceTemplates(),

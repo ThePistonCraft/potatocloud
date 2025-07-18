@@ -10,8 +10,6 @@ import net.potatocloud.core.networking.NetworkConnection;
 import net.potatocloud.core.networking.PacketListener;
 import net.potatocloud.core.networking.packets.service.UpdateServicePacket;
 
-import java.util.Set;
-
 @RequiredArgsConstructor
 public class UpdateServiceListener implements PacketListener<UpdateServicePacket> {
 

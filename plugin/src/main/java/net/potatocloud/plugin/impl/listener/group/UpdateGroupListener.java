@@ -12,11 +12,11 @@ import net.potatocloud.core.networking.packets.group.UpdateGroupPacket;
 @RequiredArgsConstructor
 public class UpdateGroupListener implements PacketListener<UpdateGroupPacket> {
 
-    private final ServiceGroupManager serviceGroupManager;
+    private final ServiceGroupManager groupManager;
 
     @Override
     public void onPacket(NetworkConnection connection, UpdateGroupPacket packet) {
-        final ServiceGroup group = serviceGroupManager.getServiceGroup(packet.getGroupName());
+        final ServiceGroup group = groupManager.getServiceGroup(packet.getGroupName());
         group.setMinOnlineCount(packet.getMinOnlineCount());
         group.setMaxOnlineCount(packet.getMaxOnlineCount());
         group.setMaxPlayers(packet.getMaxPlayers());

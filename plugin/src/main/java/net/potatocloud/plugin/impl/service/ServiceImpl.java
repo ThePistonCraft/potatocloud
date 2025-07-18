@@ -23,31 +23,36 @@ public class ServiceImpl implements Service {
     private final int serviceId;
     private final int port;
     private final long startTimestamp;
-    private final ServiceGroup serviceGroup;
+    private final ServiceGroup group;
     private final NetworkClient client;
+    private final Set<Property> properties;
     private ServiceStatus status;
     private int onlinePlayers;
     private int usedMemory;
     private int maxPlayers;
-    private final Set<Property> properties;
 
-    public ServiceImpl(String name, int serviceId, int port, long startTimestamp, ServiceGroup serviceGroup, ServiceStatus status, int onlinePlayers, int usedMemory) {
+    public ServiceImpl(String name, int serviceId, int port, long startTimestamp, ServiceGroup group, ServiceStatus status, int onlinePlayers, int usedMemory) {
         this.name = name;
         this.serviceId = serviceId;
         this.port = port;
         this.startTimestamp = startTimestamp;
-        this.serviceGroup = serviceGroup;
+        this.group = group;
         this.status = status;
         this.onlinePlayers = onlinePlayers;
         this.usedMemory = usedMemory;
 
-        maxPlayers = serviceGroup.getMaxPlayers();
+        maxPlayers = group.getMaxPlayers();
         client = PluginCloudAPI.getInstance().getClient();
-        properties = new HashSet<>(serviceGroup.getProperties());
+        properties = new HashSet<>(group.getProperties());
     }
 
     public boolean isOnline() {
         return status.equals(ServiceStatus.RUNNING);
+    }
+
+    @Override
+    public ServiceGroup getServiceGroup() {
+        return group;
     }
 
     @Override
