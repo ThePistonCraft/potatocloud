@@ -49,9 +49,6 @@ public class ServiceGroupImpl implements ServiceGroup {
         startPercentage = 100;
         javaCommand = "java";
         properties = new HashSet<>();
-
-        setProperty(Property.GAME_STATE);
-        setProperty(new Property("Map", "Pines"));
     }
 
     @Override
