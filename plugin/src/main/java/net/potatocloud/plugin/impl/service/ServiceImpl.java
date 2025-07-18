@@ -4,12 +4,16 @@ import lombok.Getter;
 import lombok.Setter;
 import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.group.ServiceGroup;
+import net.potatocloud.api.property.Property;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceStatus;
 import net.potatocloud.core.networking.NetworkClient;
 import net.potatocloud.core.networking.packets.service.ServiceExecuteCommandPacket;
 import net.potatocloud.core.networking.packets.service.ShutdownServicePacket;
 import net.potatocloud.plugin.impl.PluginCloudAPI;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -25,6 +29,7 @@ public class ServiceImpl implements Service {
     private int onlinePlayers;
     private int usedMemory;
     private int maxPlayers;
+    private final Set<Property> properties;
 
     public ServiceImpl(String name, int serviceId, int port, long startTimestamp, ServiceGroup serviceGroup, ServiceStatus status, int onlinePlayers, int usedMemory) {
         this.name = name;
@@ -38,6 +43,7 @@ public class ServiceImpl implements Service {
 
         maxPlayers = serviceGroup.getMaxPlayers();
         client = PluginCloudAPI.getInstance().getClient();
+        properties = new HashSet<>(serviceGroup.getProperties());
     }
 
     public boolean isOnline() {

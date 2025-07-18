@@ -1,11 +1,12 @@
 package net.potatocloud.api.group;
 
 import net.potatocloud.api.platform.Platform;
+import net.potatocloud.api.property.PropertyHolder;
 import net.potatocloud.api.service.Service;
 
 import java.util.List;
 
-public interface ServiceGroup {
+public interface ServiceGroup extends PropertyHolder {
 
     String getName();
 
@@ -46,6 +47,8 @@ public interface ServiceGroup {
     void addServiceTemplate(String template);
 
     void removeServiceTemplate(String template);
+
+    List<Service> getAllServices();
 
     List<Service> getOnlineServices();
 

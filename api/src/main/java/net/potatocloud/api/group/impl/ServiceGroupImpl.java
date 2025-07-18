@@ -7,10 +7,13 @@ import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.PlatformVersions;
+import net.potatocloud.api.property.Property;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceStatus;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -29,6 +32,7 @@ public class ServiceGroupImpl implements ServiceGroup {
     private int startPriority;
     private int startPercentage;
     private String javaCommand;
+    private final Set<Property> properties;
 
     public ServiceGroupImpl(String name, String platformName, List<String> serviceTemplates, int minOnlineCount, int maxOnlineCount, int maxPlayers, int maxMemory, boolean fallback, boolean isStatic) {
         this.name = name;
@@ -44,6 +48,22 @@ public class ServiceGroupImpl implements ServiceGroup {
         startPriority = 0;
         startPercentage = 100;
         javaCommand = "java";
+        properties = new HashSet<>();
+
+        setProperty(Property.GAME_STATE);
+        setProperty(new Property("Map", "Pines"));
+    }
+
+    @Override
+    public void setProperty(Property property, Object value) {
+        ServiceGroup.super.setProperty(property, value);
+
+        final Property prop = getProperty(property.getName());
+        if (prop != null) {
+            for (Service onlineService : getAllServices()) {
+                onlineService.setProperty(prop, prop.getValue());
+            }
+        }
     }
 
     @Override
@@ -68,14 +88,18 @@ public class ServiceGroupImpl implements ServiceGroup {
     }
 
     @Override
-    public List<Service> getOnlineServices() {
+    public List<Service> getAllServices() {
         return CloudAPI.getInstance()
                 .getServiceManager()
                 .getAllServices()
                 .stream()
                 .filter(service -> service.getServiceGroup().getName().equals(name))
-                .filter(service -> service.getStatus().equals(ServiceStatus.RUNNING))
                 .toList();
+    }
+
+    @Override
+    public List<Service> getOnlineServices() {
+        return getAllServices().stream().filter(service -> service.getStatus().equals(ServiceStatus.RUNNING)).toList();
     }
 
     @Override

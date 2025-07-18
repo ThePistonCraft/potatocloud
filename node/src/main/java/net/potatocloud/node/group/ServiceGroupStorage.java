@@ -4,9 +4,12 @@ import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.group.impl.ServiceGroupImpl;
+import net.potatocloud.api.property.Property;
 import org.simpleyaml.configuration.file.YamlFile;
 
 import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.Set;
 
 @UtilityClass
 public class ServiceGroupStorage {
@@ -26,6 +29,14 @@ public class ServiceGroupStorage {
         config.set("startPriority", group.getStartPriority());
         config.set("startPercentage", group.getStartPercentage());
         config.set("javaCommand", group.getJavaCommand());
+
+        if (!group.getProperties().isEmpty()) {
+            for (Property property : group.getProperties()) {
+                config.set("properties." + property.getName() + ".value", property.getValue());
+                config.set("properties." + property.getName() + ".default", property.getDefaultValue());
+            }
+        }
+
         config.save();
     }
 
@@ -33,6 +44,19 @@ public class ServiceGroupStorage {
     public ServiceGroup loadFromFile(Path groupFile) {
         final YamlFile config = new YamlFile(groupFile.toFile());
         config.load();
+
+        final Set<Property> properties = new HashSet<>();
+        if (config.isSet("properties")) {
+            for (String key : config.getConfigurationSection("properties").getKeys(false)) {
+                final Object value = config.get("properties." + key + ".value");
+                Object defaultValue = config.get("properties." + key + ".default");
+                if (defaultValue == null) {
+                    defaultValue = value;
+                }
+
+                properties.add(new Property(key, defaultValue, value));
+            }
+        }
 
         return new ServiceGroupImpl(
                 config.getString("name"),
@@ -46,7 +70,8 @@ public class ServiceGroupStorage {
                 config.getBoolean("static"),
                 config.getInt("startPriority"),
                 config.getInt("startPercentage"),
-                config.getString("javaCommand")
+                config.getString("javaCommand"),
+                properties
         );
     }
 }

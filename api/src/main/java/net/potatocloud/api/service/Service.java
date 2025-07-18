@@ -1,8 +1,9 @@
 package net.potatocloud.api.service;
 
 import net.potatocloud.api.group.ServiceGroup;
+import net.potatocloud.api.property.PropertyHolder;
 
-public interface Service {
+public interface Service extends PropertyHolder {
 
     String getName();
 

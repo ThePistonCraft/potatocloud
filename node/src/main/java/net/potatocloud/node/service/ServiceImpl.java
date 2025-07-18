@@ -8,6 +8,7 @@ import net.potatocloud.api.event.events.service.ServiceStoppedEvent;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.impl.PandaSpigotVersion;
+import net.potatocloud.api.property.Property;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceStatus;
 import net.potatocloud.core.networking.NetworkServer;
@@ -23,10 +24,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Getter
@@ -48,6 +46,9 @@ public class ServiceImpl implements Service {
     private Process serverProcess;
     private BufferedWriter processWriter;
     private BufferedReader processReader;
+
+    private final Set<Property> properties;
+
     @Setter
     private ServiceProcessChecker processChecker;
 
@@ -59,6 +60,7 @@ public class ServiceImpl implements Service {
         this.logger = logger;
         maxPlayers = serviceGroup.getMaxPlayers();
         server = Node.getInstance().getServer();
+        properties = new HashSet<>(serviceGroup.getProperties());
     }
 
     @Override
