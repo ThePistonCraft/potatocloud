@@ -14,6 +14,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>cloud-notify-plugin</module>
+        <module>cloud-hub-plugin</module>
     </modules>
 
     <properties>

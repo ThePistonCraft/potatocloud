@@ -1,4 +1,4 @@
-prefix: "<dark_gray>[<green>potatocloud<dark_gray>] <reset>"
+prefix: "<dark_gray>» <green>potato<white>cloud <dark_gray>• <reset>"
 no-permission: "<red>You do not have enough permissions for this command"
 no-group: "<red>No service group found with the name <green>%name%"
 

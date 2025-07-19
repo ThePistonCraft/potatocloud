@@ -5,6 +5,8 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.proxy.ProxyServer;
 import lombok.extern.slf4j.Slf4j;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.event.events.service.ServiceStartedEvent;
 import net.potatocloud.api.event.events.service.ServiceStoppedEvent;
@@ -18,13 +20,16 @@ public class NotifyPlugin {
     private final ProxyServer server;
     private final Logger logger;
     private final MessagesConfig messagesConfig;
+    private final Config config;
 
     @Inject
     public NotifyPlugin(ProxyServer server, Logger logger) {
         this.server = server;
         this.logger = logger;
         this.messagesConfig = new MessagesConfig();
-        messagesConfig.load();
+        this.messagesConfig.load();
+        this.config = new Config();
+        this.config.load();
     }
 
     @Subscribe
@@ -41,14 +46,15 @@ public class NotifyPlugin {
             // send message;
             this.server.getAllPlayers()
                     .stream()
-                    .filter(player -> player.hasPermission("potatocloud.notify"))
+                    .filter(player -> player.hasPermission(this.config.getPermission()))
                     .forEach(player -> {
                         player.sendMessage(this.messagesConfig.get("start")
+                                .clickEvent(ClickEvent.runCommand("/server " + startedEvent.getServiceName()))
+                                .hoverEvent(HoverEvent.showText(this.messagesConfig.get("hover")
+                                        .replaceText(text -> text.match("%service%").replacement(service.getName()))))
                                 .replaceText(text -> text.match("%service%").replacement(service.getName()))
                                 .replaceText(text -> text.match("%port%").replacement(service.getPort() + ""))
                                 .replaceText(text -> text.match("%group%").replacement(service.getServiceGroup().getName() + ""))
-
-
                         );
                     });
         });
@@ -58,7 +64,7 @@ public class NotifyPlugin {
             // send message;
             this.server.getAllPlayers()
                     .stream()
-                    .filter(player -> player.hasPermission("potatocloud.notify"))
+                    .filter(player -> player.hasPermission(this.config.getPermission()))
                     .forEach(player -> {
                         player.sendMessage(this.messagesConfig.get("stop")
                                 .replaceText(text -> text.match("%service%").replacement(stoppedEvent.getServiceName())));
