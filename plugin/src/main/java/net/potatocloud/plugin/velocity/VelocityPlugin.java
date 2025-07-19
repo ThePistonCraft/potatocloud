@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.LoginEvent;
+import com.velocitypowered.api.event.player.KickedFromServerEvent;
 import com.velocitypowered.api.event.player.PlayerChooseInitialServerEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
@@ -119,13 +120,7 @@ public class VelocityPlugin {
 
     @Subscribe
     public void onPlayerChooseInitialServer(PlayerChooseInitialServerEvent event) {
-        final Service bestFallbackService = api.getServiceManager().getAllServices().stream()
-                .filter(service -> service.getServiceGroup().isFallback())
-                .filter(service -> service.getStatus() == ServiceStatus.RUNNING)
-                .min(Comparator.comparingInt(Service::getOnlinePlayers))
-                .orElse(null);
-
-        final Optional<RegisteredServer> bestFallbackServer = server.getServer(bestFallbackService.getName());
+        final Optional<RegisteredServer> bestFallbackServer = getBestFallbackServer();
         if (bestFallbackServer.isEmpty()) {
             return;
         }
@@ -181,4 +176,31 @@ public class VelocityPlugin {
             api.getEventManager().call(new CloudPlayerDisconnectEvent(event.getPlayer().getUniqueId(), event.getPlayer().getUsername()));
         }
     }
+
+    @Subscribe
+    public void onKicked(KickedFromServerEvent event) {
+        final RegisteredServer kickedFrom = event.getServer();
+        final Optional<RegisteredServer> fallback = getBestFallbackServer();
+        if (fallback.isEmpty()) {
+            return;
+        }
+
+        if (kickedFrom.getServerInfo().getName().equalsIgnoreCase(fallback.get().getServerInfo().getName())) {
+            return;
+        }
+        event.setResult(KickedFromServerEvent.RedirectPlayer.create(fallback.get()));
+    }
+
+    private Optional<RegisteredServer> getBestFallbackServer() {
+        return api.getServiceManager().getAllServices().stream()
+                .filter(service -> service.getServiceGroup().isFallback())
+                .filter(service -> service.getStatus() == ServiceStatus.RUNNING)
+                .sorted(Comparator.comparingInt(Service::getOnlinePlayers))
+                .map(service -> server.getServer(service.getName()))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .findFirst();
+    }
+
+
 }
