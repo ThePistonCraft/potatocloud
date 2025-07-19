@@ -1,0 +1,4 @@
+prefix: "<dark_gray>» <green>potato<white>cloud <dark_gray>• <reset>"
+alreadyOnFallback: "<red>you already connected to a fallback server"
+noFallbackFound: "<red>there are no fallback servers online"
+connect: "<gray>you connecting to <green>%service%<gray>.."
