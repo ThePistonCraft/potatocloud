@@ -16,6 +16,8 @@ import net.potatocloud.core.networking.packets.service.ServiceRemovePacket;
 import net.potatocloud.node.Node;
 import net.potatocloud.node.config.NodeConfig;
 import net.potatocloud.node.console.Logger;
+import net.potatocloud.node.screen.Screen;
+import net.potatocloud.node.screen.ScreenManager;
 import org.apache.commons.io.FileUtils;
 import oshi.SystemInfo;
 import oshi.software.os.OSProcess;
@@ -49,6 +51,7 @@ public class ServiceImpl implements Service {
     private BufferedReader processReader;
     @Setter
     private ServiceProcessChecker processChecker;
+    private final Screen screen;
 
     public ServiceImpl(int serviceId, int port, ServiceGroup group, NodeConfig config, Logger logger) {
         this.serviceId = serviceId;
@@ -59,6 +62,8 @@ public class ServiceImpl implements Service {
         maxPlayers = group.getMaxPlayers();
         server = Node.getInstance().getServer();
         properties = new HashSet<>(group.getProperties());
+        screen = new Screen(getName());
+        Node.getInstance().getScreenManager().addScreen(screen);
     }
 
     @Override
@@ -222,6 +227,12 @@ public class ServiceImpl implements Service {
                 String line;
                 while ((line = processReader.readLine()) != null) {
                     logs.add(line);
+                    screen.getCachedLogs().add(line);
+
+                    if (Node.getInstance().getScreenManager().getCurrentScreen().getName().equals(getName())) {
+                        Node.getInstance().getConsole().println(line);
+                    }
+
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -281,6 +292,13 @@ public class ServiceImpl implements Service {
         startTimestamp = 0L;
 
         ((ServiceManagerImpl) Node.getInstance().getServiceManager()).removeService(this);
+
+        final ScreenManager screenManager = Node.getInstance().getScreenManager();
+        screenManager.removeScreen(screen);
+
+        if (screenManager.getCurrentScreen().getName().equals(getName())) {
+            screenManager.switchScreen("node-screen");
+        }
 
         if (server != null) {
             server.broadcastPacket(new ServiceRemovePacket(this.getName(), this.getPort()));

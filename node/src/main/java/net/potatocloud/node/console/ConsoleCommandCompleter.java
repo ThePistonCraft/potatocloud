@@ -1,6 +1,7 @@
 package net.potatocloud.node.console;
 
 import lombok.RequiredArgsConstructor;
+import net.potatocloud.node.Node;
 import net.potatocloud.node.command.Command;
 import net.potatocloud.node.command.CommandManager;
 import net.potatocloud.node.command.TabCompleter;
@@ -18,6 +19,12 @@ public class ConsoleCommandCompleter implements Completer {
 
     @Override
     public void complete(LineReader reader, ParsedLine line, List<Candidate> candidates) {
+        if (Node.getInstance().getScreenManager().getCurrentScreen() != null && !Node.getInstance().getScreenManager().getCurrentScreen().getName().equals("node-screen")) {
+            candidates.add(new Candidate("leave"));
+            candidates.add(new Candidate("exit"));
+            return;
+        }
+
         final List<String> words = line.words();
         final String currentWord = line.word();
 

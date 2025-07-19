@@ -1,6 +1,7 @@
 package net.potatocloud.node.console;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import net.potatocloud.node.Node;
 import net.potatocloud.node.command.CommandManager;
@@ -17,7 +18,10 @@ public class Console {
 
     private final Terminal terminal;
     private final LineReader lineReader;
-    private final String prompt;
+
+    @Setter
+    private String prompt;
+
     private ConsoleReader consoleReader;
 
     @SneakyThrows
@@ -33,9 +37,9 @@ public class Console {
                 .completer(new ConsoleCommandCompleter(commandManager))
                 .build();
 
-        consoleReader = new ConsoleReader(this, commandManager, node);
+        this.prompt = getDefaultPrompt();
 
-        this.prompt = ConsoleColor.format(prompt.replace("%user%", System.getProperty("user.name")));
+        consoleReader = new ConsoleReader(this, commandManager, node);
     }
 
     public void start() {
@@ -46,6 +50,10 @@ public class Console {
 
     public void println(String message) {
         lineReader.printAbove(ConsoleColor.format(message));
+    }
+
+    public String getDefaultPrompt() {
+        return ConsoleColor.format(Node.getInstance().getConfig().getPrompt().replace("%user%", System.getProperty("user.name")));
     }
 
     public void clearScreen() {

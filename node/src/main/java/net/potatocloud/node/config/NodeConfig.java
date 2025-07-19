@@ -10,10 +10,10 @@ import java.io.File;
 @Getter
 public class NodeConfig {
 
+    private String prompt = "&7&a%user%&7@cloud ~> ";
+
     private int serviceStartPort = 30000;
     private int proxyStartPort = 25565;
-
-    private String prompt = "&7&a%user%&7@cloud ~> ";
     private String splitter = "-";
     private boolean platformAutoUpdate = true;
 
@@ -40,11 +40,12 @@ public class NodeConfig {
 
         yaml.load();
 
-        serviceStartPort = yaml.getInt("service-start-port", serviceStartPort);
-        proxyStartPort = yaml.getInt("proxy-start-port", proxyStartPort);
-        prompt = yaml.getString("prompt", prompt);
-        splitter = yaml.getString("splitter", splitter);
-        platformAutoUpdate = yaml.getBoolean("platform-auto-update", platformAutoUpdate);
+        prompt = yaml.getString("console.prompt", prompt);
+
+        serviceStartPort = yaml.getInt("service.service-start-port", serviceStartPort);
+        proxyStartPort = yaml.getInt("service.proxy-start-port", proxyStartPort);
+        splitter = yaml.getString("service.service-splitter", splitter);
+        platformAutoUpdate = yaml.getBoolean("service.auto-update-platforms", platformAutoUpdate);
 
         groupsFolder = yaml.getString("folders.groups", groupsFolder);
         staticFolder = yaml.getString("folders.static", staticFolder);
@@ -62,13 +63,15 @@ public class NodeConfig {
     private void save(YamlFile yaml) {
         yaml.setCommentFormat(YamlCommentFormat.PRETTY);
 
-        yaml.set("service-start-port", serviceStartPort);
-        yaml.set("proxy-start-port", proxyStartPort);
-        yaml.setComment("prompt", "Console Prompt (placeholders: %user%)");
-        yaml.set("prompt", prompt);
-        yaml.setComment("splitter", "Separator between name and id of a service");
-        yaml.set("splitter", splitter);
-        yaml.set("platform-auto-update", platformAutoUpdate);
+        yaml.setComment("console.prompt", "Console prompt text (%user% = current user)");
+        yaml.set("console.prompt", prompt);
+
+        yaml.set("service.service-start-port", serviceStartPort);
+        yaml.set("service.proxy-start-port", proxyStartPort);
+        yaml.set("service.service-splitter", splitter);
+        yaml.setComment("service.auto-update-platforms","Auto updates platform jars to latest build in the same MC version. Also updates MC version if using 'platform-latest'");
+
+        yaml.set("service.auto-update-platforms", platformAutoUpdate);
 
         yaml.set("folders.groups", groupsFolder);
         yaml.set("folders.static", staticFolder);

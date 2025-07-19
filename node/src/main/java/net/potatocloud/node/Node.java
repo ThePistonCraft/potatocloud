@@ -23,6 +23,8 @@ import net.potatocloud.node.console.Logger;
 import net.potatocloud.node.group.ServiceGroupManagerImpl;
 import net.potatocloud.node.platform.PlatformManager;
 import net.potatocloud.node.player.CloudPlayerManagerImpl;
+import net.potatocloud.node.screen.Screen;
+import net.potatocloud.node.screen.ScreenManager;
 import net.potatocloud.node.service.ServiceImpl;
 import net.potatocloud.node.service.ServiceManagerImpl;
 import net.potatocloud.node.service.ServiceStartQueue;
@@ -43,6 +45,7 @@ public class Node extends CloudAPI {
     private final CommandManager commandManager;
     private final Console console;
     private final Logger logger;
+    private final ScreenManager screenManager;
     private final PacketManager packetManager;
     private final NetworkServer server;
     private final EventManager eventManager;
@@ -67,6 +70,11 @@ public class Node extends CloudAPI {
 
         logger = new Logger(console, new File(config.getLogsFolder()));
         new ExceptionMessageHandler(logger);
+
+        screenManager = new ScreenManager(console, logger);
+        Screen screen = new Screen("node-screen");
+        screenManager.addScreen(screen);
+        screenManager.setCurrentScreen(screen);
 
         packetManager = new PacketManager();
         server = new NettyNetworkServer(packetManager);

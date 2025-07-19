@@ -5,9 +5,11 @@ import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.group.ServiceGroupManager;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
+import net.potatocloud.node.Node;
 import net.potatocloud.node.command.Command;
 import net.potatocloud.node.command.TabCompleter;
 import net.potatocloud.node.console.Logger;
+import net.potatocloud.node.screen.Screen;
 import net.potatocloud.node.service.ServiceImpl;
 import net.potatocloud.node.utils.DurationUtil;
 
@@ -160,6 +162,27 @@ public class ServiceCommand implements Command, TabCompleter {
                 }
             }
 
+            case "screen" -> {
+                if (args.length < 2) {
+                    logger.info("&cUsage&8: &7service screen &8[&aserviceName&8]");
+                    return;
+                }
+                final String serviceName = args[1];
+                final Service service = serviceManager.getService(serviceName);
+                if (service == null) {
+                    logger.info("&cNo service found with the name &a" + serviceName);
+                    return;
+                }
+                if (service instanceof ServiceImpl impl) {
+                    Screen screen = Node.getInstance().getScreenManager().getScreen(impl.getScreen().getName());
+                    if (screen == null) {
+                        logger.error("Cant switch to screen of service " + serviceName);
+                        return;
+                    }
+                    Node.getInstance().getScreenManager().switchScreen(screen.getName());
+                }
+            }
+
             default -> sendHelp();
         }
     }
@@ -171,6 +194,7 @@ public class ServiceCommand implements Command, TabCompleter {
         logger.info("service info &8[&aname&8] - &7Show details of a service");
         logger.info("service execute &8[&aname&8] [&acommand&8...] - &7Execute a command on a service");
         logger.info("service logs &8[&aname&8] - &7Print all logs of a service");
+        logger.info("service screen &8[&aname&8] - &7Enter the screen of a service");
     }
 
     @Override
@@ -191,7 +215,7 @@ public class ServiceCommand implements Command, TabCompleter {
     @Override
     public List<String> complete(String[] args) {
         if (args.length == 1) {
-            return List.of("list", "start", "stop", "info", "execute", "logs").stream()
+            return List.of("list", "start", "stop", "info", "execute", "logs", "screen").stream()
                     .filter(input -> input.startsWith(args[0].toLowerCase()))
                     .toList();
         }
@@ -199,7 +223,7 @@ public class ServiceCommand implements Command, TabCompleter {
         String sub = args[0].toLowerCase();
 
         if (sub.equalsIgnoreCase("start") || sub.equalsIgnoreCase("stop") || sub.equalsIgnoreCase("info")
-                || sub.equalsIgnoreCase("execute") || sub.equalsIgnoreCase("logs")) {
+                || sub.equalsIgnoreCase("execute") || sub.equalsIgnoreCase("logs") || sub.equalsIgnoreCase("screen")) {
             if (args.length == 2) {
                 return serviceManager.getAllServices().stream().map(Service::getName)
                         .toList().stream().filter(input -> input.startsWith(args[1])).toList();
