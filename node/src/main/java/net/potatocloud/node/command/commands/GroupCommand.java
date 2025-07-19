@@ -355,14 +355,6 @@ public class GroupCommand implements Command, TabCompleter {
             }
         }
 
-        if (sub.equals("property")) {
-            if (args.length == 2) {
-                return List.of("list", "set", "remove").stream()
-                        .filter(c -> c.startsWith(args[1].toLowerCase()))
-                        .toList();
-            }
-        }
-
         if (sub.equals("edit") && args.length == 3) {
             return List.of("minOnlineCount", "maxOnlineCount", "maxPlayers", "maxMemory", "fallback", "startPercentage", "startPriority")
                     .stream()
