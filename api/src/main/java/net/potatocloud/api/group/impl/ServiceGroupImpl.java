@@ -55,6 +55,11 @@ public class ServiceGroupImpl implements ServiceGroup {
     }
 
     @Override
+    public String getPropertyHolderName() {
+        return getName();
+    }
+
+    @Override
     public void setProperty(Property property, Object value) {
         ServiceGroup.super.setProperty(property, value);
 

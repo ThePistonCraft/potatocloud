@@ -20,6 +20,7 @@ public class UpdateServiceListener implements PacketListener<UpdateServicePacket
         final Service service = serviceManager.getService(packet.getServiceName());
         service.setStatus(ServiceStatus.valueOf(packet.getStatusName()));
         service.setMaxPlayers(packet.getMaxPlayers());
+        service.getProperties().clear();
         for (PropertyData data : packet.getProperties()) {
             service.setProperty(Property.fromData(data));
         }

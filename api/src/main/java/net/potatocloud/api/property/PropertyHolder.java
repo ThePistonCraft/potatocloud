@@ -9,6 +9,8 @@ public interface PropertyHolder {
 
     Set<Property> getProperties();
 
+    String getPropertyHolderName();
+
     default Property getProperty(String name) {
         return getProperties().stream()
                 .filter(property -> property.getName().equalsIgnoreCase(name))
@@ -28,7 +30,7 @@ public interface PropertyHolder {
             getProperties().add(property);
         }
 
-        CloudAPI.getInstance().getEventManager().call(new PropertyChangedEvent(property.getData(), oldValue, value));
+        CloudAPI.getInstance().getEventManager().call(new PropertyChangedEvent(getPropertyHolderName() ,property.getData(), oldValue, value));
     }
 
 

@@ -22,7 +22,11 @@ public class UpdateGroupListener implements PacketListener<UpdateGroupPacket> {
         group.setMaxPlayers(packet.getMaxPlayers());
         group.setMaxMemory(packet.getMaxMemory());
         group.setFallback(packet.isFallback());
+
+        group.getServiceTemplates().clear();
         packet.getServiceTemplates().forEach(group::addServiceTemplate);
+
+        group.getProperties().clear();
         for (PropertyData data : packet.getProperties()) {
             group.setProperty(Property.fromData(data));
         }

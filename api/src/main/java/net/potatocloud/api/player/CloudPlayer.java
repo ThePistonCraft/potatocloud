@@ -1,11 +1,12 @@
 package net.potatocloud.api.player;
 
 import net.potatocloud.api.CloudAPI;
+import net.potatocloud.api.property.PropertyHolder;
 import net.potatocloud.api.service.Service;
 
 import java.util.UUID;
 
-public interface CloudPlayer {
+public interface CloudPlayer extends PropertyHolder {
 
     String getUsername();
 

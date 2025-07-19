@@ -373,4 +373,8 @@ public class ServiceImpl implements Service {
     }
 
 
+    @Override
+    public String getPropertyHolderName() {
+        return getName();
+    }
 }
