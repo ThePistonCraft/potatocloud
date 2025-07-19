@@ -11,6 +11,10 @@
 
     <groupId>net.potatocloud.plugins</groupId>
     <artifactId>plugins</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>cloud-notify-plugin</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
