@@ -5,6 +5,8 @@ import com.velocitypowered.api.proxy.Player;
 import lombok.RequiredArgsConstructor;
 import net.potatocloud.plugins.cloudcommand.MessagesConfig;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 public class CloudCommand implements SimpleCommand {
 
@@ -16,10 +18,13 @@ public class CloudCommand implements SimpleCommand {
             return;
         }
 
+        //todo add permission back
+        /*
         if (!player.hasPermission("potatocloud.cloudcommand")) {
             player.sendMessage(messages.get("no-permission"));
             return;
         }
+         */
 
         final String[] args = invocation.arguments();
 
@@ -46,7 +51,7 @@ public class CloudCommand implements SimpleCommand {
         final GroupSubCommand groupSubCommand = new GroupSubCommand(player, messages);
 
         if (args.length < 2) {
-            sendHelp(player);
+            sendHelpGroup(player);
             return;
         }
 
@@ -56,6 +61,9 @@ public class CloudCommand implements SimpleCommand {
             case "list" -> groupSubCommand.listGroups();
             case "delete" -> groupSubCommand.deleteGroup(args);
             case "info" -> groupSubCommand.infoGroup(args);
+            case "shutdown" -> groupSubCommand.shutdownGroup(args);
+            case "edit" -> groupSubCommand.editGroup(args);
+            case "property" -> groupSubCommand.propertyGroup(args);
             default -> sendHelpGroup(player);
         }
     }
@@ -75,5 +83,29 @@ public class CloudCommand implements SimpleCommand {
 
     private void sendHelp(Player player) {
 
+    }
+
+    @Override
+    public List<String> suggest(Invocation invocation) {
+        final String[] args = invocation.arguments();
+
+        if (args.length == 0) {
+            return List.of("group", "service", "player");
+        }
+
+        if (args.length == 1) {
+            return List.of("group", "service", "player").stream()
+                    .filter(s -> s.startsWith(args[0].toLowerCase()))
+                    .toList();
+        }
+
+        final String commandName = args[0].toLowerCase();
+
+        return switch (commandName) {
+            case "group" -> new GroupSubCommand(null, null).suggest(args);
+            case "service" -> List.of();
+            case "player" -> List.of();
+            default -> List.of();
+        };
     }
 }

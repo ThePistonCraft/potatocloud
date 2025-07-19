@@ -5,9 +5,13 @@ import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.group.ServiceGroupManager;
+import net.potatocloud.api.property.Property;
+import net.potatocloud.api.service.Service;
 import net.potatocloud.plugins.cloudcommand.MessagesConfig;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 public class GroupSubCommand {
@@ -17,7 +21,7 @@ public class GroupSubCommand {
 
     public void listGroups() {
         final List<ServiceGroup> groups = CloudAPI.getInstance().getServiceGroupManager().getAllServiceGroups();
-
+        player.sendMessage(messages.get("group.list.header"));
         for (ServiceGroup group : groups) {
             player.sendMessage(messages.get("group.list.entry")
                     .replaceText(text -> text.match("%name%").replacement(group.getName())));
@@ -30,17 +34,16 @@ public class GroupSubCommand {
             return;
         }
 
+        final String name = args[2];
         final ServiceGroupManager groupManager = CloudAPI.getInstance().getServiceGroupManager();
 
-        final String name = args[2];
         if (!groupManager.existsServiceGroup(name)) {
-            player.sendMessage(messages.get("no-group")
+            player.sendMessage(messages.get("group.not-found")
                     .replaceText(text -> text.match("%name%").replacement(name)));
             return;
         }
 
-        final ServiceGroup group = groupManager.getServiceGroup(name);
-        groupManager.deleteServiceGroup(group);
+        groupManager.deleteServiceGroup(groupManager.getServiceGroup(name));
         player.sendMessage(messages.get("group.delete.success")
                 .replaceText(text -> text.match("%name%").replacement(name)));
     }
@@ -51,16 +54,17 @@ public class GroupSubCommand {
             return;
         }
 
-        final ServiceGroupManager groupManager = CloudAPI.getInstance().getServiceGroupManager();
-
         final String name = args[2];
+        var groupManager = CloudAPI.getInstance().getServiceGroupManager();
+
         if (!groupManager.existsServiceGroup(name)) {
-            player.sendMessage(messages.get("no-group")
+            player.sendMessage(messages.get("group.not-found")
                     .replaceText(text -> text.match("%name%").replacement(name)));
             return;
         }
 
         final ServiceGroup group = groupManager.getServiceGroup(name);
+
         player.sendMessage(messages.get("group.info.name").replaceText(text -> text.match("%name%").replacement(name)));
         player.sendMessage(messages.get("group.info.platform")
                 .replaceText(text -> text.match("%platform%").replacement(group.getPlatform().getFullName())));
@@ -78,7 +82,271 @@ public class GroupSubCommand {
         player.sendMessage(messages.get("group.info.fallback")
                 .replaceText(text -> text.match("%fallback%").replacement((group.isFallback() ? "<green>Yes" : "<red>No"))));
         player.sendMessage(messages.get("group.info.static")
-                .replaceText(text -> text.match("%static%").replacement((group.isFallback() ? "<green>Yes" : "<red>No"))));
+                .replaceText(text -> text.match("%static%").replacement((group.isStatic() ? "<green>Yes" : "<red>No"))));
+    }
 
+    public void shutdownGroup(String[] args) {
+        if (args.length < 3) {
+            player.sendMessage(messages.get("group.shutdown.usage"));
+            return;
+        }
+
+        final String name = args[2];
+        final ServiceGroupManager groupManager = CloudAPI.getInstance().getServiceGroupManager();
+
+        if (!groupManager.existsServiceGroup(name)) {
+            player.sendMessage(messages.get("group.not-found")
+                    .replaceText(text -> text.match("%name%").replacement(name)));
+            return;
+        }
+
+        final ServiceGroup group = groupManager.getServiceGroup(name);
+        for (Service service : group.getOnlineServices()) {
+            service.shutdown();
+        }
+        player.sendMessage(messages.get("group.shutdown.success")
+                .replaceText(text -> text.match("%name%").replacement(name)));
+    }
+
+    public void propertyGroup(String[] args) {
+        if (args.length < 4) {
+            player.sendMessage(messages.get("group.property.usage"));
+            return;
+        }
+
+        final String sub = args[2].toLowerCase();
+        final String name = args[3];
+        final ServiceGroupManager groupManager = CloudAPI.getInstance().getServiceGroupManager();
+
+        if (!groupManager.existsServiceGroup(name)) {
+            player.sendMessage(messages.get("group.not-found")
+                    .replaceText(text -> text.match("%name%").replacement(name)));
+            return;
+        }
+
+        final ServiceGroup group = groupManager.getServiceGroup(name);
+
+        switch (sub) {
+            case "list" -> {
+                final Set<Property> props = group.getProperties();
+
+                if (props.isEmpty()) {
+                    player.sendMessage(messages.get("group.property.empty")
+                            .replaceText(text -> text.match("%name%").replacement(name)));
+                    return;
+                }
+
+                player.sendMessage(messages.get("group.property.list.header")
+                        .replaceText(text -> text.match("%name%").replacement(name)));
+
+                for (Property property : props) {
+                    player.sendMessage(messages.get("group.property.list.entry")
+                            .replaceText(text -> text.match("%key%").replacement(property.getName()))
+                            .replaceText(text -> text.match("%value%").replacement(String.valueOf(property.getValue()))));
+                }
+            }
+
+            case "remove" -> {
+                if (args.length < 5) {
+                    player.sendMessage(messages.get("group.property.remove.usage"));
+                    return;
+                }
+
+                final String key = args[4].toLowerCase();
+                final Property prop = group.getProperty(key);
+
+                if (prop == null) {
+                    player.sendMessage(messages.get("group.property.not-found")
+                            .replaceText(text -> text.match("%key%").replacement(key)));
+                    return;
+                }
+
+                group.getProperties().remove(prop);
+                group.update();
+
+                player.sendMessage(messages.get("group.property.remove.success")
+                        .replaceText(text -> text.match("%name%").replacement(name))
+                        .replaceText(text -> text.match("%key%").replacement(key)));
+            }
+
+            case "set" -> {
+                if (args.length < 5) {
+                    player.sendMessage(messages.get("group.property.set.usage"));
+                    return;
+                }
+
+                final String key = args[4];
+
+                final Property defaultProperty = Property.getDefaultProperties().stream()
+                        .filter(p -> p.getName().equalsIgnoreCase(key))
+                        .findFirst()
+                        .orElse(null);
+
+                if (defaultProperty != null) {
+                    group.setProperty(new Property(defaultProperty.getName(), defaultProperty.getDefaultValue()));
+                    group.update();
+
+                    player.sendMessage(messages.get("group.property.set.success.default")
+                            .replaceText(text -> text.match("%key%").replacement(key))
+                            .replaceText(text -> text.match("%value%").replacement(String.valueOf(defaultProperty.getDefaultValue())))
+                            .replaceText(text -> text.match("%name%").replacement(name)));
+                    return;
+                }
+
+                if (args.length < 6) {
+                    player.sendMessage(messages.get("group.property.set.usage"));
+                    return;
+                }
+
+                final String value = args[5];
+
+                try {
+                    group.setProperty(new Property(key, value));
+                    group.update();
+
+                    player.sendMessage(messages.get("group.property.set.success.custom")
+                            .replaceText(text -> text.match("%key%").replacement(key))
+                            .replaceText(text -> text.match("%value%").replacement(value))
+                            .replaceText(text -> text.match("%name%").replacement(name)));
+                } catch (Exception e) {
+                    player.sendMessage(messages.get("group.property.set.usage"));
+                }
+            }
+
+            default -> player.sendMessage(messages.get("group.property.usage"));
+        }
+    }
+
+    public void editGroup(String[] args) {
+        if (args.length < 5) {
+            player.sendMessage(messages.get("group.edit.usage"));
+            return;
+        }
+
+        final String name = args[2];
+        final String key = args[3].toLowerCase();
+        final String value = args[4];
+
+        final ServiceGroupManager groupManager = CloudAPI.getInstance().getServiceGroupManager();
+
+        if (!groupManager.existsServiceGroup(name)) {
+            player.sendMessage(messages.get("group.not-found")
+                    .replaceText(text -> text.match("%name%").replacement(name)));
+            return;
+        }
+
+        final ServiceGroup group = groupManager.getServiceGroup(name);
+
+        try {
+            switch (key) {
+                case "addtemplate" -> {
+                    group.addServiceTemplate(value);
+                    group.update();
+                    player.sendMessage(messages.get("group.edit.template.add")
+                            .replaceText(text -> text.match("%template%").replacement(value)));
+                    return;
+                }
+                case "removetemplate" -> {
+                    if (group.getServiceTemplates().removeIf(s -> s.equalsIgnoreCase(value))) {
+                        group.update();
+                        player.sendMessage(messages.get("group.edit.template.remove")
+                                .replaceText(text -> text.match("%template%").replacement(value)));
+                    } else {
+                        player.sendMessage(messages.get("group.edit.template.not-found")
+                                .replaceText(text -> text.match("%template%").replacement(value)));
+                    }
+                    return;
+                }
+                case "addjvmflag" -> {
+                    group.addCustomJvmFlag(value);
+                    group.update();
+                    player.sendMessage(messages.get("group.edit.jvmflag.add")
+                            .replaceText(text -> text.match("%%flag%%").replacement(value)));
+                    return;
+                }
+                case "minonlinecount" -> group.setMinOnlineCount(Integer.parseInt(value));
+                case "maxonlinecount" -> group.setMaxOnlineCount(Integer.parseInt(value));
+                case "maxplayers" -> group.setMaxPlayers(Integer.parseInt(value));
+                case "maxmemory" -> group.setMaxMemory(Integer.parseInt(value));
+                case "fallback" -> group.setFallback(Boolean.parseBoolean(value));
+                case "startpercentage" -> group.setStartPercentage(Integer.parseInt(value));
+                case "startpriority" -> group.setStartPriority(Integer.parseInt(value));
+                default -> {
+                    player.sendMessage(messages.get("group.edit.usage"));
+                    return;
+                }
+            }
+            group.update();
+            player.sendMessage(messages.get("group.edit.success")
+                    .replaceText(text -> text.match("%key%").replacement(key))
+                    .replaceText(text -> text.match("%value%").replacement(value))
+                    .replaceText(text -> text.match("%name%").replacement(name)));
+        } catch (NumberFormatException e) {
+            player.sendMessage(messages.get("group.edit.usage"));
+        }
+    }
+
+    public List<String> suggest(String[] args) {
+        if (args.length == 2) {
+            return List.of("list", "delete", "info", "edit", "property", "shutdown").stream()
+                    .filter(input -> input.startsWith(args[1].toLowerCase()))
+                    .toList();
+        }
+
+        final String sub = args[1].toLowerCase();
+        final ServiceGroupManager groupManager = CloudAPI.getInstance().getServiceGroupManager();
+
+        if ((sub.equals("info") || sub.equals("delete") || sub.equals("edit") || sub.equals("shutdown"))) {
+            if (args.length == 3) {
+                return groupManager.getAllServiceGroups().stream()
+                        .map(ServiceGroup::getName)
+                        .filter(name -> name.startsWith(args[2]))
+                        .toList();
+            }
+        }
+
+        if (sub.equals("edit") && args.length == 4) {
+            return List.of("minOnlineCount", "maxOnlineCount", "maxPlayers", "maxMemory", "fallback", "startPercentage", "startPriority", "addTemplate", "removeTemplate", "addJvmFlag")
+                    .stream()
+                    .filter(key -> key.startsWith(args[3].toLowerCase()))
+                    .toList();
+        }
+
+        if (sub.equals("property")) {
+            if (args.length == 3) {
+                return List.of("list", "set", "remove").stream()
+                        .filter(s -> s.startsWith(args[2].toLowerCase()))
+                        .toList();
+            }
+
+            if (args.length == 4) {
+                return groupManager.getAllServiceGroups().stream()
+                        .map(ServiceGroup::getName)
+                        .filter(name -> name.startsWith(args[3]))
+                        .toList();
+            }
+
+            if (args.length == 5 && args[2].equalsIgnoreCase("remove")) {
+                final String groupName = args[3];
+                if (groupManager.existsServiceGroup(groupName)) {
+                    return groupManager.getServiceGroup(groupName).getProperties().stream()
+                            .map(Property::getName)
+                            .filter(p -> p.startsWith(args[4]))
+                            .toList();
+                }
+            }
+
+            if (args.length == 5 && args[2].equalsIgnoreCase("set")) {
+                List<String> completions = new ArrayList<>();
+                completions.add("<custom>");
+                completions.addAll(Property.getDefaultProperties().stream()
+                        .map(Property::getName)
+                        .filter(s -> s.startsWith(args[4].toLowerCase()))
+                        .toList());
+                return completions;
+            }
+        }
+
+        return List.of();
     }
 }

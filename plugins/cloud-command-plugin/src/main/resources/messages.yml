@@ -6,16 +6,16 @@ group:
   not-found: "<red>No service group found with the name <green>%name%"
 
   help:
-    create: "group create <dark_gray>[<green>name<dark_gray>] [<green>platformName<dark_gray>] [<green>minOnlineCount<dark_gray>] [<green>maxOnlineCount<dark_gray>] [<green>maxPlayers<dark_gray>] [<green>maxMemory<dark_gray>] [<green>fallback<dark_gray>] [<green>static<dark_gray>] <gray>- Create a new service group"
-    delete: "group delete <dark_gray>[<green>name<dark_gray>] <gray>- Delete the group"
-    list: "group list <dark_gray>- <gray>List all groups"
-    info: "group info <dark_gray>[<green>name<dark_gray>] <gray>- Show details of the group"
-    shutdown: "group shutdown <dark_gray>[<green>name<dark_gray>] <gray>- Stop all services of the group"
-    edit: "group edit <dark_gray>[<green>name<dark_gray>] [<green>key<dark_gray>] [<green>value<dark_gray>] <gray>- Edit the group"
-    edit-addTemplate: "group edit <dark_gray>[<green>name<dark_gray>] <gray>addTemplate <dark_gray>[<green>template<dark_gray>] <gray>- Add a template to the group"
-    edit-removeTemplate: "group edit <dark_gray>[<green>name<dark_gray>] <gray>removeTemplate <dark_gray>[<green>template<dark_gray>] <gray>- Remove a template from the group"
-    edit-addJvmFlag: "group edit <dark_gray>[<green>name<dark_gray>] <gray>addJvmFlag <dark_gray>[<green>flag<dark_gray>] <gray>- Add a custom JVM flag to the group"
-    property: "group property <dark_gray>[<gray>list<dark_gray>|<gray>set<dark_gray>|<gray>remove<dark_gray>] [<green>name<dark_gray>] [<green>key<dark_gray>] [<green>value<dark_gray>] <gray>- Manage properties of the group"
+    create: "<gray>group create <dark_gray>[<green>name<dark_gray>] [<green>platformName<dark_gray>] [<green>minOnlineCount<dark_gray>] [<green>maxOnlineCount<dark_gray>] [<green>maxPlayers<dark_gray>] [<green>maxMemory<dark_gray>] [<green>fallback<dark_gray>] [<green>static<dark_gray>] <gray>- Create a new service group"
+    delete: "<gray>group delete <dark_gray>[<green>name<dark_gray>] <gray>- Delete the group"
+    list: "<gray>group list <dark_gray>- <gray>List all groups"
+    info: "<gray>roup info <dark_gray>[<green>name<dark_gray>] <gray>- Show details of the group"
+    shutdown: "<gray>group shutdown <dark_gray>[<green>name<dark_gray>] <gray>- Stop all services of the group"
+    edit: "<gray>group edit <dark_gray>[<green>name<dark_gray>] [<green>key<dark_gray>] [<green>value<dark_gray>] <gray>- Edit the group"
+    edit-addTemplate: "<gray>group edit <dark_gray>[<green>name<dark_gray>] <gray>addTemplate <dark_gray>[<green>template<dark_gray>] <gray>- Add a template to the group"
+    edit-removeTemplate: "<gray>group edit <dark_gray>[<green>name<dark_gray>] <gray>removeTemplate <dark_gray>[<green>template<dark_gray>] <gray>- Remove a template from the group"
+    edit-addJvmFlag: "g<gray>roup edit <dark_gray>[<green>name<dark_gray>] <gray>addJvmFlag <dark_gray>[<green>flag<dark_gray>] <gray>- Add a custom JVM flag to the group"
+    property: "<gray>group property <dark_gray>[<gray>list<dark_gray>|<gray>set<dark_gray>|<gray>remove<dark_gray>] [<green>name<dark_gray>] [<green>key<dark_gray>] [<green>value<dark_gray>] <gray>- Manage properties of the group"
 
   list:
     empty: "<red>There are no service groups."
@@ -45,25 +45,26 @@ group:
 
   property:
     usage: "<red>Usage<dark_gray>: <gray>group property [<gray>list<dark_gray>|<gray>set<dark_gray>|<gray>remove<dark_gray>] [<green>name<dark_gray>] [<green>key<dark_gray>] [<green>value<dark_gray>]"
-    header: "<gray>Properties of group <green>%name%<dark_gray>:"
     empty: "<gray>No properties found for group <green>%name%"
-    entry: "<dark_gray>» <green>%key% <gray>- %value%"
+
+    list:
+      header: "<gray>Properties of group <green>%name%<dark_gray>:"
+      entry: "<dark_gray>» <green>%key% <gray>- %value%"
 
     remove:
       usage: "<red>Usage<dark_gray>: <gray>group property remove [<green>name<dark_gray>] [<green>key<dark_gray>]"
-      success: "<gray>Property <green>%key% <gray>was removed"
+      success: "<gray>Property <green>%key% <gray>was removed in group <green>%name%"
 
     set:
       usage: "<red>Usage<dark_gray>: <gray>group property set [<green>name<dark_gray>] [<green>key<dark_gray>] [<green>value<dark_gray>]"
-      success: "<gray>Property <green>%key% <gray>was set to <green>%value%"
+      success-default: "<gray>Default Property <green>%key% <gray>was set to <green>%value% <gray>in group <green>%name%"
+      success-custom: "<gray>Custom Property <green>%key% <gray>was set to <green>%value% <gray>in group <green>%name%"
 
     not-found: "<gray>Property <green>%key% <gray>was <red>not found"
 
   edit:
     usage: "<red>Usage<dark_gray>: <gray>group edit [<green>name<dark_gray>] [<green>key<dark_gray>] [<green>value<dark_gray>]"
-    success: "<gray>Updated <green>%key% <gray>for group to <green>%value%"
-    invalid-key: "<red>Unknown edit key <green>%key%"
-    invalid-format: "<red>Invalid format for <green>%key%"
+    success: "<gray>Updated <green>%key% <gray>for group <green %name% <gray>to<green>%value%"
 
     template:
       add: "<gray>Template <green>%template% <gray>was added"
