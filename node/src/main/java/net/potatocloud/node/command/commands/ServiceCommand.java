@@ -6,7 +6,6 @@ import net.potatocloud.api.group.ServiceGroupManager;
 import net.potatocloud.api.property.Property;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
-import net.potatocloud.api.service.ServiceStatus;
 import net.potatocloud.node.Node;
 import net.potatocloud.node.command.Command;
 import net.potatocloud.node.command.TabCompleter;
@@ -46,6 +45,7 @@ public class ServiceCommand implements Command, TabCompleter {
             case "screen" -> screenService(args);
             case "edit" -> editService(args);
             case "property" -> propertyService(args);
+            case "copy" -> copyService(args);
             default -> sendHelp();
         }
     }
@@ -334,9 +334,41 @@ public class ServiceCommand implements Command, TabCompleter {
         }
     }
 
+    private void copyService(String[] args) {
+        if (args.length < 3) {
+            logger.info("&cUsage&8: &7service copy &8[&aname&8] [&atemplate&8] (&afilter&8)");
+            return;
+        }
+
+        final String name = args[1];
+        final Service service = serviceManager.getService(name);
+        if (service == null) {
+            logger.info("&cNo service found with the name &a" + name);
+            return;
+        }
+
+        final String template = args[2];
+        String filter;
+        if (args.length >= 4) {
+            filter = args[3];
+        } else {
+            filter = "";
+        }
+
+
+        if (filter.isEmpty()) {
+            service.copy(template);
+        } else {
+            service.copy(template, filter);
+        }
+
+        logger.info("Copied &a" + (filter.isEmpty() ? "all service files" : filter) + " &7to template: &a" + template);
+    }
+
+
     private void sendHelp() {
         logger.info("service list &8- &7List all running services");
-        logger.info("service start &8[&agroupName&8] [&aamount&8] - &7Start new service(s)");
+        logger.info("service start &8[&agroupName&8] (&aamount&8) - &7Start new service(s)");
         logger.info("service stop &8[&aname&8] - &7Stop a running service");
         logger.info("service info &8[&aname&8] - &7Show details of a service");
         logger.info("service execute &8[&aname&8] [&acommand&8...] - &7Execute a command on a service");
@@ -344,6 +376,7 @@ public class ServiceCommand implements Command, TabCompleter {
         logger.info("service screen &8[&aname&8] - &7Enter the screen of a service");
         logger.info("service edit &8[&aname&8] [&akey&8] [&avalue&8] - &7Edit a service");
         logger.info("service property &8[&7list&8|&7set&8|&7remove&8] [&aname&8] [&akey&8] [&avalue&8] - &7Manage properties of a service");
+        logger.info("service copy &8[&aname&8] [&atemplate&8] (&afilter&8) - &7Copy files from a service to a template");
     }
 
     @Override
@@ -364,7 +397,7 @@ public class ServiceCommand implements Command, TabCompleter {
     @Override
     public List<String> complete(String[] args) {
         if (args.length == 1) {
-            return List.of("list", "start", "stop", "info", "execute", "logs", "screen", "edit", "property").stream()
+            return List.of("list", "start", "stop", "info", "execute", "logs", "screen", "edit", "property", "copy").stream()
                     .filter(input -> input.startsWith(args[0].toLowerCase()))
                     .toList();
         }
@@ -373,7 +406,7 @@ public class ServiceCommand implements Command, TabCompleter {
 
         if (sub.equalsIgnoreCase("start") || sub.equalsIgnoreCase("stop") || sub.equalsIgnoreCase("info")
                 || sub.equalsIgnoreCase("execute") || sub.equalsIgnoreCase("logs") || sub.equalsIgnoreCase("screen") ||
-                sub.equalsIgnoreCase("edit")) {
+                sub.equalsIgnoreCase("edit") || sub.equalsIgnoreCase("copy")) {
             if (args.length == 2) {
                 return serviceManager.getAllServices().stream().map(Service::getName)
                         .toList().stream().filter(input -> input.startsWith(args[1])).toList();

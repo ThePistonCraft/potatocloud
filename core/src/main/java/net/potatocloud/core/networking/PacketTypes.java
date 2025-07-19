@@ -12,12 +12,14 @@ public class PacketTypes {
     public static final String START_SERVICE = "start_service";
     public static final String SHUTDOWN_SERVICE = "shutdown_service";
     public static final String SERVICE_EXECUTE_COMMAND = "service_execute_command";
+    public static final String SERVICE_COPY = "service_copy";
 
     public static final String REQUEST_GROUPS = "request_groups";
     public static final String GROUP_ADD = "group_add";
     public static final String UPDATE_GROUP = "update_group";
     public static final String CREATE_GROUP = "create_group";
     public static final String DELETE_GROUP = "delete_group";
+
 
     public static final String EVENT = "event";
 

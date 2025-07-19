@@ -42,6 +42,7 @@ public class ServiceManagerImpl implements ServiceManager {
         server.registerPacketListener(PacketTypes.START_SERVICE, new StartServiceListener(this, groupManager));
         server.registerPacketListener(PacketTypes.SHUTDOWN_SERVICE, new ShutdownServiceListener(this));
         server.registerPacketListener(PacketTypes.SERVICE_EXECUTE_COMMAND, new ServiceExecuteCommandListener(this));
+        server.registerPacketListener(PacketTypes.SERVICE_COPY, new ServiceCopyListener(this));
     }
 
     @Override

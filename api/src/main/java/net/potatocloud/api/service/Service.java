@@ -33,5 +33,11 @@ public interface Service extends PropertyHolder {
 
     boolean executeCommand(String command);
 
+    void copy(String template, String filter);
+
+    default void copy(String template) {
+        copy(template, "");
+    }
+
     void update();
 }

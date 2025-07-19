@@ -22,6 +22,7 @@ public class PacketRegistry {
         manager.register(PacketTypes.START_SERVICE, StartServicePacket.class);
         manager.register(PacketTypes.SHUTDOWN_SERVICE, ShutdownServicePacket.class);
         manager.register(PacketTypes.SERVICE_EXECUTE_COMMAND, ServiceExecuteCommandPacket.class);
+        manager.register(PacketTypes.SERVICE_COPY, ServiceCopyPacket.class);
 
         manager.register(PacketTypes.REQUEST_GROUPS, RequestGroupsPacket.class);
         manager.register(PacketTypes.GROUP_ADD, AddGroupPacket.class);

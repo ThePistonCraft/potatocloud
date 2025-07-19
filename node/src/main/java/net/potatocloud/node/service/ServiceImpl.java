@@ -331,6 +331,32 @@ public class ServiceImpl implements Service {
     }
 
     @Override
+    @SneakyThrows
+    public void copy(String template, String filter) {
+        final Path templatesFolder = Path.of(config.getTemplatesFolder());
+        Path targetPath = templatesFolder.resolve(template);
+        Path sourcePath = directory;
+
+        // a filter was set
+        if (filter != null && filter.startsWith("/")) {
+            // remove the / symbol
+            sourcePath = directory.resolve(filter.substring(1));
+            targetPath = targetPath.resolve(filter.substring(1));
+        }
+
+        if (!Files.exists(sourcePath)) {
+            return;
+        }
+
+        if (!Files.exists(targetPath)) {
+            Node.getInstance().getTemplateManager().createTemplate(targetPath.toFile().getName());
+        }
+
+        FileUtils.copyDirectory(sourcePath.toFile(), targetPath.toFile());
+    }
+
+
+    @Override
     public void update() {
         CloudAPI.getInstance().getServiceManager().updateService(this);
     }

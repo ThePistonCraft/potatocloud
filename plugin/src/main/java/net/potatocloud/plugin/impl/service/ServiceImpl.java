@@ -8,6 +8,7 @@ import net.potatocloud.api.property.Property;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceStatus;
 import net.potatocloud.core.networking.NetworkClient;
+import net.potatocloud.core.networking.packets.service.ServiceCopyPacket;
 import net.potatocloud.core.networking.packets.service.ServiceExecuteCommandPacket;
 import net.potatocloud.core.networking.packets.service.ShutdownServicePacket;
 import net.potatocloud.plugin.impl.PluginCloudAPI;
@@ -64,6 +65,11 @@ public class ServiceImpl implements Service {
     public boolean executeCommand(String command) {
         client.send(new ServiceExecuteCommandPacket(name, command));
         return false;
+    }
+
+    @Override
+    public void copy(String template, String filter) {
+        client.send(new ServiceCopyPacket(getName(), template, filter));
     }
 
     @Override
