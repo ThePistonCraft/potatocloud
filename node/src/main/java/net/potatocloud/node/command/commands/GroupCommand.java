@@ -8,6 +8,7 @@ import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.PlatformVersions;
 import net.potatocloud.api.property.Property;
 import net.potatocloud.api.service.Service;
+import net.potatocloud.node.Node;
 import net.potatocloud.node.command.Command;
 import net.potatocloud.node.command.TabCompleter;
 import net.potatocloud.node.console.Logger;
@@ -166,7 +167,7 @@ public class GroupCommand implements Command, TabCompleter {
 
     private void editGroup(String[] args) {
         if (args.length < 4) {
-            logger.info("&cUsage&8: group edit &8[&aname&8] [&akey&8] [&avalue&8]");
+            logger.info("&cUsage&8: &7group edit &8[&aname&8] [&akey&8] [&avalue&8]");
             return;
         }
 
@@ -182,6 +183,29 @@ public class GroupCommand implements Command, TabCompleter {
 
         try {
             switch (key) {
+                case "addtemplate" -> {
+                    group.addServiceTemplate(value);
+                    Node.getInstance().getTemplateManager().createTemplate(value);
+                    group.update();
+                    logger.info("Template &a" + value + " &7was added to group &a" + name);
+                    return;
+                }
+                case "removetemplate" -> {
+                    if (group.getServiceTemplates().removeIf(s -> s.equalsIgnoreCase(value))) {
+                        group.update();
+                        logger.info("Template &a" + value + " &7was removed from group &a" + name);
+                    } else {
+                        logger.info("Template &a" + value + " &7was not found in group &a" + name);
+                    }
+                    return;
+                }
+                case "addjvmflag" -> {
+                    group.addCustomJvmFlag(value);
+                    group.update();
+                    logger.info("Custom JVM flag &a" + value + " &7was added to group &a" + name);
+                    return;
+                }
+
                 case "minOnlineCount" -> group.setMinOnlineCount(Integer.parseInt(value));
                 case "maxonlinecount" -> group.setMaxOnlineCount(Integer.parseInt(value));
                 case "maxplayers" -> group.setMaxPlayers(Integer.parseInt(value));
@@ -189,15 +213,16 @@ public class GroupCommand implements Command, TabCompleter {
                 case "fallback" -> group.setFallback(Boolean.parseBoolean(value));
                 case "startpercentage" -> group.setStartPercentage(Integer.parseInt(value));
                 case "startpriority" -> group.setStartPriority(Integer.parseInt(value));
+
                 default -> {
-                    logger.info("&cUsage&8: group edit &8[&aname&8] [&akey&8] [&avalue&8]");
+                    logger.info("&cUsage&8: &7group edit &8[&aname&8] [&akey&8] [&avalue&8]");
                     return;
                 }
             }
             group.update();
             logger.info("Updated &a" + key + " &7for group &a" + name + "&7 to &a" + value);
         } catch (NumberFormatException ex) {
-            logger.info("&cUsage&8: group edit &8[&aname&8] [&akey&8] [&avalue&8]");
+            logger.info("&cUsage&8: &7group edit &8[&aname&8] [&akey&8] [&avalue&8]");
         }
     }
 
@@ -294,11 +319,14 @@ public class GroupCommand implements Command, TabCompleter {
 
     private void sendHelp() {
         logger.info("group create &8[&aname&8] [&aplatformName&8] [&aminOnlineCount&8] [&amaxOnlineCount&8] [&amaxPlayers&8] [&amaxMemory&8] [&afallback&8] [&astatic&8] - &7Create a new service group");
-        logger.info("group delete &8[&aname&8] - &7Delete a service group");
-        logger.info("group list &8- &7List all service groups");
-        logger.info("group info &8[&aname&8] - &7Show details of a service group");
-        logger.info("group edit &8[&aname&8] [&akey&8] [&avalue&8] - &7Edit a service group");
-        logger.info("group property &8[&7list&8|&7set&8|&7remove&8] [&aname&8] [&akey&8] [&avalue&8] - &7Manage properties of a service group");
+        logger.info("group delete &8[&aname&8] - &7Delete the group");
+        logger.info("group list &8- &7List all groups");
+        logger.info("group info &8[&aname&8] - &7Show details of the group");
+        logger.info("group edit &8[&aname&8] [&akey&8] [&avalue&8] - &7Edit the group");
+        logger.info("group edit &8[&aname&8] &7addTemplate &8[&atemplate&8] - &7Add a template to the group");
+        logger.info("group edit &8[&aname&8] &7removeTemplate &8[&atemplate&8] - &7Remove a template from the group");
+        logger.info("group edit &8[&aname&8] &7addJvmFlag &8[&aflag&8] - &7Add a custom JVM flag to the group");
+        logger.info("group property &8[&7list&8|&7set&8|&7remove&8] [&aname&8] [&akey&8] [&avalue&8] - &7Manage properties of the group");
     }
 
     @Override
@@ -356,7 +384,7 @@ public class GroupCommand implements Command, TabCompleter {
         }
 
         if (sub.equals("edit") && args.length == 3) {
-            return List.of("minOnlineCount", "maxOnlineCount", "maxPlayers", "maxMemory", "fallback", "startPercentage", "startPriority")
+            return List.of("minOnlineCount", "maxOnlineCount", "maxPlayers", "maxMemory", "fallback", "startPercentage", "startPriority", "addTemplate", "removeTemplate", "addJvmFlag")
                     .stream()
                     .filter(key -> key.startsWith(args[2].toLowerCase()))
                     .toList();

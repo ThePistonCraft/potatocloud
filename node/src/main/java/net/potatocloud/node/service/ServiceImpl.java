@@ -208,6 +208,10 @@ public class ServiceImpl implements Service {
             args.addAll(platform.getRecommendedFlags());
         }
 
+        if (group.getCustomJvmFlags() != null) {
+            args.addAll(group.getCustomJvmFlags());
+        }
+
         args.add("-jar");
         args.add(serverJarPath.toAbsolutePath().toString());
 

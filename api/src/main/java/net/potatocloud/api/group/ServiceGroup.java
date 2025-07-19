@@ -48,6 +48,10 @@ public interface ServiceGroup extends PropertyHolder {
 
     String getJavaCommand();
 
+    List<String> getCustomJvmFlags();
+
+    void addCustomJvmFlag(String flag);
+
     void addServiceTemplate(String template);
 
     void removeServiceTemplate(String template);

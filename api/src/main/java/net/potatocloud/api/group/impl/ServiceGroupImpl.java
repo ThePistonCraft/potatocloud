@@ -11,6 +11,7 @@ import net.potatocloud.api.property.Property;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceStatus;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -32,6 +33,7 @@ public class ServiceGroupImpl implements ServiceGroup {
     private int startPriority;
     private int startPercentage;
     private String javaCommand;
+    private List<String> customJvmFlags;
     private final Set<Property> properties;
 
     public ServiceGroupImpl(String name, String platformName, List<String> serviceTemplates, int minOnlineCount, int maxOnlineCount, int maxPlayers, int maxMemory, boolean fallback, boolean isStatic) {
@@ -48,6 +50,7 @@ public class ServiceGroupImpl implements ServiceGroup {
         startPriority = 0;
         startPercentage = 100;
         javaCommand = "java";
+        customJvmFlags = new ArrayList<>();
         properties = new HashSet<>();
     }
 
@@ -66,6 +69,11 @@ public class ServiceGroupImpl implements ServiceGroup {
     @Override
     public Platform getPlatform() {
         return PlatformVersions.getPlatformByName(platformName);
+    }
+
+    @Override
+    public void addCustomJvmFlag(String flag) {
+        customJvmFlags.add(flag);
     }
 
     @Override

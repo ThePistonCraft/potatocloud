@@ -8,7 +8,9 @@ import net.potatocloud.api.property.Property;
 import org.simpleyaml.configuration.file.YamlFile;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @UtilityClass
@@ -29,6 +31,10 @@ public class ServiceGroupStorage {
         config.set("startPriority", group.getStartPriority());
         config.set("startPercentage", group.getStartPercentage());
         config.set("javaCommand", group.getJavaCommand());
+
+        if (!group.getCustomJvmFlags().isEmpty()) {
+            config.set("customJvmFlags", group.getCustomJvmFlags());
+        }
 
         if (!group.getProperties().isEmpty()) {
             for (Property property : group.getProperties()) {
@@ -71,6 +77,7 @@ public class ServiceGroupStorage {
                 config.getInt("startPriority"),
                 config.getInt("startPercentage"),
                 config.getString("javaCommand"),
+                config.getStringList("customJvmFlags"),
                 properties
         );
     }
