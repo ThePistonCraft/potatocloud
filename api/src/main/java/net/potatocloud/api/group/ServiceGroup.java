@@ -40,7 +40,11 @@ public interface ServiceGroup extends PropertyHolder {
 
     int getStartPriority();
 
+    void setStartPriority(int startPriority);
+
     int getStartPercentage();
+
+    void setStartPercentage(int startPercentage);
 
     String getJavaCommand();
 

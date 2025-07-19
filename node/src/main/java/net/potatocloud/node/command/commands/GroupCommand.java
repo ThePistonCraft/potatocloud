@@ -182,11 +182,13 @@ public class GroupCommand implements Command, TabCompleter {
 
         try {
             switch (key) {
-                case "minonlinecount" -> group.setMinOnlineCount(Integer.parseInt(value));
+                case "minOnlineCount" -> group.setMinOnlineCount(Integer.parseInt(value));
                 case "maxonlinecount" -> group.setMaxOnlineCount(Integer.parseInt(value));
                 case "maxplayers" -> group.setMaxPlayers(Integer.parseInt(value));
                 case "maxmemory" -> group.setMaxMemory(Integer.parseInt(value));
                 case "fallback" -> group.setFallback(Boolean.parseBoolean(value));
+                case "startpercentage" -> group.setStartPercentage(Integer.parseInt(value));
+                case "startpriority" -> group.setStartPriority(Integer.parseInt(value));
                 default -> {
                     logger.info("&cUsage&8: group edit &8[&aname&8] [&akey&8] [&avalue&8]");
                     return;
@@ -362,7 +364,7 @@ public class GroupCommand implements Command, TabCompleter {
         }
 
         if (sub.equals("edit") && args.length == 3) {
-            return List.of("minonlinecount", "maxonlinecount", "maxplayers", "maxmemory", "fallback")
+            return List.of("minOnlineCount", "maxOnlineCount", "maxPlayers", "maxMemory", "fallback", "startPercentage", "startPriority")
                     .stream()
                     .filter(key -> key.startsWith(args[2].toLowerCase()))
                     .toList();

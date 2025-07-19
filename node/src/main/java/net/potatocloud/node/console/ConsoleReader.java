@@ -21,7 +21,7 @@ public class ConsoleReader extends Thread {
     public void run() {
         try {
             while (!isInterrupted()) {
-                String input = console.getLineReader().readLine(console.getPrompt());
+                final String input = console.getLineReader().readLine(console.getPrompt());
                 if (input == null || input.isBlank()) {
                     console.println(Ansi.ansi().cursorUpLine().eraseLine().cursorUp(1).toString());
                     continue;
