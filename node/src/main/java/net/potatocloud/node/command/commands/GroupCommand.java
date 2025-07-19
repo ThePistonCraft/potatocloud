@@ -232,6 +232,7 @@ public class GroupCommand implements Command, TabCompleter {
             logger.info("There are &cno &7service groups");
             return;
         }
+        logger.info("All loaded groups&8:");
         for (ServiceGroup group : groups) {
             logger.info("&8» &a" + group.getName());
         }
@@ -289,7 +290,7 @@ public class GroupCommand implements Command, TabCompleter {
 
         ServiceGroup group = groupManager.getServiceGroup(name);
         groupManager.deleteServiceGroup(group);
-        logger.info("&aService group &a" + name + " &awas deleted");
+        logger.info("&7Service group &a" + name + " &7was deleted");
     }
 
     private void infoGroup(String[] args) {
@@ -313,8 +314,8 @@ public class GroupCommand implements Command, TabCompleter {
         logger.info("Online Players: &a" + CloudAPI.getInstance().getPlayerManager().getOnlinePlayersByGroup(group).size());
         logger.info("Max Players: &a" + group.getMaxPlayers());
         logger.info("Max Memory: &a" + group.getMaxMemory() + "MB");
-        logger.info("&7Fallback: " + (group.isFallback() ? "&aYes" : "&cNo"));
-        logger.info("&7Static: " + (group.isStatic() ? "&aYes" : "&cNo"));
+        logger.info("Fallback: " + (group.isFallback() ? "&aYes" : "&cNo"));
+        logger.info("Static: " + (group.isStatic() ? "&aYes" : "&cNo"));
     }
 
     private void sendHelp() {
@@ -322,6 +323,7 @@ public class GroupCommand implements Command, TabCompleter {
         logger.info("group delete &8[&aname&8] - &7Delete the group");
         logger.info("group list &8- &7List all groups");
         logger.info("group info &8[&aname&8] - &7Show details of the group");
+        logger.info("group shutdown &8[&aname&8] - &7Stop all services of the group");
         logger.info("group edit &8[&aname&8] [&akey&8] [&avalue&8] - &7Edit the group");
         logger.info("group edit &8[&aname&8] &7addTemplate &8[&atemplate&8] - &7Add a template to the group");
         logger.info("group edit &8[&aname&8] &7removeTemplate &8[&atemplate&8] - &7Remove a template from the group");

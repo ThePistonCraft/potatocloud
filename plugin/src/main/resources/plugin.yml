@@ -1,3 +1,4 @@
 name: potatocloud-plugin
 version: 1.0.0
 main: net.potatocloud.plugin.paper.PaperPlugin
+author: "jirmjahu"

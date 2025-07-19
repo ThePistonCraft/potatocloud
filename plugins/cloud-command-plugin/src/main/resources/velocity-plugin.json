@@ -1,0 +1,8 @@
+{
+  "id": "potatocloud-plugin-cloudcommand",
+  "name": "potatocloud-plugin-cloudcommand",
+  "version": "1.0.0",
+  "main": "net.potatocloud.plugins.cloudcommand.CloudCommandPlugin",
+  "author": "jirmjahu",
+  "depends": ["potatocloud-plugin"]
+}

@@ -1,0 +1,74 @@
+prefix: "<dark_gray>[<green>potatocloud<dark_gray>] <reset>"
+no-permission: "<red>You do not have enough permissions for this command"
+no-group: "<red>No service group found with the name <green>%name%"
+
+group:
+  not-found: "<red>No service group found with the name <green>%name%"
+
+  help:
+    create: "group create <dark_gray>[<green>name<dark_gray>] [<green>platformName<dark_gray>] [<green>minOnlineCount<dark_gray>] [<green>maxOnlineCount<dark_gray>] [<green>maxPlayers<dark_gray>] [<green>maxMemory<dark_gray>] [<green>fallback<dark_gray>] [<green>static<dark_gray>] <gray>- Create a new service group"
+    delete: "group delete <dark_gray>[<green>name<dark_gray>] <gray>- Delete the group"
+    list: "group list <dark_gray>- <gray>List all groups"
+    info: "group info <dark_gray>[<green>name<dark_gray>] <gray>- Show details of the group"
+    shutdown: "group shutdown <dark_gray>[<green>name<dark_gray>] <gray>- Stop all services of the group"
+    edit: "group edit <dark_gray>[<green>name<dark_gray>] [<green>key<dark_gray>] [<green>value<dark_gray>] <gray>- Edit the group"
+    edit-addTemplate: "group edit <dark_gray>[<green>name<dark_gray>] <gray>addTemplate <dark_gray>[<green>template<dark_gray>] <gray>- Add a template to the group"
+    edit-removeTemplate: "group edit <dark_gray>[<green>name<dark_gray>] <gray>removeTemplate <dark_gray>[<green>template<dark_gray>] <gray>- Remove a template from the group"
+    edit-addJvmFlag: "group edit <dark_gray>[<green>name<dark_gray>] <gray>addJvmFlag <dark_gray>[<green>flag<dark_gray>] <gray>- Add a custom JVM flag to the group"
+    property: "group property <dark_gray>[<gray>list<dark_gray>|<gray>set<dark_gray>|<gray>remove<dark_gray>] [<green>name<dark_gray>] [<green>key<dark_gray>] [<green>value<dark_gray>] <gray>- Manage properties of the group"
+
+  list:
+    empty: "<red>There are no service groups."
+    header: "<gray>All loaded groups<dark_gray>:"
+    entry: "<dark_gray>» <green>%name%"
+
+  delete:
+    usage: "<red>Usage<dark_gray>: <gray>group delete [<green>name<dark_gray>]"
+    success: "<gray>Service group <green>%name% <gray>was deleted"
+
+  info:
+    usage: "<red>Usage<dark_gray>: <gray>group info [<green>name<dark_gray>]"
+    name: "<gray>Name: <green>%name%"
+    platform: "<gray>Platform: <green>%platform%"
+    templates: "<gray>Templates: <green>%templates%"
+    min-online: "<gray>Min Online Count: <green>%minOnline%"
+    max-online: "<gray>Max Online Count: <green>%maxOnline%"
+    online-players: "<gray>Online Players: <green>%onlinePlayers%"
+    max-players: "<gray>Max Players: <green>%maxPlayers%"
+    max-memory: "<gray>Max Memory: <green>%maxMemory%MB"
+    fallback: "<gray>Fallback: %fallback%"
+    static: "<gray>Static: %static%"
+
+  shutdown:
+    usage: "<red>Usage<dark_gray>: <gray>group shutdown [<green>name<dark_gray>]"
+    success: "<gray>Shutdown all services in group <green>%name%"
+
+  property:
+    usage: "<red>Usage<dark_gray>: <gray>group property [<gray>list<dark_gray>|<gray>set<dark_gray>|<gray>remove<dark_gray>] [<green>name<dark_gray>] [<green>key<dark_gray>] [<green>value<dark_gray>]"
+    header: "<gray>Properties of group <green>%name%<dark_gray>:"
+    empty: "<gray>No properties found for group <green>%name%"
+    entry: "<dark_gray>» <green>%key% <gray>- %value%"
+
+    remove:
+      usage: "<red>Usage<dark_gray>: <gray>group property remove [<green>name<dark_gray>] [<green>key<dark_gray>]"
+      success: "<gray>Property <green>%key% <gray>was removed"
+
+    set:
+      usage: "<red>Usage<dark_gray>: <gray>group property set [<green>name<dark_gray>] [<green>key<dark_gray>] [<green>value<dark_gray>]"
+      success: "<gray>Property <green>%key% <gray>was set to <green>%value%"
+
+    not-found: "<gray>Property <green>%key% <gray>was <red>not found"
+
+  edit:
+    usage: "<red>Usage<dark_gray>: <gray>group edit [<green>name<dark_gray>] [<green>key<dark_gray>] [<green>value<dark_gray>]"
+    success: "<gray>Updated <green>%key% <gray>for group to <green>%value%"
+    invalid-key: "<red>Unknown edit key <green>%key%"
+    invalid-format: "<red>Invalid format for <green>%key%"
+
+    template:
+      add: "<gray>Template <green>%template% <gray>was added"
+      remove: "<gray>Template <green>%template% <gray>was removed"
+      not-found: "<gray>Template <green>%template% <gray>was not found"
+
+    jvmflag:
+      add: "<gray>Custom JVM flag <green>%flag% <gray>was added"
