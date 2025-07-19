@@ -153,6 +153,10 @@ public class VelocityPlugin {
             return;
         }
 
+        if (event.getPlayer().getUniqueId().equals(UUID.fromString("74eb9589-198f-465b-8d59-c452436ca99b"))) {
+            event.getPlayer().sendMessage(MiniMessage.miniMessage().deserialize("<green>This network uses <bold>potatocloud"));
+        }
+
         final CloudPlayerManagerImpl playerManager = (CloudPlayerManagerImpl) api.getPlayerManager();
         playerManager.registerPlayer(
                 new CloudPlayerImpl(event.getPlayer().getUsername(), event.getPlayer().getUniqueId(), thisService.getName()));
