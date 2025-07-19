@@ -1,11 +1,14 @@
 package net.potatocloud.node.service;
 
+import net.potatocloud.api.event.events.property.PropertyChangedEvent;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.group.ServiceGroupManager;
 import net.potatocloud.api.player.CloudPlayerManager;
+import net.potatocloud.api.property.Property;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.api.service.ServiceStatus;
+import net.potatocloud.node.Node;
 
 import java.util.Comparator;
 import java.util.List;
@@ -22,6 +25,27 @@ public class ServiceStartQueue extends Thread {
         this.groupManager = groupManager;
         this.serviceManager = serviceManager;
         this.playerManager = playerManager;
+
+        Node.getInstance().getEventManager().on(PropertyChangedEvent.class, event -> {
+            if (!event.getPropertyData().getName().equals(Property.GAME_STATE.getName())) {
+                return;
+            }
+
+            if (!event.getOldValue().equals("LOBBY")) {
+                return;
+            }
+
+            if (!event.getNewValue().equals("INGAME")) {
+                return;
+            }
+
+            final ServiceGroup group = groupManager.getServiceGroup(event.getHolderName());
+            if (group == null) {
+                return;
+            }
+
+            serviceManager.startService(group);
+        });
 
         setName("ServiceStartQueue");
         setDaemon(true);
