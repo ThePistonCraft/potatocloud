@@ -28,26 +28,6 @@ public class GroupSubCommand {
         }
     }
 
-    public void deleteGroup(String[] args) {
-        if (args.length < 3) {
-            player.sendMessage(messages.get("group.delete.usage"));
-            return;
-        }
-
-        final String name = args[2];
-        final ServiceGroupManager groupManager = CloudAPI.getInstance().getServiceGroupManager();
-
-        if (!groupManager.existsServiceGroup(name)) {
-            player.sendMessage(messages.get("group.not-found")
-                    .replaceText(text -> text.match("%name%").replacement(name)));
-            return;
-        }
-
-        groupManager.deleteServiceGroup(groupManager.getServiceGroup(name));
-        player.sendMessage(messages.get("group.delete.success")
-                .replaceText(text -> text.match("%name%").replacement(name)));
-    }
-
     public void infoGroup(String[] args) {
         if (args.length < 3) {
             player.sendMessage(messages.get("group.info.usage"));
@@ -288,7 +268,7 @@ public class GroupSubCommand {
 
     public List<String> suggest(String[] args) {
         if (args.length == 2) {
-            return List.of("list", "delete", "info", "edit", "property", "shutdown").stream()
+            return List.of("list", "info", "edit", "property", "shutdown").stream()
                     .filter(input -> input.startsWith(args[1].toLowerCase()))
                     .toList();
         }
@@ -296,7 +276,7 @@ public class GroupSubCommand {
         final String sub = args[1].toLowerCase();
         final ServiceGroupManager groupManager = CloudAPI.getInstance().getServiceGroupManager();
 
-        if ((sub.equals("info") || sub.equals("delete") || sub.equals("edit") || sub.equals("shutdown"))) {
+        if ((sub.equals("info") || sub.equals("edit") || sub.equals("shutdown"))) {
             if (args.length == 3) {
                 return groupManager.getAllServiceGroups().stream()
                         .map(ServiceGroup::getName)

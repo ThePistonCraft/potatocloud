@@ -59,7 +59,6 @@ public class CloudCommand implements SimpleCommand {
 
         switch (sub) {
             case "list" -> groupSubCommand.listGroups();
-            case "delete" -> groupSubCommand.deleteGroup(args);
             case "info" -> groupSubCommand.infoGroup(args);
             case "shutdown" -> groupSubCommand.shutdownGroup(args);
             case "edit" -> groupSubCommand.editGroup(args);
