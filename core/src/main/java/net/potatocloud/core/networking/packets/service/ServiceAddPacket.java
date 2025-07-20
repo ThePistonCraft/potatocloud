@@ -16,7 +16,6 @@ public class ServiceAddPacket implements Packet {
     private final String groupName;
 
     private String status;
-    private int onlinePlayers;
     private int usedMemory;
 
     @Override

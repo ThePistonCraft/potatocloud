@@ -8,6 +8,8 @@ import net.potatocloud.api.property.PropertyData;
 import net.potatocloud.core.networking.NetworkConnection;
 import net.potatocloud.core.networking.PacketListener;
 import net.potatocloud.core.networking.packets.group.UpdateGroupPacket;
+import net.potatocloud.node.group.ServiceGroupManagerImpl;
+import net.potatocloud.node.group.ServiceGroupStorage;
 
 @RequiredArgsConstructor
 public class UpdateGroupListener implements PacketListener<UpdateGroupPacket> {
@@ -26,9 +28,19 @@ public class UpdateGroupListener implements PacketListener<UpdateGroupPacket> {
         group.getServiceTemplates().clear();
         packet.getServiceTemplates().forEach(group::addServiceTemplate);
 
+        group.getCustomJvmFlags().clear();
+        for (String flag : packet.getCustomJvmFlags()) {
+            group.addCustomJvmFlag(flag);
+        }
+
         group.getProperties().clear();
         for (PropertyData data : packet.getProperties()) {
             group.setProperty(Property.fromData(data));
+        }
+
+        // update group file
+        if (groupManager instanceof ServiceGroupManagerImpl impl) {
+            ServiceGroupStorage.saveToFile(group, impl.getGroupsPath());
         }
     }
 }

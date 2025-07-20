@@ -6,9 +6,11 @@ import lombok.SneakyThrows;
 import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.event.events.service.PreparedServiceStartingEvent;
 import net.potatocloud.api.event.events.service.ServiceStoppedEvent;
+import net.potatocloud.api.event.events.service.ServiceStoppingEvent;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.impl.PandaSpigotVersion;
+import net.potatocloud.api.player.CloudPlayer;
 import net.potatocloud.api.property.Property;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceStatus;
@@ -101,12 +103,16 @@ public class ServiceImpl implements Service {
         return group;
     }
 
-    public int getOnlinePlayers() {
+    public List<CloudPlayer> getOnlinePlayers() {
         return CloudAPI.getInstance().getPlayerManager().getOnlinePlayers()
                 .stream()
                 .filter(player -> player.getConnectedServiceName().equals(getName()))
-                .toList()
-                .size();
+                .toList();
+    }
+
+    @Override
+    public int getOnlinePlayersCount() {
+        return getOnlinePlayers().size();
     }
 
     @SneakyThrows
@@ -269,6 +275,10 @@ public class ServiceImpl implements Service {
 
         logger.info("Stopping service &a" + getName() + "&7...");
         status = ServiceStatus.STOPPING;
+
+        if (Node.getInstance().getServer() != null && Node.getInstance().getEventManager() != null) {
+            Node.getInstance().getEventManager().call(new ServiceStoppingEvent(this.getName()));
+        }
 
         executeCommand(group.getPlatform().isProxy() ? "end" : "stop");
 

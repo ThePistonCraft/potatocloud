@@ -80,7 +80,8 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
                 group.getMaxMemory(),
                 group.isFallback(),
                 group.getServiceTemplates(),
-                group.getProperties().stream().map(Property::getData).collect(Collectors.toSet())
+                group.getProperties().stream().map(Property::getData).collect(Collectors.toSet()),
+                group.getCustomJvmFlags()
         ));
     }
 

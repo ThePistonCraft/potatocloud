@@ -51,7 +51,7 @@ public class HubCommand implements SimpleCommand {
         return CloudAPI.getInstance().getServiceManager().getAllServices().stream()
                 .filter(service -> service.getServiceGroup().isFallback())
                 .filter(service -> service.getStatus() == ServiceStatus.RUNNING)
-                .sorted(Comparator.comparingInt(Service::getOnlinePlayers))
+                .sorted(Comparator.comparingInt(Service::getOnlinePlayersCount))
                 .map(service -> server.getServer(service.getName()))
                 .filter(Optional::isPresent)
                 .map(Optional::get)

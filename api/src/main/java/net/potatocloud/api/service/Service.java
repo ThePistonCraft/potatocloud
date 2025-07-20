@@ -1,7 +1,10 @@
 package net.potatocloud.api.service;
 
 import net.potatocloud.api.group.ServiceGroup;
+import net.potatocloud.api.player.CloudPlayer;
 import net.potatocloud.api.property.PropertyHolder;
+
+import java.util.List;
 
 public interface Service extends PropertyHolder {
 
@@ -17,7 +20,9 @@ public interface Service extends PropertyHolder {
 
     long getStartTimestamp();
 
-    int getOnlinePlayers();
+    List<CloudPlayer> getOnlinePlayers();
+
+    int getOnlinePlayersCount();
 
     int getMaxPlayers();
 

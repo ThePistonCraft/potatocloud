@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.group.ServiceGroup;
+import net.potatocloud.api.player.CloudPlayer;
 import net.potatocloud.api.property.Property;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceStatus;
@@ -14,6 +15,7 @@ import net.potatocloud.core.networking.packets.service.ShutdownServicePacket;
 import net.potatocloud.plugin.impl.PluginCloudAPI;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -28,18 +30,16 @@ public class ServiceImpl implements Service {
     private final NetworkClient client;
     private final Set<Property> properties;
     private ServiceStatus status;
-    private int onlinePlayers;
     private int usedMemory;
     private int maxPlayers;
 
-    public ServiceImpl(String name, int serviceId, int port, long startTimestamp, ServiceGroup group, ServiceStatus status, int onlinePlayers, int usedMemory) {
+    public ServiceImpl(String name, int serviceId, int port, long startTimestamp, ServiceGroup group, ServiceStatus status, int usedMemory) {
         this.name = name;
         this.serviceId = serviceId;
         this.port = port;
         this.startTimestamp = startTimestamp;
         this.group = group;
         this.status = status;
-        this.onlinePlayers = onlinePlayers;
         this.usedMemory = usedMemory;
 
         maxPlayers = group.getMaxPlayers();
@@ -49,6 +49,16 @@ public class ServiceImpl implements Service {
 
     public boolean isOnline() {
         return status.equals(ServiceStatus.RUNNING);
+    }
+
+    @Override
+    public List<CloudPlayer> getOnlinePlayers() {
+        return CloudAPI.getInstance().getPlayerManager().getOnlinePlayers().stream().filter(player -> player.getConnectedServiceName().equals(name)).toList();
+    }
+
+    @Override
+    public int getOnlinePlayersCount() {
+        return getOnlinePlayers().size();
     }
 
     @Override

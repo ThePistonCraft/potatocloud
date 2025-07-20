@@ -21,6 +21,7 @@ public class UpdateGroupPacket implements Packet {
     private boolean fallback;
     private List<String> serviceTemplates;
     private Set<PropertyData> properties;
+    private List<String> customJvmFlags;
 
     @Override
     public String getType() {
