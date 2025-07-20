@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import net.potatocloud.api.CloudAPI;
+import net.potatocloud.api.event.events.service.PreparedServiceStartingEvent;
 import net.potatocloud.api.event.events.service.ServiceStoppedEvent;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.platform.Platform;
@@ -243,7 +244,8 @@ public class ServiceImpl implements Service {
             }
         }, "processReader-" + getName()).start();
 
-        logger.info("The Service &a" + getName() + "&7 is now starting... &8[&7Port&8: &a" + port + ", &7Group&8: &a" + group.getName() + "&8]");
+        logger.info("The Service &a" + this.getName() + "&7 is now starting... &8[&7Port&8: &a" + port + ", &7Group&8: &a" + group.getName() + "&8]");
+        Node.getInstance().getEventManager().call(new PreparedServiceStartingEvent(this.getName()));
     }
 
     @Override
