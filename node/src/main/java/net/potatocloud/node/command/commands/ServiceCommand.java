@@ -404,13 +404,17 @@ public class ServiceCommand implements Command, TabCompleter {
 
         String sub = args[0].toLowerCase();
 
-        if (sub.equalsIgnoreCase("start") || sub.equalsIgnoreCase("stop") || sub.equalsIgnoreCase("info")
-                || sub.equalsIgnoreCase("execute") || sub.equalsIgnoreCase("logs") || sub.equalsIgnoreCase("screen") ||
+        if (sub.equalsIgnoreCase("stop") || sub.equalsIgnoreCase("info") || sub.equalsIgnoreCase("execute")
+                || sub.equalsIgnoreCase("logs") || sub.equalsIgnoreCase("screen") ||
                 sub.equalsIgnoreCase("edit") || sub.equalsIgnoreCase("copy")) {
             if (args.length == 2) {
                 return serviceManager.getAllServices().stream().map(Service::getName)
                         .toList().stream().filter(input -> input.startsWith(args[1])).toList();
             }
+        }
+
+        if (sub.equalsIgnoreCase("start") && args.length == 2) {
+            return groupManager.getAllServiceGroups().stream().map(ServiceGroup::getName).toList().stream().filter(input -> input.startsWith(args[1])).toList();
         }
 
         if (sub.equals("edit") && args.length == 3) {
