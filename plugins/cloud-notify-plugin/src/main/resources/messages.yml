@@ -1,3 +1,4 @@
+starting: "<dark_gray>» <gold>%service% <dark_gray>[<white>%group%<dark_gray>]"
 start: "<dark_gray>» <green>%service% <dark_gray>[<white>%group%<dark_gray>]"
 stop: "<dark_gray>« <red>%service%"
-hover: "<gray>click to connect on %service%.."
+hover: "<gray>Click to connect to <white>%service%</white>..."

@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.potatocloud.api.CloudAPI;
+import net.potatocloud.api.event.events.service.PreparedServiceStartingEvent;
 import net.potatocloud.api.event.events.service.ServiceStartedEvent;
 import net.potatocloud.api.event.events.service.ServiceStoppedEvent;
 import net.potatocloud.api.service.Service;
@@ -39,6 +40,25 @@ public class NotifyPlugin {
 
     private void handleIncomingEvents() {
         final CloudAPI cloudAPI = CloudAPI.getInstance();
+
+        // starting Server
+        cloudAPI.getEventManager().on(PreparedServiceStartingEvent.class, startingEvent -> {
+            final Service service = cloudAPI.getServiceManager().getService(startingEvent.getServiceName());
+            // send message;
+            this.server.getAllPlayers()
+                    .stream()
+                    .filter(player -> player.hasPermission(this.config.getPermission()))
+                    .forEach(player -> {
+                        player.sendMessage(this.messagesConfig.get("starting")
+                                .clickEvent(ClickEvent.runCommand("/server " + startingEvent.getServiceName()))
+                                .hoverEvent(HoverEvent.showText(this.messagesConfig.get("hover")
+                                        .replaceText(text -> text.match("%service%").replacement(service.getName()))))
+                                .replaceText(text -> text.match("%service%").replacement(service.getName()))
+                                .replaceText(text -> text.match("%port%").replacement(service.getPort() + ""))
+                                .replaceText(text -> text.match("%group%").replacement(service.getServiceGroup().getName() + ""))
+                        );
+                    });
+        });
 
         // start Server
         cloudAPI.getEventManager().on(ServiceStartedEvent.class, startedEvent -> {
