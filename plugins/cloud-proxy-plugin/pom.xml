@@ -28,6 +28,10 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
+        <repository>
+            <id>labymod</id>
+            <url>https://dist.labymod.net/api/v1/maven/release/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -50,6 +54,13 @@
             <artifactId>Simple-Yaml</artifactId>
             <version>${simpleyaml.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>net.labymod.serverapi</groupId>
+            <artifactId>server-velocity</artifactId>
+            <version>1.0.6</version>
+        </dependency>
+
     </dependencies>
 
     <build>
