@@ -1,18 +1,18 @@
 package net.potatocloud.plugins.proxy;
 
 import com.google.inject.Inject;
-import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.event.EventManager;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.proxy.ProxyServer;
+import net.labymod.serverapi.server.velocity.LabyModProtocolService;
 import net.potatocloud.plugins.proxy.commands.ProxyCommand;
 import net.potatocloud.plugins.proxy.maintenance.LoginListener;
 import net.potatocloud.plugins.proxy.motd.ProxyPingListener;
+import net.potatocloud.plugins.proxy.tablist.TablistBannerHandler;
 import net.potatocloud.plugins.proxy.tablist.TablistHandler;
 
-import java.net.Proxy;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
 
 public class ProxyPlugin {
 
@@ -33,12 +33,16 @@ public class ProxyPlugin {
 
     @Subscribe
     public void onProxyInitialize(ProxyInitializeEvent event) {
+        LabyModProtocolService.initialize(this, this.server, logger);
         final EventManager eventManager = this.server.getEventManager();
         if (this.config.useMotd()) {
             eventManager.register(this, new ProxyPingListener(this.config));
         }
         if (this.config.useTablist()) {
             eventManager.register(this, new TablistHandler(this.config, this.server));
+        }
+        if (this.config.useTablistBanner()) {
+            eventManager.register(this, new TablistBannerHandler(this.config));
         }
 
         eventManager.register(this, new LoginListener(this.config, this.messagesConfig));
