@@ -26,6 +26,11 @@ public class UpdateGroupListener implements PacketListener<UpdateGroupPacket> {
         group.getServiceTemplates().clear();
         packet.getServiceTemplates().forEach(group::addServiceTemplate);
 
+        group.getCustomJvmFlags().clear();
+        for (String flag : packet.getCustomJvmFlags()) {
+            group.addCustomJvmFlag(flag);
+        }
+
         group.getProperties().clear();
         for (PropertyData data : packet.getProperties()) {
             group.setProperty(Property.fromData(data));

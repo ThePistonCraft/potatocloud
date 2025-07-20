@@ -1,5 +1,6 @@
 package net.potatocloud.node.group;
 
+import lombok.Getter;
 import lombok.SneakyThrows;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.group.ServiceGroupManager;
@@ -30,7 +31,10 @@ import java.util.stream.Stream;
 public class ServiceGroupManagerImpl implements ServiceGroupManager {
 
     private final List<ServiceGroup> groups = new ArrayList<>();
+
+    @Getter
     private final Path groupsPath;
+
     private final NetworkServer server;
 
     public ServiceGroupManagerImpl(Path groupsPath, NetworkServer server) {
@@ -144,7 +148,8 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
                 group.getMaxMemory(),
                 group.isFallback(),
                 group.getServiceTemplates(),
-                group.getProperties().stream().map(Property::getData).collect(Collectors.toSet())
+                group.getProperties().stream().map(Property::getData).collect(Collectors.toSet()),
+                group.getCustomJvmFlags()
         ));
     }
 
