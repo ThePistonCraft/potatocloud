@@ -18,13 +18,11 @@ public class CloudCommand implements SimpleCommand {
             return;
         }
 
-        //todo add permission back
-        /*
+
         if (!player.hasPermission("potatocloud.cloudcommand")) {
             player.sendMessage(messages.get("no-permission"));
             return;
         }
-         */
 
         final String[] args = invocation.arguments();
 
