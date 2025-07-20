@@ -18,7 +18,6 @@ public class CloudCommand implements SimpleCommand {
             return;
         }
 
-
         if (!player.hasPermission("potatocloud.cloudcommand")) {
             player.sendMessage(messages.get("no-permission"));
             return;
@@ -100,6 +99,10 @@ public class CloudCommand implements SimpleCommand {
 
     @Override
     public List<String> suggest(Invocation invocation) {
+        if (!invocation.source().hasPermission("potatocloud.cloudcommand")) {
+            return List.of();
+        }
+
         final String[] args = invocation.arguments();
 
         if (args.length == 0) {
