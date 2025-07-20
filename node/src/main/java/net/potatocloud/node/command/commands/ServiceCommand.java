@@ -413,6 +413,14 @@ public class ServiceCommand implements Command, TabCompleter {
             }
         }
 
+        if (sub.equalsIgnoreCase("copy") && args.length == 3) {
+            final Service service = serviceManager.getService(args[1]);
+            if (service == null) {
+                return List.of();
+            }
+            return service.getServiceGroup().getServiceTemplates().stream().toList();
+        }
+
         if (sub.equalsIgnoreCase("start") && args.length == 2) {
             return groupManager.getAllServiceGroups().stream().map(ServiceGroup::getName).toList().stream().filter(input -> input.startsWith(args[1])).toList();
         }
@@ -456,7 +464,6 @@ public class ServiceCommand implements Command, TabCompleter {
                 return completions;
             }
         }
-
         return List.of();
     }
 }
