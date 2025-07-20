@@ -306,6 +306,14 @@ public class ServiceSubCommand {
         }
 
 
+        if (sub.equalsIgnoreCase("copy") && args.length == 4) {
+            final Service service = serviceManager.getService(args[2]);
+            if (service == null) {
+                return List.of();
+            }
+            return service.getServiceGroup().getServiceTemplates().stream().toList();
+        }
+
         if (sub.equalsIgnoreCase("start") && args.length == 3) {
             return CloudAPI.getInstance().getServiceGroupManager().getAllServiceGroups().stream().map(ServiceGroup::getName).toList();
         }
