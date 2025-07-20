@@ -36,52 +36,68 @@ public class CloudCommand implements SimpleCommand {
         final String commandName = args[0].toLowerCase();
 
         switch (commandName) {
-            case "group" -> handleGroupCommand(player, args);
-            case "service" -> {
+            case "group" -> {
+                final GroupSubCommand groupSubCommand = new GroupSubCommand(player, messages);
 
+                if (args.length < 2) {
+                    groupSubCommand.sendHelpGroup(player);
+                    return;
+                }
+
+                final String sub = args[1].toLowerCase();
+
+                switch (sub) {
+                    case "list" -> groupSubCommand.listGroups();
+                    case "info" -> groupSubCommand.infoGroup(args);
+                    case "shutdown" -> groupSubCommand.shutdownGroup(args);
+                    case "edit" -> groupSubCommand.editGroup(args);
+                    case "property" -> groupSubCommand.propertyGroup(args);
+                    default -> groupSubCommand.sendHelpGroup(player);
+                }
+            }
+            case "service" -> {
+                final ServiceSubCommand serviceSubCommand = new ServiceSubCommand(player, messages);
+
+                if (args.length < 2) {
+                    serviceSubCommand.sendHelp(player);
+                    return;
+                }
+
+                final String sub = args[1].toLowerCase();
+
+                switch (sub) {
+                    case "list" -> serviceSubCommand.listServices();
+                    case "start" -> serviceSubCommand.startService(args);
+                    case "stop" -> serviceSubCommand.stopService(args);
+                    case "info" -> serviceSubCommand.infoService(args);
+                    case "edit" -> serviceSubCommand.editService(args);
+                    case "property" -> serviceSubCommand.propertyService(args);
+                    case "copy" -> serviceSubCommand.copyService(args);
+                }
             }
             case "player" -> {
+                final PlayerSubCommand playerSubCommand = new PlayerSubCommand(player, messages);
 
+                if (args.length < 2) {
+                    playerSubCommand.sendHelp();
+                    return;
+                }
+
+                final String sub = args[1].toLowerCase();
+
+                switch (sub) {
+                    case "list" -> playerSubCommand.listPlayers();
+                    case "connect" -> playerSubCommand.connectPlayer(args);
+                }
             }
             default -> sendHelp(player);
         }
     }
 
-    private void handleGroupCommand(Player player, String[] args) {
-        final GroupSubCommand groupSubCommand = new GroupSubCommand(player, messages);
-
-        if (args.length < 2) {
-            sendHelpGroup(player);
-            return;
-        }
-
-        final String sub = args[1].toLowerCase();
-
-        switch (sub) {
-            case "list" -> groupSubCommand.listGroups();
-            case "info" -> groupSubCommand.infoGroup(args);
-            case "shutdown" -> groupSubCommand.shutdownGroup(args);
-            case "edit" -> groupSubCommand.editGroup(args);
-            case "property" -> groupSubCommand.propertyGroup(args);
-            default -> sendHelpGroup(player);
-        }
-    }
-
-    private void sendHelpGroup(Player player) {
-        player.sendMessage(messages.get("group.help.create"));
-        player.sendMessage(messages.get("group.help.delete"));
-        player.sendMessage(messages.get("group.help.list"));
-        player.sendMessage(messages.get("group.help.info"));
-        player.sendMessage(messages.get("group.help.shutdown"));
-        player.sendMessage(messages.get("group.help.edit"));
-        player.sendMessage(messages.get("group.help.edit.addTemplate"));
-        player.sendMessage(messages.get("group.help.edit.removeTemplate"));
-        player.sendMessage(messages.get("group.help.edit.addJvmFlag"));
-        player.sendMessage(messages.get("group.help.property"));
-    }
-
     private void sendHelp(Player player) {
-
+        player.sendMessage(messages.get("help.group"));
+        player.sendMessage(messages.get("help.service"));
+        player.sendMessage(messages.get("help.player"));
     }
 
     @Override
@@ -102,8 +118,8 @@ public class CloudCommand implements SimpleCommand {
 
         return switch (commandName) {
             case "group" -> new GroupSubCommand(null, null).suggest(args);
-            case "service" -> List.of();
-            case "player" -> List.of();
+            case "service" -> new ServiceSubCommand(null, null).suggest(args);
+            case "player" -> new PlayerSubCommand(null, null).suggest(args);
             default -> List.of();
         };
     }

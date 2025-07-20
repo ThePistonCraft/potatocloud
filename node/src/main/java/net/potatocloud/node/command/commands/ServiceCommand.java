@@ -63,7 +63,7 @@ public class ServiceCommand implements Command, TabCompleter {
 
     private void startService(String[] args) {
         if (args.length < 2) {
-            logger.info("&cUsage&8: &7service start &8[&agroupName&8] [&aamount&8]");
+            logger.info("&cUsage&8: &7service start &8[&agroupName&8] (&aamount&8)");
             return;
         }
 
@@ -78,11 +78,11 @@ public class ServiceCommand implements Command, TabCompleter {
             try {
                 amount = Integer.parseInt(args[2]);
                 if (amount <= 0) {
-                    logger.info("&cUsage&8: &7service start &8[&agroupName&8] [&aamount&8]");
+                    logger.info("&cUsage&8: &7service start &8[&agroupName&8] (&aamount&8)");
                     return;
                 }
             } catch (NumberFormatException e) {
-                logger.info("&cUsage&8: &7service start &8[&agroupName&8] [&aamount&8]");
+                logger.info("&cUsage&8: &7service start &8[&agroupName&8] (&aamount&8)");
                 return;
             }
         }

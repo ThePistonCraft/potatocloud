@@ -166,7 +166,7 @@ public class GroupSubCommand {
                     group.setProperty(new Property(defaultProperty.getName(), defaultProperty.getDefaultValue()));
                     group.update();
 
-                    player.sendMessage(messages.get("group.property.set.success.default")
+                    player.sendMessage(messages.get("group.property.set.success-default")
                             .replaceText(text -> text.match("%key%").replacement(key))
                             .replaceText(text -> text.match("%value%").replacement(String.valueOf(defaultProperty.getDefaultValue())))
                             .replaceText(text -> text.match("%name%").replacement(name)));
@@ -184,7 +184,7 @@ public class GroupSubCommand {
                     group.setProperty(new Property(key, value));
                     group.update();
 
-                    player.sendMessage(messages.get("group.property.set.success.custom")
+                    player.sendMessage(messages.get("group.property.set.success-custom")
                             .replaceText(text -> text.match("%key%").replacement(key))
                             .replaceText(text -> text.match("%value%").replacement(value))
                             .replaceText(text -> text.match("%name%").replacement(name)));
@@ -328,5 +328,18 @@ public class GroupSubCommand {
         }
 
         return List.of();
+    }
+
+    public void sendHelpGroup(Player player) {
+        player.sendMessage(messages.get("group.help.create"));
+        player.sendMessage(messages.get("group.help.delete"));
+        player.sendMessage(messages.get("group.help.list"));
+        player.sendMessage(messages.get("group.help.info"));
+        player.sendMessage(messages.get("group.help.shutdown"));
+        player.sendMessage(messages.get("group.help.edit"));
+        player.sendMessage(messages.get("group.help.edit.edit-addTemplate"));
+        player.sendMessage(messages.get("group.help.edit.edit-removeTemplate"));
+        player.sendMessage(messages.get("group.help.edit.edit-addJvmFlag"));
+        player.sendMessage(messages.get("group.help.property"));
     }
 }
