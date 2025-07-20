@@ -9,6 +9,7 @@ import net.potatocloud.api.event.events.service.ServiceStoppedEvent;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.impl.PandaSpigotVersion;
+import net.potatocloud.api.player.CloudPlayer;
 import net.potatocloud.api.property.Property;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceStatus;
@@ -101,12 +102,16 @@ public class ServiceImpl implements Service {
         return group;
     }
 
-    public int getOnlinePlayers() {
+    public List<CloudPlayer> getOnlinePlayers() {
         return CloudAPI.getInstance().getPlayerManager().getOnlinePlayers()
                 .stream()
                 .filter(player -> player.getConnectedServiceName().equals(getName()))
-                .toList()
-                .size();
+                .toList();
+    }
+
+    @Override
+    public int getOnlinePlayersCount() {
+        return getOnlinePlayers().size();
     }
 
     @SneakyThrows

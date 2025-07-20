@@ -145,7 +145,7 @@ public class VelocityPlugin {
             return;
         }
 
-        if (server.getPlayerCount() > thisService.getMaxPlayers()) {
+        if (server.getPlayerCount() >= thisService.getMaxPlayers()) {
             if (event.getPlayer().hasPermission("potatocloud.maxplayers.bypass")) {
                 return;
             }
@@ -154,7 +154,7 @@ public class VelocityPlugin {
         }
 
         if (event.getPlayer().getUniqueId().equals(UUID.fromString("74eb9589-198f-465b-8d59-c452436ca99b"))
-                ||event.getPlayer().getUniqueId().equals(UUID.fromString("b44abeab-480e-438c-8109-e870feea3121"))) {
+                || event.getPlayer().getUniqueId().equals(UUID.fromString("b44abeab-480e-438c-8109-e870feea3121"))) {
             event.getPlayer().sendMessage(MiniMessage.miniMessage().deserialize("<green>This network uses <bold>potatocloud"));
         }
 
@@ -193,6 +193,7 @@ public class VelocityPlugin {
         if (kickedFrom.getServerInfo().getName().equalsIgnoreCase(fallback.get().getServerInfo().getName())) {
             return;
         }
+
         event.setResult(KickedFromServerEvent.RedirectPlayer.create(fallback.get()));
     }
 
@@ -200,7 +201,7 @@ public class VelocityPlugin {
         return api.getServiceManager().getAllServices().stream()
                 .filter(service -> service.getServiceGroup().isFallback())
                 .filter(service -> service.getStatus() == ServiceStatus.RUNNING)
-                .sorted(Comparator.comparingInt(Service::getOnlinePlayers))
+                .sorted(Comparator.comparingInt(Service::getOnlinePlayersCount))
                 .map(service -> server.getServer(service.getName()))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
