@@ -3,6 +3,6 @@
   "name": "potatocloud-plugin-proxy",
   "version": "1.0.0",
   "main": "net.potatocloud.plugins.proxy.ProxyPlugin",
-  "author": "TruaYT",
+  "authors": [ "TruaYT", "einCode_" ],
   "depends": ["potatocloud-plugin"]
 }

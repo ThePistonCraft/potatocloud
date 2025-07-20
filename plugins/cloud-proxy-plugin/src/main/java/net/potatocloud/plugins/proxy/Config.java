@@ -50,6 +50,14 @@ public class Config {
         }
     }
 
+    public boolean useTablistBanner() {
+        return this.config.getBoolean("useTablistBanner");
+    }
+
+    public String getTablistBannerUrl() {
+        return this.config.getString("tablistImageURL");
+    }
+
     public boolean useTablist() {
         return this.config.getBoolean("useTablist");
     }
