@@ -17,7 +17,7 @@ public interface CloudPlayer extends PropertyHolder {
     String getConnectedServiceName();
 
     default Service getConnectedProxy() {
-        return CloudAPI.getInstance().getServiceManager().getService(getConnectedServiceName());
+        return CloudAPI.getInstance().getServiceManager().getService(getConnectedProxyName());
     }
 
     default Service getConnectedService() {
