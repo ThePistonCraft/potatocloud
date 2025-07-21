@@ -332,15 +332,13 @@ public class GroupSubCommand {
     }
 
     public void sendHelpGroup(Player player) {
-        player.sendMessage(messages.get("group.help.create"));
-        player.sendMessage(messages.get("group.help.delete"));
         player.sendMessage(messages.get("group.help.list"));
         player.sendMessage(messages.get("group.help.info"));
         player.sendMessage(messages.get("group.help.shutdown"));
         player.sendMessage(messages.get("group.help.edit"));
-        player.sendMessage(messages.get("group.help.edit.edit-addTemplate"));
-        player.sendMessage(messages.get("group.help.edit.edit-removeTemplate"));
-        player.sendMessage(messages.get("group.help.edit.edit-addJvmFlag"));
+        player.sendMessage(messages.get("group.help.edit-addTemplate"));
+        player.sendMessage(messages.get("group.help.edit-removeTemplate"));
+        player.sendMessage(messages.get("group.help.edit-addJvmFlag"));
         player.sendMessage(messages.get("group.help.property"));
     }
 }
