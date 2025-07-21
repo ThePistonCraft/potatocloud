@@ -207,6 +207,4 @@ public class VelocityPlugin {
                 .map(Optional::get)
                 .findFirst();
     }
-
-
 }

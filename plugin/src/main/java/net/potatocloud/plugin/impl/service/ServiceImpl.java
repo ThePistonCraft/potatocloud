@@ -53,8 +53,11 @@ public class ServiceImpl implements Service {
 
     @Override
     public List<CloudPlayer> getOnlinePlayers() {
-        return CloudAPI.getInstance().getPlayerManager().getOnlinePlayers().stream().filter(player -> player.getConnectedServiceName().equals(name)).toList();
+        return CloudAPI.getInstance().getPlayerManager().getOnlinePlayers().stream()
+                .filter(player -> name.equals(player.getConnectedServiceName()))
+                .toList();
     }
+
 
     @Override
     public int getOnlinePlayersCount() {
