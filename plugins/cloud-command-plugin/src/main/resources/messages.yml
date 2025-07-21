@@ -116,5 +116,5 @@ player:
     entry: "<dark_gray>» <green>%name% <gray>- Proxy: <green>%proxy% <gray>- Service: <green>%service%"
   connect:
     usage: "<red>Usage<dark_gray>: <gray>/cloud player connect <dark_gray>[<green>player<dark_gray>] [<green>service<dark_gray>]"
-    already-connected: "<gray>Player <green>%player% <gray>is already comnnected to <green>%service%"
+    already-connected: "<gray>Player <green>%player% <gray>is already connected to <green>%service%"
     success: "<gray>Successfully connected player <green>%player% <gray>to service <green>%service%"

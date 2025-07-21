@@ -2,6 +2,7 @@ package net.potatocloud.plugins.cloudcommand.command;
 
 import com.velocitypowered.api.proxy.Player;
 import lombok.RequiredArgsConstructor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.group.ServiceGroupManager;
@@ -60,9 +61,9 @@ public class GroupSubCommand {
         player.sendMessage(messages.get("group.info.max-players")
                 .replaceText(text -> text.match("%maxPlayers%").replacement(String.valueOf(group.getMaxPlayers()))));
         player.sendMessage(messages.get("group.info.fallback")
-                .replaceText(text -> text.match("%fallback%").replacement((group.isFallback() ? "<green>Yes" : "<red>No"))));
+                .replaceText(text -> text.match("%fallback%").replacement(MiniMessage.miniMessage().deserialize(group.isFallback() ? "<green>Yes" : "<red>No"))));
         player.sendMessage(messages.get("group.info.static")
-                .replaceText(text -> text.match("%static%").replacement((group.isStatic() ? "<green>Yes" : "<red>No"))));
+                .replaceText(text -> text.match("%static%").replacement(MiniMessage.miniMessage().deserialize((group.isStatic() ? "<green>Yes" : "<red>No")))));
     }
 
     public void shutdownGroup(String[] args) {

@@ -192,7 +192,6 @@ public class ServiceImpl implements Service {
             if (!Files.exists(directory.resolve("forwarding.secret"))){
                 Files.writeString(directory.resolve("forwarding.secret"), UUID.randomUUID().toString(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
             }
-
         }
 
         final Path jarPath = Path.of(config.getPlatformsFolder())

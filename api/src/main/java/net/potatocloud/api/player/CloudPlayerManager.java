@@ -16,7 +16,7 @@ public interface CloudPlayerManager {
 
     default List<CloudPlayer> getOnlinePlayersByGroup(ServiceGroup group) {
         return getOnlinePlayers().stream()
-                .filter(player -> player.getConnectedService() != null && player.getConnectedService().getServiceGroup().equals(group))
+                .filter(player -> player.getConnectedService() != null && player.getConnectedService().getServiceGroup().getName().equals(group.getName()))
                 .toList();
     }
 
