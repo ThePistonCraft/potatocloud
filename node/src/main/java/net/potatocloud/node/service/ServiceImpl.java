@@ -189,7 +189,10 @@ public class ServiceImpl implements Service {
             Files.writeString(velocityConfigFile, fileContent);
 
             // a forwarding secret file has to be created or else velocity will throw an error
-            Files.writeString(directory.resolve("forwarding.secret"), UUID.randomUUID().toString(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            if (!Files.exists(directory.resolve("forwarding.secret"))){
+                Files.writeString(directory.resolve("forwarding.secret"), UUID.randomUUID().toString(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            }
+
         }
 
         final Path jarPath = Path.of(config.getPlatformsFolder())
