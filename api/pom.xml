@@ -6,7 +6,7 @@
     <parent>
         <groupId>net.potatocloud</groupId>
         <artifactId>potatocloud</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
 
     <groupId>net.potatocloud.api</groupId>
