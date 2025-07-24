@@ -3,7 +3,6 @@ package net.potatocloud.core.networking.netty;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.RequiredArgsConstructor;
-import net.potatocloud.core.networking.NetworkConnection;
 import net.potatocloud.core.networking.Packet;
 import net.potatocloud.core.networking.PacketManager;
 

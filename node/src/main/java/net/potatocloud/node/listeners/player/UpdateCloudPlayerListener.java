@@ -10,8 +10,6 @@ import net.potatocloud.core.networking.PacketListener;
 import net.potatocloud.core.networking.packets.player.UpdateCloudPlayerPacket;
 import net.potatocloud.node.Node;
 
-import java.util.stream.Collectors;
-
 @RequiredArgsConstructor
 public class UpdateCloudPlayerListener implements PacketListener<UpdateCloudPlayerPacket> {
 

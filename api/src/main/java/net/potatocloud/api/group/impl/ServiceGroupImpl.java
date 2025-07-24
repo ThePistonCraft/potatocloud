@@ -9,7 +9,6 @@ import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.PlatformVersions;
 import net.potatocloud.api.property.Property;
 import net.potatocloud.api.service.Service;
-import net.potatocloud.api.service.ServiceStatus;
 
 import java.util.ArrayList;
 import java.util.HashSet;
