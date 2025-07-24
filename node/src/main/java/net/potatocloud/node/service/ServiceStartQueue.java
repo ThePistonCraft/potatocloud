@@ -43,12 +43,12 @@ public class ServiceStartQueue extends Thread {
                 return;
             }
 
-            final ServiceGroup group = groupManager.getServiceGroup(event.getHolderName());
-            if (group == null) {
+            final Service service = Node.getInstance().getServiceManager().getService(event.getHolderName());
+            if (service == null) {
                 return;
             }
 
-            serviceManager.startService(group);
+            serviceManager.startService(service.getServiceGroup());
         });
 
         setName("ServiceStartQueue");
