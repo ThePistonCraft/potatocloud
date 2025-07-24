@@ -122,7 +122,7 @@ public class ServiceCommand implements Command, TabCompleter {
         logger.info("Group: &a" + service.getServiceGroup().getName());
         logger.info("Port: &a" + service.getPort());
         logger.info("Status: &a" + service.getStatus());
-        logger.info("Online Players: &a" + service.getOnlinePlayers());
+        logger.info("Online Players: &a" + service.getOnlinePlayersCount());
         logger.info("Max Players: &a" + service.getMaxPlayers());
         logger.info("Memory usage: &a" + service.getUsedMemory() + "MB");
         logger.info("Start Timestamp: &a" + TIME_FORMAT.format(service.getStartTimestamp()));
