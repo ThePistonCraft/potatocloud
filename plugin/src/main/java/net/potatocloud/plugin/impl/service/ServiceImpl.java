@@ -15,8 +15,8 @@ import net.potatocloud.core.networking.packets.service.ShutdownServicePacket;
 import net.potatocloud.plugin.impl.PluginCloudAPI;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -52,10 +52,10 @@ public class ServiceImpl implements Service {
     }
 
     @Override
-    public List<CloudPlayer> getOnlinePlayers() {
+    public Set<CloudPlayer> getOnlinePlayers() {
         return CloudAPI.getInstance().getPlayerManager().getOnlinePlayers().stream()
                 .filter(player -> name.equals(player.getConnectedServiceName()))
-                .toList();
+                .collect(Collectors.toSet());
     }
 
     @Override

@@ -9,6 +9,7 @@ import net.potatocloud.api.service.Service;
 import net.potatocloud.plugins.cloudcommand.MessagesConfig;
 
 import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 public class PlayerSubCommand {
@@ -23,7 +24,7 @@ public class PlayerSubCommand {
     }
 
     public void listPlayers() {
-        final List<CloudPlayer> players = playerManager.getOnlinePlayers();
+        final Set<CloudPlayer> players = playerManager.getOnlinePlayers();
         player.sendMessage(messages.get("player.list.header"));
         for (CloudPlayer cloudPlayer : players) {
             player.sendMessage(messages.get("player.list.entry")

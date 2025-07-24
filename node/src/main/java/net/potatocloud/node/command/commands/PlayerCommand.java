@@ -10,6 +10,7 @@ import net.potatocloud.node.command.TabCompleter;
 import net.potatocloud.node.console.Logger;
 
 import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 public class PlayerCommand implements Command, TabCompleter {
@@ -28,7 +29,7 @@ public class PlayerCommand implements Command, TabCompleter {
         final String sub = args[0];
 
         if (sub.equalsIgnoreCase("list")) {
-            final List<CloudPlayer> players = playerManager.getOnlinePlayers();
+            final Set<CloudPlayer> players = playerManager.getOnlinePlayers();
             if (players.isEmpty()) {
                 logger.info("There are &cno &7online players");
                 return;
