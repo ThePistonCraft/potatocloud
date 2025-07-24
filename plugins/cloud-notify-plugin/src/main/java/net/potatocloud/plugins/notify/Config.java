@@ -9,8 +9,8 @@ import java.nio.file.Files;
 
 public class Config {
 
-    private YamlFile config;
     private final File configFile;
+    private YamlFile config;
 
     public Config() {
         this.configFile = new File("plugins/potatocloud-notify", "config.yml");
@@ -33,6 +33,14 @@ public class Config {
     }
 
     public String getPermission() {
-        return this.config.getString("permission");
+        return config.getString("permission");
+    }
+
+    public boolean enableStarting() {
+        return config.getBoolean("messages.enable-service-starting");
+    }
+
+    public boolean enableStopping() {
+        return config.getBoolean("messages.enable-service-stopping");
     }
 }

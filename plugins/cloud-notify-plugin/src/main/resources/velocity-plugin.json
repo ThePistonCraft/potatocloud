@@ -3,6 +3,10 @@
   "name": "potatocloud-plugin-notify",
   "version": "1.0.0",
   "main": "net.potatocloud.plugins.notify.NotifyPlugin",
-  "authors": ["TruaYT", "einCode_"],
+  "authors": [
+    "TruaYT",
+    "einCode_",
+    "jirmjahu"
+  ],
   "depends": ["potatocloud-plugin"]
 }

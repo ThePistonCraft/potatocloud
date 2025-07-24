@@ -1,5 +1,6 @@
 package net.potatocloud.plugin.impl.player;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.player.CloudPlayer;
@@ -11,16 +12,14 @@ import net.potatocloud.core.networking.packets.player.RemoveCloudPlayerPacket;
 import net.potatocloud.core.networking.packets.player.UpdateCloudPlayerPacket;
 import net.potatocloud.plugin.impl.event.LocalConnectPlayerWithServiceEvent;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
+@Getter
 @RequiredArgsConstructor
 public class CloudPlayerManagerImpl implements CloudPlayerManager {
 
-    private final List<CloudPlayer> onlinePlayers = new ArrayList<>();
+    private final Set<CloudPlayer> onlinePlayers = new HashSet<>();
     private final NetworkClient client;
 
     public void registerPlayer(CloudPlayer player) {
@@ -52,8 +51,8 @@ public class CloudPlayerManagerImpl implements CloudPlayerManager {
     }
 
     @Override
-    public List<CloudPlayer> getOnlinePlayers() {
-        return Collections.unmodifiableList(onlinePlayers);
+    public Set<CloudPlayer> getOnlinePlayers() {
+        return onlinePlayers;
     }
 
     @Override

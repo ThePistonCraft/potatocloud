@@ -1,4 +1,4 @@
-prefix: "<dark_gray>» <green>potato<white>cloud <dark_gray>• <reset>"
+prefix: "<dark_gray>» <gradient:#55FF55:#DAF3DA>potatocloud</gradient> <dark_gray>• <reset>"
 notWhitelist: "<dark_gray>» <red>You are not whitelisted on this server"
 no-permission: "<red>You do not have enough permissions for this command"
 

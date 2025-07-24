@@ -286,7 +286,7 @@ public class ServiceCommand implements Command, TabCompleter {
                 logger.info("Property &a" + key + " &7was removed in service &a" + name);
             }
             case "set" -> {
-                if (args.length < 4) {
+                if (args.length < 5) {
                     logger.info("&cUsage&8: &7service property set &8[&aname&8] [&akey&8] [&avalue&8]");
                     return;
                 }
@@ -299,32 +299,13 @@ public class ServiceCommand implements Command, TabCompleter {
                 }
 
                 final String key = args[3].toLowerCase();
-
-                // check if the property the user wants to add is a default property
-                final Property defaultProperty = Property.getDefaultProperties().stream()
-                        .filter(p -> p.getName().equalsIgnoreCase(key))
-                        .findFirst()
-                        .orElse(null);
-
-                // set default property
-                if (defaultProperty != null) {
-                    service.setProperty(new Property(defaultProperty.getName(), defaultProperty.getDefaultValue()));
-                    service.update();
-                    logger.info("Default Property &a" + key + " &7was set to &a" + defaultProperty.getDefaultValue() + " &7in service &a" + name);
-                    return;
-                }
-
-                if (args.length < 5) {
-                    logger.info("&cUsage&8: &7service property set &8[&aname&8] [&akey&8] [&avalue&8]");
-                    return;
-                }
+                final String value = args[4];
 
                 //set custom property
                 try {
-                    final String value = args[4];
                     service.setProperty(new Property(key, value));
                     service.update();
-                    logger.info("Custom Property &a" + key + " &7was set to &a" + value + " &7in service &a" + name);
+                    logger.info("Property &a" + key + " &7was set to &a" + value + " &7in service &a" + name);
                 } catch (Exception e) {
                     logger.info("&cUsage&8: &7service property set &8[&aname&8] [&akey&8] [&avalue&8]");
                 }

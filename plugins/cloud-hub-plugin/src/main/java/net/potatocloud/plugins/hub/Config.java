@@ -10,8 +10,8 @@ import java.util.List;
 
 public class Config {
 
-    private YamlFile config;
     private final File configFile;
+    private YamlFile config;
 
     public Config() {
         this.configFile = new File("plugins/potatocloud-hub", "config.yml");

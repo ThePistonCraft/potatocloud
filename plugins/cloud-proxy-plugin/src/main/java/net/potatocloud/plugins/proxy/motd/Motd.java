@@ -3,7 +3,6 @@ package net.potatocloud.plugins.proxy.motd;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 import lombok.experimental.Accessors;
 
 @AllArgsConstructor

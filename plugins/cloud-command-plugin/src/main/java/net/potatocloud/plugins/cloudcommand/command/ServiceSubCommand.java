@@ -204,41 +204,19 @@ public class ServiceSubCommand {
             }
 
             case "set" -> {
-                if (args.length < 5) {
-                    player.sendMessage(messages.get("service.property.set.usage"));
-                    return;
-                }
-
-                final String key = args[4];
-
-                final Property defaultProperty = Property.getDefaultProperties().stream()
-                        .filter(p -> p.getName().equalsIgnoreCase(key))
-                        .findFirst()
-                        .orElse(null);
-
-                if (defaultProperty != null) {
-                    service.setProperty(new Property(defaultProperty.getName(), defaultProperty.getDefaultValue()));
-                    service.update();
-
-                    player.sendMessage(messages.get("service.property.set.success-default")
-                            .replaceText(text -> text.match("%key%").replacement(key))
-                            .replaceText(text -> text.match("%value%").replacement(String.valueOf(defaultProperty.getDefaultValue())))
-                            .replaceText(text -> text.match("%name%").replacement(name)));
-                    return;
-                }
-
                 if (args.length < 6) {
                     player.sendMessage(messages.get("service.property.set.usage"));
                     return;
                 }
 
+                final String key = args[4];
                 final String value = args[5];
 
                 try {
                     service.setProperty(new Property(key, value));
                     service.update();
 
-                    player.sendMessage(messages.get("service.property.set.success-custom")
+                    player.sendMessage(messages.get("service.property.set.success")
                             .replaceText(text -> text.match("%key%").replacement(key))
                             .replaceText(text -> text.match("%value%").replacement(value))
                             .replaceText(text -> text.match("%name%").replacement(name)));

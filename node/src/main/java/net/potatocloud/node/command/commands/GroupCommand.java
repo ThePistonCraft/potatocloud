@@ -117,7 +117,7 @@ public class GroupCommand implements Command, TabCompleter {
                 logger.info("Property &a" + key + " &7was removed in group &a" + name);
             }
             case "set" -> {
-                if (args.length < 4) {
+                if (args.length < 5) {
                     logger.info("&cUsage&8: &7group property set &8[&aname&8] [&akey&8] [&avalue&8]");
                     return;
                 }
@@ -130,38 +130,17 @@ public class GroupCommand implements Command, TabCompleter {
 
                 final ServiceGroup group = groupManager.getServiceGroup(name);
                 final String key = args[3].toLowerCase();
+                final String value = args[4];
 
-                // check if the property the user wants to add is a default property
-                final Property defaultProperty = Property.getDefaultProperties().stream()
-                        .filter(p -> p.getName().equalsIgnoreCase(key))
-                        .findFirst()
-                        .orElse(null);
-
-                // set default property
-                if (defaultProperty != null) {
-                    group.setProperty(new Property(defaultProperty.getName(), defaultProperty.getDefaultValue()));
-                    group.update();
-                    logger.info("Default Property &a" + key + " &7was set to &a" + defaultProperty.getDefaultValue() + " &7in group &a" + name);
-                    return;
-                }
-
-                if (args.length < 5) {
-                    logger.info("&cUsage&8: &7group property set &8[&aname&8] [&akey&8] [&avalue&8]");
-                    return;
-                }
-
-                //set custom property
                 try {
-                    final String value = args[4];
                     group.setProperty(new Property(key, value));
                     group.update();
-                    logger.info("Custom Property &a" + key + " &7was set to &a" + value + " &7in group &a" + name);
+                    logger.info("Property &a" + key + " &7was set to &a" + value + " &7in group &a" + name);
                 } catch (Exception e) {
                     logger.info("&cUsage&8: &7group property set &8[&aname&8] [&akey&8] [&avalue&8]");
                 }
             }
-            default ->
-                    logger.info("&cUsage&8: &7group property &8[&7list&8|&7set&8|&7remove&8] [&aname&8] [&akey&8] [&avalue&8]");
+            default -> logger.info("&cUsage&8: &7group property &8[&7list&8|&7set&8|&7remove&8] [&aname&8] [&akey&8] [&avalue&8]");
         }
     }
 

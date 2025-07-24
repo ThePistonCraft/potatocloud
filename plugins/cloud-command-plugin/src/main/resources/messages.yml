@@ -1,4 +1,4 @@
-prefix: "<dark_gray>» <green>potato<white>cloud <dark_gray>• <reset>"
+prefix: "<dark_gray>» <gradient:#55FF55:#DAF3DA>potatocloud</gradient> <dark_gray>• <reset>"
 no-permission: "<red>You do not have enough permissions for this command"
 no-group: "<red>No service group found with the name <green>%name%"
 no-service: "<red>No service found with the name <green>%name%"
@@ -49,8 +49,7 @@ group:
       success: "<gray>Property <green>%key% <gray>was removed in group <green>%name%"
     set:
       usage: "<red>Usage<dark_gray>: <gray>/cloud group property set [<green>name<dark_gray>] [<green>key<dark_gray>] [<green>value<dark_gray>]"
-      success-default: "<gray>Default Property <green>%key% <gray>was set to <green>%value% <gray>in group <green>%name%"
-      success-custom: "<gray>Custom Property <green>%key% <gray>was set to <green>%value% <gray>in group <green>%name%"
+      success: "<gray>Property <green>%key% <gray>was set to <green>%value% <gray>in group <green>%name%"
     not-found: "<gray>Property <green>%key% <gray>was <red>not found"
   edit:
     usage: "<red>Usage<dark_gray>: <gray>/cloud group edit <dark_gray>[<green>name<dark_gray>] [<green>key<dark_gray>] [<green>value<dark_gray>]"
@@ -101,8 +100,7 @@ service:
       success: "<gray>Property <green>%key% <gray>was removed in service <green>%name%"
     set:
       usage: "<red>Usage<dark_gray>: <gray>/cloud service property set [<green>name<dark_gray>] [<green>key<dark_gray>] [<green>value<dark_gray>]"
-      success-default: "<gray>Default Property <green>%key% <gray>was set to <green>%value% <gray>in service <green>%name%"
-      success-custom: "<gray>Custom Property <green>%key% <gray>was set to <green>%value% <gray>in service <green>%name%"
+      success: "<gray>Property <green>%key% <gray>was set to <green>%value% <gray>in service <green>%name%"
     not-found: "<gray>Property <green>%key% <gray>was <red>not found"
   copy:
     usage: "<red>Usage<dark_gray>: <gray>/cloud service copy [<green>name<dark_gray>] [<green>template<dark_gray>] (<green>filter<dark_gray>)"

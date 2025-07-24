@@ -3,8 +3,9 @@ package net.potatocloud.api.player;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.service.Service;
 
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public interface CloudPlayerManager {
 
@@ -12,12 +13,12 @@ public interface CloudPlayerManager {
 
     CloudPlayer getCloudPlayer(UUID uniqueId);
 
-    List<CloudPlayer> getOnlinePlayers();
+    Set<CloudPlayer> getOnlinePlayers();
 
-    default List<CloudPlayer> getOnlinePlayersByGroup(ServiceGroup group) {
+    default Set<CloudPlayer> getOnlinePlayersByGroup(ServiceGroup group) {
         return getOnlinePlayers().stream()
                 .filter(player -> player.getConnectedService() != null && player.getConnectedService().getServiceGroup().getName().equals(group.getName()))
-                .toList();
+                .collect(Collectors.toSet());
     }
 
     void connectPlayerWithService(CloudPlayer player, String serviceName);

@@ -11,7 +11,6 @@ import net.potatocloud.plugins.proxy.maintenance.LoginListener;
 import net.potatocloud.plugins.proxy.motd.ProxyPingListener;
 import net.potatocloud.plugins.proxy.tablist.TablistBannerHandler;
 import net.potatocloud.plugins.proxy.tablist.TablistHandler;
-
 import org.slf4j.Logger;
 
 public class ProxyPlugin {

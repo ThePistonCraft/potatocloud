@@ -8,9 +8,7 @@ import net.potatocloud.api.property.Property;
 import org.simpleyaml.configuration.file.YamlFile;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @UtilityClass

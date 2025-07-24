@@ -22,11 +22,11 @@ public class HubPlugin {
         this.messagesConfig = new MessagesConfig();
         this.messagesConfig.load();
         this.config = new Config();
-        this.config.load();;
+        this.config.load();
     }
 
     @Subscribe
     public void onProxyInitialize(ProxyInitializeEvent event) {
-       server.getCommandManager().register(server.getCommandManager().metaBuilder("hub").aliases(this.config.aliases()).build(), new HubCommand(this.messagesConfig, this.server));
+        server.getCommandManager().register(server.getCommandManager().metaBuilder("hub").aliases(this.config.aliases()).build(), new HubCommand(this.messagesConfig, this.server));
     }
 }

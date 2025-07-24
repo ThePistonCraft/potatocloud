@@ -6,15 +6,14 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.simpleyaml.configuration.file.YamlFile;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 
 public class MessagesConfig {
 
-    private YamlFile config;
     private final MiniMessage miniMessage = MiniMessage.miniMessage();
     private final File configFile;
+    private YamlFile config;
 
     public MessagesConfig() {
         this.configFile = new File("plugins/potatocloud-proxy", "messages.yml");
@@ -37,7 +36,7 @@ public class MessagesConfig {
     }
 
     public Component get(String key) {
-        return miniMessage.deserialize(config.getString("prefix") +config.getString(key));
+        return miniMessage.deserialize(config.getString("prefix") + config.getString(key));
     }
 
     public Component getWithoutPrefix(String key) {

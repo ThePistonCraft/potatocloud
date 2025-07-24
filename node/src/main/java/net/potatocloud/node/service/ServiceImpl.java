@@ -43,6 +43,7 @@ public class ServiceImpl implements Service {
     private final List<String> logs = new ArrayList<>();
     private final NetworkServer server;
     private final Set<Property> properties;
+    private final Screen screen;
     @Setter
     private int maxPlayers;
     @Setter
@@ -54,7 +55,6 @@ public class ServiceImpl implements Service {
     private BufferedReader processReader;
     @Setter
     private ServiceProcessChecker processChecker;
-    private final Screen screen;
 
     public ServiceImpl(int serviceId, int port, ServiceGroup group, NodeConfig config, Logger logger) {
         this.serviceId = serviceId;
@@ -189,7 +189,7 @@ public class ServiceImpl implements Service {
             Files.writeString(velocityConfigFile, fileContent);
 
             // a forwarding secret file has to be created or else velocity will throw an error
-            if (!Files.exists(directory.resolve("forwarding.secret"))){
+            if (!Files.exists(directory.resolve("forwarding.secret"))) {
                 Files.writeString(directory.resolve("forwarding.secret"), UUID.randomUUID().toString(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
             }
         }

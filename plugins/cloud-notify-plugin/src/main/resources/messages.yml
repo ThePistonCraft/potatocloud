@@ -1,4 +1,6 @@
-starting: "<dark_gray>» <gold>%service% <dark_gray>[<white>%group%<dark_gray>]"
-start: "<dark_gray>» <green>%service% <dark_gray>[<white>%group%<dark_gray>]"
-stop: "<dark_gray>« <red>%service%"
-hover: "<gray>Click to connect to <white>%service%</white>..."
+# Placeholders: %service% %group% %port%
+service-starting: "<dark_gray>» <gray>Service <green>%service% <gray>is <green>starting<gray>..."
+service-started: "<dark_gray>» <gray>Service <green>%service% <gray>has started"
+service-stopping: "<dark_gray>« <gray>Service <green>%service% <gray>is <red>stopping<gray>..."
+service-stopped: "<dark_gray>« <gray>Service <green>%service% <gray>has <red>stopped"
+hover-text: "<gray>Click to connect to <white>%service%</white>."

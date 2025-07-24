@@ -11,9 +11,9 @@ import java.nio.file.Files;
 
 public class MessagesConfig {
 
-    private YamlFile config;
     private final MiniMessage miniMessage = MiniMessage.miniMessage();
     private final File configFile;
+    private YamlFile config;
 
     public MessagesConfig() {
         this.configFile = new File("plugins/potatocloud-hub", "messages.yml");

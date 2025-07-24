@@ -58,7 +58,6 @@ public class ServiceImpl implements Service {
                 .toList();
     }
 
-
     @Override
     public int getOnlinePlayersCount() {
         return getOnlinePlayers().size();

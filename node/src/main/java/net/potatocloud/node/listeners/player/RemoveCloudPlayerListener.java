@@ -5,6 +5,7 @@ import net.potatocloud.api.player.CloudPlayer;
 import net.potatocloud.core.networking.NetworkConnection;
 import net.potatocloud.core.networking.PacketListener;
 import net.potatocloud.core.networking.packets.player.RemoveCloudPlayerPacket;
+import net.potatocloud.node.Node;
 import net.potatocloud.node.player.CloudPlayerManagerImpl;
 
 @RequiredArgsConstructor
@@ -16,5 +17,8 @@ public class RemoveCloudPlayerListener implements PacketListener<RemoveCloudPlay
     public void onPacket(NetworkConnection connection, RemoveCloudPlayerPacket packet) {
         final CloudPlayer playerToRemove = playerManager.getCloudPlayer(packet.getPlayerUniqueId());
         playerManager.unregisterPlayer(playerToRemove);
+
+        // send back the same packet for the paper clients
+        Node.getInstance().getServer().broadcastPacket(new RemoveCloudPlayerPacket(playerToRemove.getUniqueId()));
     }
 }

@@ -7,7 +7,6 @@ import net.potatocloud.node.command.CommandManager;
 import net.potatocloud.node.screen.Screen;
 import org.jline.jansi.Ansi;
 import org.jline.reader.EndOfFileException;
-import org.jline.reader.LineReader;
 import org.jline.reader.UserInterruptException;
 
 @RequiredArgsConstructor

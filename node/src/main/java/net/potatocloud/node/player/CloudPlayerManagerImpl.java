@@ -9,14 +9,11 @@ import net.potatocloud.node.listeners.player.AddCloudPlayerListener;
 import net.potatocloud.node.listeners.player.RemoveCloudPlayerListener;
 import net.potatocloud.node.listeners.player.UpdateCloudPlayerListener;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class CloudPlayerManagerImpl implements CloudPlayerManager {
 
-    private final List<CloudPlayer> onlinePlayers = new ArrayList<>();
+    private final Set<CloudPlayer> onlinePlayers = new HashSet<>();
     private final NetworkServer server;
 
     public CloudPlayerManagerImpl(NetworkServer server) {
@@ -25,6 +22,7 @@ public class CloudPlayerManagerImpl implements CloudPlayerManager {
         server.registerPacketListener(PacketTypes.PLAYER_ADD, new AddCloudPlayerListener(this));
         server.registerPacketListener(PacketTypes.PLAYER_REMOVE, new RemoveCloudPlayerListener(this));
         server.registerPacketListener(PacketTypes.UPDATE_PLAYER, new UpdateCloudPlayerListener(this));
+
     }
 
     public void registerPlayer(CloudPlayer player) {
@@ -52,8 +50,8 @@ public class CloudPlayerManagerImpl implements CloudPlayerManager {
     }
 
     @Override
-    public List<CloudPlayer> getOnlinePlayers() {
-        return Collections.unmodifiableList(onlinePlayers);
+    public Set<CloudPlayer> getOnlinePlayers() {
+        return onlinePlayers;
     }
 
     @Override
@@ -62,6 +60,7 @@ public class CloudPlayerManagerImpl implements CloudPlayerManager {
     }
 
     @Override
-    public void updatePlayer(CloudPlayer player) {}
+    public void updatePlayer(CloudPlayer player) {
+    }
 }
 

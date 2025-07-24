@@ -1,1 +1,5 @@
 permission: "potatocloud.notify"
+
+messages:
+  enable-service-starting: true
+  enable-service-stopping: true

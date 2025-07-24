@@ -69,7 +69,7 @@ public class NodeConfig {
         yaml.set("service.service-start-port", serviceStartPort);
         yaml.set("service.proxy-start-port", proxyStartPort);
         yaml.set("service.service-splitter", splitter);
-        yaml.setComment("service.auto-update-platforms","Auto updates platform jars to latest build in the same MC version. Also updates MC version if using 'platform-latest'");
+        yaml.setComment("service.auto-update-platforms", "Auto updates platform jars to latest build in the same MC version. Also updates MC version if using 'platform-latest'");
 
         yaml.set("service.auto-update-platforms", platformAutoUpdate);
 
