@@ -10,7 +10,6 @@ import net.potatocloud.api.event.events.service.ServiceStoppingEvent;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.impl.PandaSpigotVersion;
-import net.potatocloud.api.player.CloudPlayer;
 import net.potatocloud.api.property.Property;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceStatus;
@@ -31,7 +30,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 @Getter
 public class ServiceImpl implements Service {
@@ -75,10 +73,6 @@ public class ServiceImpl implements Service {
         return group.getName() + config.getSplitter() + serviceId;
     }
 
-    public boolean isOnline() {
-        return status == ServiceStatus.RUNNING;
-    }
-
     public int getUsedMemory() {
         if (serverProcess == null || !serverProcess.isAlive()) {
             return 0;
@@ -102,18 +96,6 @@ public class ServiceImpl implements Service {
     @Override
     public ServiceGroup getServiceGroup() {
         return group;
-    }
-
-    public Set<CloudPlayer> getOnlinePlayers() {
-        return CloudAPI.getInstance().getPlayerManager().getOnlinePlayers()
-                .stream()
-                .filter(player -> player.getConnectedServiceName().equals(getName()))
-                .collect(Collectors.toSet());
-    }
-
-    @Override
-    public int getOnlinePlayersCount() {
-        return getOnlinePlayers().size();
     }
 
     @SneakyThrows

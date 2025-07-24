@@ -98,21 +98,6 @@ public class ServiceGroupImpl implements ServiceGroup {
     }
 
     @Override
-    public List<Service> getAllServices() {
-        return CloudAPI.getInstance()
-                .getServiceManager()
-                .getAllServices()
-                .stream()
-                .filter(service -> service.getServiceGroup().getName().equals(name))
-                .toList();
-    }
-
-    @Override
-    public List<Service> getOnlineServices() {
-        return getAllServices().stream().filter(service -> service.getStatus().equals(ServiceStatus.RUNNING)).toList();
-    }
-
-    @Override
     public int getOnlineServiceCount() {
         return getOnlineServices().size();
     }

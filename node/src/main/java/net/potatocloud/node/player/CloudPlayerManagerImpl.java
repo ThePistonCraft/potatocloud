@@ -55,8 +55,8 @@ public class CloudPlayerManagerImpl implements CloudPlayerManager {
     }
 
     @Override
-    public void connectPlayerWithService(CloudPlayer player, String serviceName) {
-        server.broadcastPacket(new ConnectCloudPlayerWithServicePacket(player.getUniqueId(), serviceName));
+    public void connectPlayerWithService(String playerName, String serviceName) {
+        server.broadcastPacket(new ConnectCloudPlayerWithServicePacket(playerName, serviceName));
     }
 
     @Override

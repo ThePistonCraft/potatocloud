@@ -21,7 +21,15 @@ public interface CloudPlayerManager {
                 .collect(Collectors.toSet());
     }
 
-    void connectPlayerWithService(CloudPlayer player, String serviceName);
+    void connectPlayerWithService(String playerName, String serviceName);
+
+    default void connectPlayerWithService(CloudPlayer player, String serviceName) {
+        connectPlayerWithService(player.getUsername(), serviceName);
+    }
+
+    default void connectPlayerWithService(String playerName, Service service) {
+        connectPlayerWithService(playerName, service.getName());
+    }
 
     default void connectPlayerWithService(CloudPlayer player, Service service) {
         connectPlayerWithService(player, service.getName());

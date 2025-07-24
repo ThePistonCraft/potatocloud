@@ -10,7 +10,11 @@ public interface ServiceGroupManager {
 
     ServiceGroup createServiceGroup(String name, String platformName, int minOnlineCount, int maxOnlineCount, int maxPlayers, int maxMemory, boolean fallback, boolean isStatic);
 
-    boolean deleteServiceGroup(ServiceGroup group);
+    void deleteServiceGroup(String name);
+
+    default void deleteServiceGroup(ServiceGroup group) {
+        deleteServiceGroup(group.getName());
+    }
 
     void updateServiceGroup(ServiceGroup group);
 
