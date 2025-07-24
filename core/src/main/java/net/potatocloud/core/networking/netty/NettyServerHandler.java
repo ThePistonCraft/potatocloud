@@ -26,8 +26,10 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         if (msg instanceof Packet packet) {
-            NetworkConnection connection = new NettyNetworkConnection(ctx.channel());
-            packetManager.onPacket(connection, packet);
+            server.getConnectedSessions().stream()
+                    .filter(conn -> conn instanceof NettyNetworkConnection networkConnection && networkConnection.getChannel().equals(ctx.channel()))
+                    .findFirst().ifPresent(connection -> packetManager.onPacket(connection, packet));
+
         }
     }
 }

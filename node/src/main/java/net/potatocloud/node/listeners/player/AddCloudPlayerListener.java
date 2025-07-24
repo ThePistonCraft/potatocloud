@@ -18,10 +18,10 @@ public class AddCloudPlayerListener implements PacketListener<AddCloudPlayerPack
     @Override
     public void onPacket(NetworkConnection connection, AddCloudPlayerPacket packet) {
         final CloudPlayer player = new CloudPlayerImpl(packet.getUsername(), packet.getUniqueId(), packet.getConnectedProxyName());
-
         playerManager.registerPlayer(player);
 
-        // send back the same packet for the paper clients
-        Node.getInstance().getServer().broadcastPacket(new AddCloudPlayerPacket(player.getUsername(), player.getUniqueId(), player.getConnectedProxyName()));
+        Node.getInstance().getServer().getConnectedSessions().stream()
+                .filter(networkConnection -> !networkConnection.equals(connection))
+                .forEach(networkConnection -> networkConnection.send(packet));
     }
 }

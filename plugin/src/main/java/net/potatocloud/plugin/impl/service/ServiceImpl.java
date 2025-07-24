@@ -85,11 +85,6 @@ public class ServiceImpl implements Service {
     }
 
     @Override
-    public void update() {
-        CloudAPI.getInstance().getServiceManager().updateService(this);
-    }
-
-    @Override
     public String getPropertyHolderName() {
         return getName();
     }

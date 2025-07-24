@@ -9,6 +9,7 @@ import net.potatocloud.api.service.ServiceStatus;
 import net.potatocloud.core.networking.NetworkConnection;
 import net.potatocloud.core.networking.PacketListener;
 import net.potatocloud.core.networking.packets.service.UpdateServicePacket;
+import net.potatocloud.node.Node;
 
 @RequiredArgsConstructor
 public class UpdateServiceListener implements PacketListener<UpdateServicePacket> {
@@ -24,5 +25,9 @@ public class UpdateServiceListener implements PacketListener<UpdateServicePacket
         for (PropertyData data : packet.getProperties()) {
             service.setProperty(Property.fromData(data));
         }
+
+        Node.getInstance().getServer().getConnectedSessions().stream()
+                .filter(networkConnection -> !networkConnection.equals(connection))
+                .forEach(networkConnection -> networkConnection.send(packet));
     }
 }
