@@ -31,6 +31,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Getter
 public class ServiceImpl implements Service {
@@ -103,11 +104,11 @@ public class ServiceImpl implements Service {
         return group;
     }
 
-    public List<CloudPlayer> getOnlinePlayers() {
+    public Set<CloudPlayer> getOnlinePlayers() {
         return CloudAPI.getInstance().getPlayerManager().getOnlinePlayers()
                 .stream()
                 .filter(player -> player.getConnectedServiceName().equals(getName()))
-                .toList();
+                .collect(Collectors.toSet());
     }
 
     @Override
