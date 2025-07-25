@@ -9,7 +9,6 @@ import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.PlatformVersions;
 import net.potatocloud.api.property.Property;
 import net.potatocloud.api.service.Service;
-import net.potatocloud.api.service.ServiceStatus;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -95,21 +94,6 @@ public class ServiceGroupImpl implements ServiceGroup {
             return;
         }
         serviceTemplates.remove(template);
-    }
-
-    @Override
-    public List<Service> getAllServices() {
-        return CloudAPI.getInstance()
-                .getServiceManager()
-                .getAllServices()
-                .stream()
-                .filter(service -> service.getServiceGroup().getName().equals(name))
-                .toList();
-    }
-
-    @Override
-    public List<Service> getOnlineServices() {
-        return getAllServices().stream().filter(service -> service.getStatus().equals(ServiceStatus.RUNNING)).toList();
     }
 
     @Override

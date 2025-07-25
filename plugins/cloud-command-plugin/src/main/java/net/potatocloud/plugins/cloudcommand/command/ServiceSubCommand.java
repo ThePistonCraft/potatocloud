@@ -107,7 +107,7 @@ public class ServiceSubCommand {
         player.sendMessage(messages.get("service.info.group").replaceText(text -> text.match("%group%").replacement(service.getServiceGroup().getName())));
         player.sendMessage(messages.get("service.info.port").replaceText(text -> text.match("%port%").replacement(String.valueOf(service.getPort()))));
         player.sendMessage(messages.get("service.info.status").replaceText(text -> text.match("%status%").replacement(service.getStatus().name())));
-        player.sendMessage(messages.get("service.info.online-players").replaceText(text -> text.match("%players%").replacement(String.valueOf(service.getOnlinePlayers()))));
+        player.sendMessage(messages.get("service.info.online-players").replaceText(text -> text.match("%players%").replacement(String.valueOf(service.getOnlinePlayerCount()))));
         player.sendMessage(messages.get("service.info.max-players").replaceText(text -> text.match("%maxPlayers%").replacement(String.valueOf(service.getMaxPlayers()))));
 
         // todo add missing stuff like: memory usage, online time, start timestamp

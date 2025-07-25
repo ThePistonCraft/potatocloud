@@ -18,7 +18,8 @@ public class RemoveCloudPlayerListener implements PacketListener<RemoveCloudPlay
         final CloudPlayer playerToRemove = playerManager.getCloudPlayer(packet.getPlayerUniqueId());
         playerManager.unregisterPlayer(playerToRemove);
 
-        // send back the same packet for the paper clients
-        Node.getInstance().getServer().broadcastPacket(new RemoveCloudPlayerPacket(playerToRemove.getUniqueId()));
+        Node.getInstance().getServer().getConnectedSessions().stream()
+                .filter(networkConnection -> !networkConnection.equals(connection))
+                .forEach(networkConnection -> networkConnection.send(packet));
     }
 }

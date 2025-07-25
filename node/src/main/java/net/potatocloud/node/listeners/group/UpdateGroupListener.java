@@ -8,6 +8,7 @@ import net.potatocloud.api.property.PropertyData;
 import net.potatocloud.core.networking.NetworkConnection;
 import net.potatocloud.core.networking.PacketListener;
 import net.potatocloud.core.networking.packets.group.UpdateGroupPacket;
+import net.potatocloud.node.Node;
 import net.potatocloud.node.group.ServiceGroupManagerImpl;
 import net.potatocloud.node.group.ServiceGroupStorage;
 
@@ -42,5 +43,9 @@ public class UpdateGroupListener implements PacketListener<UpdateGroupPacket> {
         if (groupManager instanceof ServiceGroupManagerImpl impl) {
             ServiceGroupStorage.saveToFile(group, impl.getGroupsPath());
         }
+
+        Node.getInstance().getServer().getConnectedSessions().stream()
+                .filter(networkConnection -> !networkConnection.equals(connection))
+                .forEach(networkConnection -> networkConnection.send(packet));
     }
 }

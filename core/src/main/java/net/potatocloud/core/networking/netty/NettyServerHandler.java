@@ -3,7 +3,6 @@ package net.potatocloud.core.networking.netty;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.RequiredArgsConstructor;
-import net.potatocloud.core.networking.NetworkConnection;
 import net.potatocloud.core.networking.Packet;
 import net.potatocloud.core.networking.PacketManager;
 
@@ -26,8 +25,10 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         if (msg instanceof Packet packet) {
-            NetworkConnection connection = new NettyNetworkConnection(ctx.channel());
-            packetManager.onPacket(connection, packet);
+            server.getConnectedSessions().stream()
+                    .filter(conn -> conn instanceof NettyNetworkConnection networkConnection && networkConnection.getChannel().equals(ctx.channel()))
+                    .findFirst().ifPresent(connection -> packetManager.onPacket(connection, packet));
+
         }
     }
 }

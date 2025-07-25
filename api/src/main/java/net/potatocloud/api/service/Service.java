@@ -1,11 +1,12 @@
 package net.potatocloud.api.service;
 
+import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.player.CloudPlayer;
 import net.potatocloud.api.property.PropertyHolder;
 
-import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public interface Service extends PropertyHolder {
 
@@ -13,7 +14,9 @@ public interface Service extends PropertyHolder {
 
     int getServiceId();
 
-    boolean isOnline();
+    default boolean isOnline() {
+        return getStatus() == ServiceStatus.RUNNING;
+    }
 
     ServiceStatus getStatus();
 
@@ -21,9 +24,23 @@ public interface Service extends PropertyHolder {
 
     long getStartTimestamp();
 
-    Set<CloudPlayer> getOnlinePlayers();
+    default long getUptime() {
+        return System.currentTimeMillis() - getStartTimestamp();
+    }
 
-    int getOnlinePlayersCount();
+    default Set<CloudPlayer> getOnlinePlayers() {
+        return CloudAPI.getInstance().getPlayerManager().getOnlinePlayers().stream()
+                .filter(player -> getName().equals(player.getConnectedServiceName()))
+                .collect(Collectors.toSet());
+    }
+
+    default int getOnlinePlayerCount() {
+        return getOnlinePlayers().size();
+    }
+
+    default boolean isFull() {
+        return getOnlinePlayerCount() >= getMaxPlayers();
+    }
 
     int getMaxPlayers();
 
@@ -45,5 +62,7 @@ public interface Service extends PropertyHolder {
         copy(template, "");
     }
 
-    void update();
+    default void update() {
+        CloudAPI.getInstance().getServiceManager().updateService(this);
+    }
 }

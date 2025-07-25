@@ -5,13 +5,11 @@ import lombok.Data;
 import net.potatocloud.core.networking.Packet;
 import net.potatocloud.core.networking.PacketTypes;
 
-import java.util.UUID;
-
 @Data
 @AllArgsConstructor
 public class ConnectCloudPlayerWithServicePacket implements Packet {
 
-    private UUID playerUniqueId;
+    private String playerUsername;
     private String serviceName;
 
     @Override

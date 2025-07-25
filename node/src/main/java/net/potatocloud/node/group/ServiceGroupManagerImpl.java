@@ -118,22 +118,23 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
     }
 
     @Override
-    public boolean deleteServiceGroup(ServiceGroup serviceGroup) {
-        if (serviceGroup == null || !groups.contains(serviceGroup)) {
-            return false;
+    public void deleteServiceGroup(String name) {
+        final ServiceGroup group = getServiceGroup(name);
+
+        if (group == null || !groups.contains(group)) {
+            return;
         }
 
-        serviceGroup.getOnlineServices().forEach(Service::shutdown);
+        group.getOnlineServices().forEach(Service::shutdown);
 
-        groups.remove(serviceGroup);
+        groups.remove(group);
 
-        final Path filePath = groupsPath.resolve(serviceGroup.getName() + ".yml");
+        final Path filePath = groupsPath.resolve(name + ".yml");
         try {
             Files.deleteIfExists(filePath);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return true;
     }
 
     @Override

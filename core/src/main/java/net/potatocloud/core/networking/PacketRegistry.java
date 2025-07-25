@@ -3,7 +3,10 @@ package net.potatocloud.core.networking;
 import net.potatocloud.core.networking.packets.EventPacket;
 import net.potatocloud.core.networking.packets.MessagePacket;
 import net.potatocloud.core.networking.packets.group.*;
-import net.potatocloud.core.networking.packets.player.*;
+import net.potatocloud.core.networking.packets.player.AddCloudPlayerPacket;
+import net.potatocloud.core.networking.packets.player.ConnectCloudPlayerWithServicePacket;
+import net.potatocloud.core.networking.packets.player.RemoveCloudPlayerPacket;
+import net.potatocloud.core.networking.packets.player.UpdateCloudPlayerPacket;
 import net.potatocloud.core.networking.packets.service.*;
 
 public class PacketRegistry {

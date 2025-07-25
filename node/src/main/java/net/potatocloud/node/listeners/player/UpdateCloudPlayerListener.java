@@ -10,8 +10,6 @@ import net.potatocloud.core.networking.PacketListener;
 import net.potatocloud.core.networking.packets.player.UpdateCloudPlayerPacket;
 import net.potatocloud.node.Node;
 
-import java.util.stream.Collectors;
-
 @RequiredArgsConstructor
 public class UpdateCloudPlayerListener implements PacketListener<UpdateCloudPlayerPacket> {
 
@@ -28,7 +26,8 @@ public class UpdateCloudPlayerListener implements PacketListener<UpdateCloudPlay
             player.setProperty(Property.fromData(data));
         }
 
-        // send back the same packet for the paper clients
-        Node.getInstance().getServer().broadcastPacket(new UpdateCloudPlayerPacket(player.getUniqueId(), player.getConnectedProxyName(), player.getConnectedServiceName(), player.getProperties().stream().map(Property::getData).collect(Collectors.toSet())));
+        Node.getInstance().getServer().getConnectedSessions().stream()
+                .filter(networkConnection -> !networkConnection.equals(connection))
+                .forEach(networkConnection -> networkConnection.send(packet));
     }
 }

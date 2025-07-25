@@ -65,9 +65,8 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
 
 
     @Override
-    public boolean deleteServiceGroup(ServiceGroup group) {
-        client.send(new DeleteGroupPacket(group.getName()));
-        return false;
+    public void deleteServiceGroup(String name) {
+        client.send(new DeleteGroupPacket(name));
     }
 
     @Override

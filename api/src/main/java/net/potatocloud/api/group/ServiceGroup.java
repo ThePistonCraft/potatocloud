@@ -1,10 +1,13 @@
 package net.potatocloud.api.group;
 
+import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.platform.Platform;
+import net.potatocloud.api.player.CloudPlayer;
 import net.potatocloud.api.property.PropertyHolder;
 import net.potatocloud.api.service.Service;
 
 import java.util.List;
+import java.util.Set;
 
 public interface ServiceGroup extends PropertyHolder {
 
@@ -23,6 +26,14 @@ public interface ServiceGroup extends PropertyHolder {
     int getMaxOnlineCount();
 
     void setMaxOnlineCount(int maxOnlineCount);
+
+    default Set<CloudPlayer> getOnlinePlayers() {
+        return CloudAPI.getInstance().getPlayerManager().getOnlinePlayersByGroup(this);
+    }
+
+    default int getOnlinePlayerCount() {
+        return getOnlinePlayers().size();
+    }
 
     int getMaxPlayers();
 
@@ -56,9 +67,13 @@ public interface ServiceGroup extends PropertyHolder {
 
     void removeServiceTemplate(String template);
 
-    List<Service> getAllServices();
+    default List<Service> getAllServices() {
+        return CloudAPI.getInstance().getServiceManager().getAllServices(getName());
+    }
 
-    List<Service> getOnlineServices();
+    default List<Service> getOnlineServices() {
+        return CloudAPI.getInstance().getServiceManager().getOnlineServices(getName());
+    }
 
     int getOnlineServiceCount();
 

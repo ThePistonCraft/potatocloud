@@ -64,11 +64,11 @@ public class VelocityPlugin {
         });
 
         api.getEventManager().on(LocalConnectPlayerWithServiceEvent.class, connectEvent -> {
-            connectPlayer(connectEvent.getPlayerUniqueId(), connectEvent.getServiceName());
+            connectPlayer(connectEvent.getPlayerUsername(), connectEvent.getServiceName());
         });
 
         api.getClient().registerPacketListener(PacketTypes.CONNECT_PLAYER, (NetworkConnection connection, ConnectCloudPlayerWithServicePacket packet) -> {
-            connectPlayer(packet.getPlayerUniqueId(), packet.getServiceName());
+            connectPlayer(packet.getPlayerUsername(), packet.getServiceName());
         });
 
         api.getClient().registerPacketListener(PacketTypes.SERVICE_REMOVE, (NetworkConnection connection, ServiceRemovePacket packet) -> {
@@ -76,8 +76,8 @@ public class VelocityPlugin {
         });
     }
 
-    private void connectPlayer(UUID uniqueId, String serviceName) {
-        final Optional<Player> player = server.getPlayer(uniqueId);
+    private void connectPlayer(String username, String serviceName) {
+        final Optional<Player> player = server.getPlayer(username);
         if (player.isEmpty()) {
             return;
         }
@@ -201,7 +201,7 @@ public class VelocityPlugin {
         return api.getServiceManager().getAllServices().stream()
                 .filter(service -> service.getServiceGroup().isFallback())
                 .filter(service -> service.getStatus() == ServiceStatus.RUNNING)
-                .sorted(Comparator.comparingInt(Service::getOnlinePlayersCount))
+                .sorted(Comparator.comparingInt(Service::getOnlinePlayerCount))
                 .map(service -> server.getServer(service.getName()))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
