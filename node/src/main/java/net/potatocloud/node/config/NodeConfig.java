@@ -11,6 +11,7 @@ import java.io.File;
 public class NodeConfig {
 
     private String prompt = "&7&a%user%&7@cloud ~> ";
+    private boolean enableBanner = true;
 
     private int serviceStartPort = 30000;
     private int proxyStartPort = 25565;
@@ -41,6 +42,7 @@ public class NodeConfig {
         yaml.load();
 
         prompt = yaml.getString("console.prompt", prompt);
+        enableBanner = yaml.getBoolean("console.enable-banner", enableBanner);
 
         serviceStartPort = yaml.getInt("service.service-start-port", serviceStartPort);
         proxyStartPort = yaml.getInt("service.proxy-start-port", proxyStartPort);
@@ -65,6 +67,7 @@ public class NodeConfig {
 
         yaml.setComment("console.prompt", "Console prompt text (%user% = current user)");
         yaml.set("console.prompt", prompt);
+        yaml.set("console.enable-banner", enableBanner);
 
         yaml.set("service.service-start-port", serviceStartPort);
         yaml.set("service.proxy-start-port", proxyStartPort);

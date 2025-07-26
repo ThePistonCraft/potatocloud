@@ -22,10 +22,10 @@ public class Console {
     @Setter
     private String prompt;
 
-    private ConsoleReader consoleReader;
+    private final ConsoleReader consoleReader;
 
     @SneakyThrows
-    public Console(String prompt, CommandManager commandManager, Node node) {
+    public Console(CommandManager commandManager, Node node) {
         terminal = TerminalBuilder.builder()
                 .name("potatocloud-console")
                 .system(true)
@@ -44,7 +44,11 @@ public class Console {
 
     public void start() {
         clearScreen();
-        ConsoleHeader.display(this);
+
+        if (Node.getInstance().getConfig().isEnableBanner()) {
+            ConsoleBanner.display(this);
+        }
+
         consoleReader.start();
     }
 
