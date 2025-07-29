@@ -56,6 +56,8 @@ public class Node extends CloudAPI {
     private final ServiceManagerImpl serviceManager;
     private final ServiceStartQueue serviceStartQueue;
 
+    private boolean isStopping;
+
     @SneakyThrows
     public Node() {
         config = new NodeConfig();
@@ -105,7 +107,7 @@ public class Node extends CloudAPI {
         ((ServiceGroupManagerImpl) groupManager).loadGroups();
 
         if (!groupManager.getAllServiceGroups().isEmpty()) {
-            logger.info("Found &a" + groupManager.getAllServiceGroups().size() + "&7 Service Groups:");
+            logger.info("Loaded &a" + groupManager.getAllServiceGroups().size() + "&7 Service Groups:");
             for (ServiceGroup group : groupManager.getAllServiceGroups()) {
                 logger.info("&8» &a" + group.getName());
             }
@@ -117,7 +119,7 @@ public class Node extends CloudAPI {
 
         registerCommands();
 
-        logger.info("Successfully started the potatocloud node &8(&7Took &a" + (System.currentTimeMillis() - Long.parseLong(System.getProperty("nodeStartupTime"))) + "ms&8)");
+        logger.info("Startup completed in &a" + (System.currentTimeMillis() - Long.parseLong(System.getProperty("nodeStartupTime"))) + "ms &7| Use &8'&ahelp&8' &7to see available commands");
 
         serviceStartQueue = new ServiceStartQueue(groupManager, serviceManager);
         serviceStartQueue.start();
@@ -164,7 +166,8 @@ public class Node extends CloudAPI {
 
     @SneakyThrows
     public void shutdown() {
-        logger.info("&cShutting down node...");
+        isStopping = true;
+        logger.info("&7Starting node &cshutdown&7...");
         serviceStartQueue.close();
 
         for (Service service : serviceManager.getAllServices()) {
@@ -178,6 +181,7 @@ public class Node extends CloudAPI {
 
         FileUtils.deleteDirectory(Path.of(config.getTempServicesFolder()).toFile());
 
+        logger.info("&7Shutdown complete. Goodbye!");
         console.close();
     }
 }
