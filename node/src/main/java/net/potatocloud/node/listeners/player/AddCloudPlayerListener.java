@@ -5,17 +5,17 @@ import net.potatocloud.api.player.CloudPlayer;
 import net.potatocloud.api.player.impl.CloudPlayerImpl;
 import net.potatocloud.core.networking.NetworkConnection;
 import net.potatocloud.core.networking.PacketListener;
-import net.potatocloud.core.networking.packets.player.AddCloudPlayerPacket;
+import net.potatocloud.core.networking.packets.player.CloudPlayerAddPacket;
 import net.potatocloud.node.Node;
 import net.potatocloud.node.player.CloudPlayerManagerImpl;
 
 @RequiredArgsConstructor
-public class AddCloudPlayerListener implements PacketListener<AddCloudPlayerPacket> {
+public class AddCloudPlayerListener implements PacketListener<CloudPlayerAddPacket> {
 
     private final CloudPlayerManagerImpl playerManager;
 
     @Override
-    public void onPacket(NetworkConnection connection, AddCloudPlayerPacket packet) {
+    public void onPacket(NetworkConnection connection, CloudPlayerAddPacket packet) {
         final CloudPlayer player = new CloudPlayerImpl(packet.getUsername(), packet.getUniqueId(), packet.getConnectedProxyName());
         playerManager.registerPlayer(player);
 

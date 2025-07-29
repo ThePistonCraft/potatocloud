@@ -9,7 +9,7 @@ import net.potatocloud.api.service.ServiceStatus;
 import net.potatocloud.core.networking.NetworkClient;
 import net.potatocloud.core.networking.packets.service.ServiceCopyPacket;
 import net.potatocloud.core.networking.packets.service.ServiceExecuteCommandPacket;
-import net.potatocloud.core.networking.packets.service.ShutdownServicePacket;
+import net.potatocloud.core.networking.packets.service.StopServicePacket;
 import net.potatocloud.plugin.impl.PluginCloudAPI;
 
 import java.util.HashSet;
@@ -30,15 +30,15 @@ public class ServiceImpl implements Service {
     private int usedMemory;
     private int maxPlayers;
 
-    public ServiceImpl(String name, int serviceId, int port, long startTimestamp, ServiceGroup group, ServiceStatus status, int usedMemory) {
+    public ServiceImpl(String name, int serviceId, int port, long startTimestamp, ServiceGroup group, ServiceStatus status) {
         this.name = name;
         this.serviceId = serviceId;
         this.port = port;
         this.startTimestamp = startTimestamp;
         this.group = group;
         this.status = status;
-        this.usedMemory = usedMemory;
 
+        usedMemory = 0; //todo
         maxPlayers = group.getMaxPlayers();
         client = PluginCloudAPI.getInstance().getClient();
         properties = new HashSet<>(group.getProperties());
@@ -51,7 +51,7 @@ public class ServiceImpl implements Service {
 
     @Override
     public void shutdown() {
-        client.send(new ShutdownServicePacket(name));
+        client.send(new StopServicePacket(name));
     }
 
     @Override

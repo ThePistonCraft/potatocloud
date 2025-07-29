@@ -5,7 +5,7 @@ import net.potatocloud.api.event.EventListener;
 import net.potatocloud.api.event.EventManager;
 import net.potatocloud.core.networking.NetworkClient;
 import net.potatocloud.core.networking.NetworkConnection;
-import net.potatocloud.core.networking.PacketTypes;
+import net.potatocloud.core.networking.PacketIds;
 import net.potatocloud.core.networking.packets.EventPacket;
 
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ public class ClientEventManager implements EventManager {
     public ClientEventManager(NetworkClient client) {
         this.client = client;
 
-        client.registerPacketListener(PacketTypes.EVENT, (NetworkConnection connection, EventPacket packet) -> {
+        client.registerPacketListener(PacketIds.EVENT, (NetworkConnection connection, EventPacket packet) -> {
             Event event = EventSerializer.deserialize(packet);
             if (event != null) {
                 callLocal(event);

@@ -1,4 +1,4 @@
-package net.potatocloud.core.networking.packets.service;
+package net.potatocloud.core.networking.packets.group;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,25 +10,22 @@ import net.potatocloud.core.networking.netty.PacketBuffer;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ServiceRemovePacket implements Packet {
+public class GroupDeletePacket implements Packet {
 
-    private String serviceName;
-    private int servicePort;
+    private String groupName;
 
     @Override
     public int getId() {
-        return PacketIds.SERVICE_REMOVE;
+        return PacketIds.GROUP_DELETE;
     }
 
     @Override
     public void write(PacketBuffer buf) {
-        buf.writeString(serviceName);
-        buf.writeInt(servicePort);
+        buf.writeString(groupName);
     }
 
     @Override
     public void read(PacketBuffer buf) {
-        serviceName = buf.readString();
-        servicePort = buf.readInt();
+        groupName = buf.readString();
     }
 }

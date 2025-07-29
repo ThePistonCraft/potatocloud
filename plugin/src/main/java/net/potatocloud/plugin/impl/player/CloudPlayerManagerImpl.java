@@ -7,9 +7,9 @@ import net.potatocloud.api.player.CloudPlayer;
 import net.potatocloud.api.player.CloudPlayerManager;
 import net.potatocloud.api.property.Property;
 import net.potatocloud.core.networking.NetworkClient;
-import net.potatocloud.core.networking.packets.player.AddCloudPlayerPacket;
-import net.potatocloud.core.networking.packets.player.RemoveCloudPlayerPacket;
-import net.potatocloud.core.networking.packets.player.UpdateCloudPlayerPacket;
+import net.potatocloud.core.networking.packets.player.CloudPlayerAddPacket;
+import net.potatocloud.core.networking.packets.player.CloudPlayerRemovePacket;
+import net.potatocloud.core.networking.packets.player.CloudPlayerUpdatePacket;
 import net.potatocloud.plugin.impl.event.LocalConnectPlayerWithServiceEvent;
 
 import java.util.HashSet;
@@ -27,13 +27,13 @@ public class CloudPlayerManagerImpl implements CloudPlayerManager {
     public void registerPlayer(CloudPlayer player) {
         onlinePlayers.add(player);
 
-        client.send(new AddCloudPlayerPacket(player.getUsername(), player.getUniqueId(), player.getConnectedProxyName()));
+        client.send(new CloudPlayerAddPacket(player.getUsername(), player.getUniqueId(), player.getConnectedProxyName()));
     }
 
     public void unregisterPlayer(CloudPlayer player) {
         onlinePlayers.remove(player);
 
-        client.send(new RemoveCloudPlayerPacket(player.getUniqueId()));
+        client.send(new CloudPlayerRemovePacket(player.getUniqueId()));
     }
 
     @Override
@@ -64,7 +64,7 @@ public class CloudPlayerManagerImpl implements CloudPlayerManager {
 
     @Override
     public void updatePlayer(CloudPlayer player) {
-        client.send(new UpdateCloudPlayerPacket(player.getUniqueId(), player.getConnectedProxyName(),
+        client.send(new CloudPlayerUpdatePacket(player.getUniqueId(), player.getConnectedProxyName(),
                 player.getConnectedServiceName(), player.getProperties().stream().map(Property::getData).collect(Collectors.toSet())));
     }
 }

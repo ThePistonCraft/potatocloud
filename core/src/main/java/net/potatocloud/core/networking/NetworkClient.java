@@ -8,7 +8,7 @@ public interface NetworkClient {
 
     void disconnect();
 
-    <T extends Packet> void registerPacketListener(String packetType, PacketListener<T> listener);
+    <T extends Packet> void registerPacketListener(int id, PacketListener<T> listener);
 
     boolean isConnected();
 

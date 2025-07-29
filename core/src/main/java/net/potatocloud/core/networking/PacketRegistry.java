@@ -1,40 +1,37 @@
 package net.potatocloud.core.networking;
 
 import net.potatocloud.core.networking.packets.EventPacket;
-import net.potatocloud.core.networking.packets.MessagePacket;
 import net.potatocloud.core.networking.packets.group.*;
-import net.potatocloud.core.networking.packets.player.AddCloudPlayerPacket;
-import net.potatocloud.core.networking.packets.player.ConnectCloudPlayerWithServicePacket;
-import net.potatocloud.core.networking.packets.player.RemoveCloudPlayerPacket;
-import net.potatocloud.core.networking.packets.player.UpdateCloudPlayerPacket;
+import net.potatocloud.core.networking.packets.player.CloudPlayerAddPacket;
+import net.potatocloud.core.networking.packets.player.CloudPlayerConnectPacket;
+import net.potatocloud.core.networking.packets.player.CloudPlayerRemovePacket;
+import net.potatocloud.core.networking.packets.player.CloudPlayerUpdatePacket;
 import net.potatocloud.core.networking.packets.service.*;
 
 public class PacketRegistry {
 
     public static void registerPackets(PacketManager manager) {
-        manager.register(PacketTypes.MESSAGE, MessagePacket.class);
+        manager.register(PacketIds.SERVICE_ADD, ServiceAddPacket::new);
+        manager.register(PacketIds.SERVICE_REMOVE, ServiceRemovePacket::new);
+        manager.register(PacketIds.SERVICE_UPDATE, ServiceUpdatePacket::new);
+        manager.register(PacketIds.SERVICE_STARTED, ServiceStartedPacket::new);
+        manager.register(PacketIds.REQUEST_SERVICES, RequestServicesPacket::new);
+        manager.register(PacketIds.START_SERVICE, StartServicePacket::new);
+        manager.register(PacketIds.STOP_SERVICE, StopServicePacket::new);
+        manager.register(PacketIds.SERVICE_EXECUTE_COMMAND, ServiceExecuteCommandPacket::new);
+        manager.register(PacketIds.SERVICE_COPY, ServiceCopyPacket::new);
 
-        manager.register(PacketTypes.SERVICE_ADD, ServiceAddPacket.class);
-        manager.register(PacketTypes.SERVICE_REMOVE, ServiceRemovePacket.class);
-        manager.register(PacketTypes.UPDATE_SERVICE, UpdateServicePacket.class);
-        manager.register(PacketTypes.SERVICE_STARTED, ServiceStartedPacket.class);
-        manager.register(PacketTypes.REQUEST_SERVICES, RequestServicesPacket.class);
-        manager.register(PacketTypes.START_SERVICE, StartServicePacket.class);
-        manager.register(PacketTypes.SHUTDOWN_SERVICE, ShutdownServicePacket.class);
-        manager.register(PacketTypes.SERVICE_EXECUTE_COMMAND, ServiceExecuteCommandPacket.class);
-        manager.register(PacketTypes.SERVICE_COPY, ServiceCopyPacket.class);
+        manager.register(PacketIds.REQUEST_GROUPS, RequestGroupsPacket::new);
+        manager.register(PacketIds.GROUP_ADD, GroupAddPacket::new);
+        manager.register(PacketIds.GROUP_UPDATE, GroupUpdatePacket::new);
+        manager.register(PacketIds.GROUP_CREATE, GroupCreatePacket::new);
+        manager.register(PacketIds.GROUP_DELETE, GroupDeletePacket::new);
 
-        manager.register(PacketTypes.REQUEST_GROUPS, RequestGroupsPacket.class);
-        manager.register(PacketTypes.GROUP_ADD, AddGroupPacket.class);
-        manager.register(PacketTypes.UPDATE_GROUP, UpdateGroupPacket.class);
-        manager.register(PacketTypes.CREATE_GROUP, CreateGroupPacket.class);
-        manager.register(PacketTypes.DELETE_GROUP, DeleteGroupPacket.class);
+        manager.register(PacketIds.PLAYER_ADD, CloudPlayerAddPacket::new);
+        manager.register(PacketIds.PLAYER_REMOVE, CloudPlayerRemovePacket::new);
+        manager.register(PacketIds.PLAYER_UPDATE, CloudPlayerUpdatePacket::new);
+        manager.register(PacketIds.PLAYER_CONNECT, CloudPlayerConnectPacket::new);
 
-        manager.register(PacketTypes.EVENT, EventPacket.class);
-
-        manager.register(PacketTypes.PLAYER_ADD, AddCloudPlayerPacket.class);
-        manager.register(PacketTypes.PLAYER_REMOVE, RemoveCloudPlayerPacket.class);
-        manager.register(PacketTypes.UPDATE_PLAYER, UpdateCloudPlayerPacket.class);
-        manager.register(PacketTypes.CONNECT_PLAYER, ConnectCloudPlayerWithServicePacket.class);
+        manager.register(PacketIds.EVENT, EventPacket::new);
     }
 }

@@ -7,9 +7,9 @@ import net.potatocloud.api.property.Property;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.core.networking.NetworkServer;
-import net.potatocloud.core.networking.PacketTypes;
+import net.potatocloud.core.networking.PacketIds;
 import net.potatocloud.core.networking.packets.service.ServiceAddPacket;
-import net.potatocloud.core.networking.packets.service.UpdateServicePacket;
+import net.potatocloud.core.networking.packets.service.ServiceUpdatePacket;
 import net.potatocloud.node.config.NodeConfig;
 import net.potatocloud.node.console.Logger;
 import net.potatocloud.node.listeners.service.*;
@@ -36,13 +36,13 @@ public class ServiceManagerImpl implements ServiceManager {
         this.eventManager = eventManager;
         this.groupManager = groupManager;
 
-        server.registerPacketListener(PacketTypes.REQUEST_SERVICES, new RequestServicesListener(this));
-        server.registerPacketListener(PacketTypes.SERVICE_STARTED, new ServiceStartedListener(this, logger, eventManager));
-        server.registerPacketListener(PacketTypes.UPDATE_SERVICE, new UpdateServiceListener(this));
-        server.registerPacketListener(PacketTypes.START_SERVICE, new StartServiceListener(this, groupManager));
-        server.registerPacketListener(PacketTypes.SHUTDOWN_SERVICE, new ShutdownServiceListener(this));
-        server.registerPacketListener(PacketTypes.SERVICE_EXECUTE_COMMAND, new ServiceExecuteCommandListener(this));
-        server.registerPacketListener(PacketTypes.SERVICE_COPY, new ServiceCopyListener(this));
+        server.registerPacketListener(PacketIds.REQUEST_SERVICES, new RequestServicesListener(this));
+        server.registerPacketListener(PacketIds.SERVICE_STARTED, new ServiceStartedListener(this, logger, eventManager));
+        server.registerPacketListener(PacketIds.SERVICE_UPDATE, new UpdateServiceListener(this));
+        server.registerPacketListener(PacketIds.START_SERVICE, new StartServiceListener(this, groupManager));
+        server.registerPacketListener(PacketIds.STOP_SERVICE, new ShutdownServiceListener(this));
+        server.registerPacketListener(PacketIds.SERVICE_EXECUTE_COMMAND, new ServiceExecuteCommandListener(this));
+        server.registerPacketListener(PacketIds.SERVICE_COPY, new ServiceCopyListener(this));
     }
 
     @Override
@@ -60,7 +60,7 @@ public class ServiceManagerImpl implements ServiceManager {
 
     @Override
     public void updateService(Service service) {
-        server.broadcastPacket(new UpdateServicePacket(
+        server.broadcastPacket(new ServiceUpdatePacket(
                 service.getName(),
                 service.getStatus().name(),
                 service.getMaxPlayers(),
@@ -82,7 +82,7 @@ public class ServiceManagerImpl implements ServiceManager {
         services.add(service);
 
         // broadcast add service packet to all connected clients
-        server.broadcastPacket(new ServiceAddPacket(service.getName(), service.getServiceId(), service.getPort(), service.getStartTimestamp(), service.getGroup().getName(), service.getStatus().name(), service.getUsedMemory()));
+        server.broadcastPacket(new ServiceAddPacket(service.getName(), service.getServiceId(), service.getPort(), service.getStartTimestamp(), service.getGroup().getName(), service.getStatus().name()));
 
         service.start();
     }

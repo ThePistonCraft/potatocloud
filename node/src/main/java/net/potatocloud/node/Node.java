@@ -65,7 +65,7 @@ public class Node extends CloudAPI {
         }
 
         commandManager = new CommandManager();
-        console = new Console(config.getPrompt(), commandManager, this);
+        console = new Console(commandManager, this);
         console.start();
 
         logger = new Logger(console, new File(config.getLogsFolder()));
@@ -119,7 +119,7 @@ public class Node extends CloudAPI {
 
         logger.info("Successfully started the potatocloud node &8(&7Took &a" + (System.currentTimeMillis() - Long.parseLong(System.getProperty("nodeStartupTime"))) + "ms&8)");
 
-        serviceStartQueue = new ServiceStartQueue(groupManager, serviceManager, playerManager);
+        serviceStartQueue = new ServiceStartQueue(groupManager, serviceManager);
         serviceStartQueue.start();
     }
 

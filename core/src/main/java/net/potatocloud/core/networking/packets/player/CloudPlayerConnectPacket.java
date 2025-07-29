@@ -1,4 +1,4 @@
-package net.potatocloud.core.networking.packets.service;
+package net.potatocloud.core.networking.packets.player;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,25 +10,26 @@ import net.potatocloud.core.networking.netty.PacketBuffer;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ServiceRemovePacket implements Packet {
+public class CloudPlayerConnectPacket implements Packet {
 
+    private String playerUsername;
     private String serviceName;
-    private int servicePort;
 
     @Override
     public int getId() {
-        return PacketIds.SERVICE_REMOVE;
+        return PacketIds.PLAYER_CONNECT;
     }
 
     @Override
     public void write(PacketBuffer buf) {
+        buf.writeString(playerUsername);
         buf.writeString(serviceName);
-        buf.writeInt(servicePort);
     }
 
     @Override
     public void read(PacketBuffer buf) {
+        playerUsername = buf.readString();
         serviceName = buf.readString();
-        servicePort = buf.readInt();
+        ;
     }
 }

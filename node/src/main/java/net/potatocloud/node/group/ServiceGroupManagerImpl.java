@@ -10,9 +10,9 @@ import net.potatocloud.api.platform.PlatformVersions;
 import net.potatocloud.api.property.Property;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.core.networking.NetworkServer;
-import net.potatocloud.core.networking.PacketTypes;
-import net.potatocloud.core.networking.packets.group.AddGroupPacket;
-import net.potatocloud.core.networking.packets.group.UpdateGroupPacket;
+import net.potatocloud.core.networking.PacketIds;
+import net.potatocloud.core.networking.packets.group.GroupAddPacket;
+import net.potatocloud.core.networking.packets.group.GroupUpdatePacket;
 import net.potatocloud.node.Node;
 import net.potatocloud.node.listeners.group.CreateGroupListener;
 import net.potatocloud.node.listeners.group.DeleteGroupListener;
@@ -41,10 +41,10 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
         this.groupsPath = groupsPath;
         this.server = server;
 
-        server.registerPacketListener(PacketTypes.REQUEST_GROUPS, new RequestGroupsListener(this));
-        server.registerPacketListener(PacketTypes.UPDATE_GROUP, new UpdateGroupListener(this));
-        server.registerPacketListener(PacketTypes.CREATE_GROUP, new CreateGroupListener(this));
-        server.registerPacketListener(PacketTypes.DELETE_GROUP, new DeleteGroupListener(this));
+        server.registerPacketListener(PacketIds.REQUEST_GROUPS, new RequestGroupsListener(this));
+        server.registerPacketListener(PacketIds.GROUP_UPDATE, new UpdateGroupListener(this));
+        server.registerPacketListener(PacketIds.GROUP_CREATE, new CreateGroupListener(this));
+        server.registerPacketListener(PacketIds.GROUP_DELETE, new DeleteGroupListener(this));
     }
 
     @Override
@@ -100,7 +100,7 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
         );
 
         // send group add packet to clients
-        server.broadcastPacket(new AddGroupPacket(
+        server.broadcastPacket(new GroupAddPacket(
                 name,
                 platformName,
                 templates,
@@ -141,7 +141,7 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
     public void updateServiceGroup(ServiceGroup group) {
         ServiceGroupStorage.saveToFile(group, groupsPath);
 
-        server.broadcastPacket(new UpdateGroupPacket(
+        server.broadcastPacket(new GroupUpdatePacket(
                 group.getName(),
                 group.getMinOnlineCount(),
                 group.getMaxOnlineCount(),

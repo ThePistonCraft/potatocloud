@@ -7,15 +7,15 @@ import net.potatocloud.api.property.Property;
 import net.potatocloud.api.property.PropertyData;
 import net.potatocloud.core.networking.NetworkConnection;
 import net.potatocloud.core.networking.PacketListener;
-import net.potatocloud.core.networking.packets.group.UpdateGroupPacket;
+import net.potatocloud.core.networking.packets.group.GroupUpdatePacket;
 
 @RequiredArgsConstructor
-public class UpdateGroupListener implements PacketListener<UpdateGroupPacket> {
+public class UpdateGroupListener implements PacketListener<GroupUpdatePacket> {
 
     private final ServiceGroupManager groupManager;
 
     @Override
-    public void onPacket(NetworkConnection connection, UpdateGroupPacket packet) {
+    public void onPacket(NetworkConnection connection, GroupUpdatePacket packet) {
         final ServiceGroup group = groupManager.getServiceGroup(packet.getGroupName());
         group.setMinOnlineCount(packet.getMinOnlineCount());
         group.setMaxOnlineCount(packet.getMaxOnlineCount());

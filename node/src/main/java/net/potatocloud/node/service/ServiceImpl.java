@@ -25,6 +25,7 @@ import oshi.SystemInfo;
 import oshi.software.os.OSProcess;
 
 import java.io.*;
+import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -353,7 +354,11 @@ public class ServiceImpl implements Service {
             Node.getInstance().getTemplateManager().createTemplate(targetPath.toFile().getName());
         }
 
-        FileUtils.copyDirectory(sourcePath.toFile(), targetPath.toFile());
+        try {
+            FileUtils.copyDirectory(sourcePath.toFile(), targetPath.toFile());
+        } catch (FileSystemException ignored) {
+
+        }
     }
 
 

@@ -5,13 +5,13 @@ import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.core.networking.NetworkClient;
 import net.potatocloud.core.networking.NetworkConnection;
-import net.potatocloud.core.networking.PacketTypes;
+import net.potatocloud.core.networking.PacketIds;
 import net.potatocloud.core.networking.packets.service.RequestServicesPacket;
 import net.potatocloud.core.networking.packets.service.ServiceRemovePacket;
+import net.potatocloud.core.networking.packets.service.ServiceUpdatePacket;
 import net.potatocloud.core.networking.packets.service.StartServicePacket;
-import net.potatocloud.core.networking.packets.service.UpdateServicePacket;
 import net.potatocloud.plugin.impl.listener.service.ServiceAddListener;
-import net.potatocloud.plugin.impl.listener.service.UpdateServiceListener;
+import net.potatocloud.plugin.impl.listener.service.ServiceUpdateListener;
 
 import java.util.Collections;
 import java.util.List;
@@ -28,13 +28,13 @@ public class ServiceManagerImpl implements ServiceManager {
 
         client.send(new RequestServicesPacket());
 
-        client.registerPacketListener(PacketTypes.SERVICE_ADD, new ServiceAddListener(this));
+        client.registerPacketListener(PacketIds.SERVICE_ADD, new ServiceAddListener(this));
 
-        client.registerPacketListener(PacketTypes.SERVICE_REMOVE, (NetworkConnection connection, ServiceRemovePacket packet) -> {
+        client.registerPacketListener(PacketIds.SERVICE_REMOVE, (NetworkConnection connection, ServiceRemovePacket packet) -> {
             services.remove(getService(packet.getServiceName()));
         });
 
-        client.registerPacketListener(PacketTypes.UPDATE_SERVICE, new UpdateServiceListener(this));
+        client.registerPacketListener(PacketIds.SERVICE_UPDATE, new ServiceUpdateListener(this));
     }
 
     public void addService(Service service) {
@@ -56,7 +56,7 @@ public class ServiceManagerImpl implements ServiceManager {
 
     @Override
     public void updateService(Service service) {
-        client.send(new UpdateServicePacket(
+        client.send(new ServiceUpdatePacket(
                 service.getName(),
                 service.getStatus().name(),
                 service.getMaxPlayers(),
