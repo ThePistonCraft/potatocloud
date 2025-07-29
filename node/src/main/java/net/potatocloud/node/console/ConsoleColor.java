@@ -1,6 +1,7 @@
 package net.potatocloud.node.console;
 
 
+import net.potatocloud.node.Node;
 import org.jline.jansi.Ansi;
 
 public enum ConsoleColor {
@@ -9,7 +10,7 @@ public enum ConsoleColor {
     GRAY('7', 188),
     RED('c', 203),
     BLUE('9', 63),
-    YELLOW('e', 2020),
+    YELLOW('e', 226),
     GREEN('a', 42),
     WHITE('f', 15);
 
@@ -23,8 +24,18 @@ public enum ConsoleColor {
 
     public static String format(String text) {
         for (ConsoleColor color : values()) {
-            text = text.replace("&" + color.code, color.ansiColor);
+            if (color.code == 'a') {
+                text = text.replace("&a", getPrimaryColor());
+            } else {
+                text = text.replace("&" + color.code, color.ansiColor);
+            }
         }
         return text + Ansi.ansi().reset();
     }
+
+    private static String getPrimaryColor() {
+        return Ansi.ansi().reset().fg(Node.getInstance().getConfig().getPrimaryColorCode()).toString();
+    }
 }
+
+
