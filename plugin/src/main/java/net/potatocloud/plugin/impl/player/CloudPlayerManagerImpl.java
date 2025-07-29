@@ -57,7 +57,7 @@ public class CloudPlayerManagerImpl implements CloudPlayerManager {
 
     @Override
     public void connectPlayerWithService(String playerName, String serviceName) {
-        CloudAPI.getInstance().getEventManager().callLocal(new LocalConnectPlayerWithServiceEvent(playerName, serviceName));
+        CloudAPI.getInstance().getEventManager().call(new LocalConnectPlayerWithServiceEvent(playerName, serviceName));
     }
 
     @Override
