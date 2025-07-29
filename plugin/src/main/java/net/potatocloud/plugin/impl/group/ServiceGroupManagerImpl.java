@@ -2,7 +2,6 @@ package net.potatocloud.plugin.impl.group;
 
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.group.ServiceGroupManager;
-import net.potatocloud.api.property.Property;
 import net.potatocloud.core.networking.NetworkClient;
 import net.potatocloud.core.networking.PacketIds;
 import net.potatocloud.core.networking.packets.group.GroupCreatePacket;
@@ -15,7 +14,6 @@ import net.potatocloud.plugin.impl.listener.group.UpdateGroupListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ServiceGroupManagerImpl implements ServiceGroupManager {
 
@@ -79,7 +77,7 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
                 group.getMaxMemory(),
                 group.isFallback(),
                 group.getServiceTemplates(),
-                group.getProperties().stream().map(Property::getData).collect(Collectors.toSet()),
+                group.getProperties(),
                 group.getCustomJvmFlags()
         ));
     }

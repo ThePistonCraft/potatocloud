@@ -2,7 +2,7 @@ package net.potatocloud.core.networking.netty;
 
 import io.netty.buffer.ByteBuf;
 import lombok.RequiredArgsConstructor;
-import net.potatocloud.api.property.PropertyData;
+import net.potatocloud.api.property.Property;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -89,34 +89,34 @@ public class PacketBuffer {
         };
     }
 
-    public void writePropertyData(PropertyData data) {
-        writeString(data.getName());
-        writeObject(data.getDefaultValue());
-        writeObject(data.getValue());
+    public void writeProperty(Property property) {
+        writeString(property.getName());
+        writeObject(property.getDefaultValue());
+        writeObject(property.getValue());
     }
 
-    public PropertyData readPropertyData() {
+    public Property readProperty() {
         final String name = readString();
         final Object defaultValue = readObject();
         final Object value = readObject();
 
-        return new PropertyData(name, defaultValue, value);
+        return Property.of(name, defaultValue, value);
     }
 
-    public void writePropertyDataSet(Set<PropertyData> data) {
-        buf.writeInt(data.size());
-        for (PropertyData propertyData : data) {
-            writePropertyData(propertyData);
+    public void writePropertySet(Set<Property> properties) {
+        buf.writeInt(properties.size());
+        for (Property property : properties) {
+            writeProperty(property);
         }
     }
 
-    public Set<PropertyData> readPropertyDataSet() {
+    public Set<Property> readPropertySet() {
         final int size = readInt();
-        final Set<PropertyData> dataSet = new HashSet<>(size);
+        final Set<Property> properties = new HashSet<>(size);
         for (int i = 0; i < size; i++) {
-            dataSet.add(readPropertyData());
+            properties.add(readProperty());
         }
-        return dataSet;
+        return properties;
     }
 
     public void writeLong(long value) {

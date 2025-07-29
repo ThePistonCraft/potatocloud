@@ -1,48 +1,48 @@
 package net.potatocloud.api.property;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Set;
 
-@Setter
 @Getter
-@AllArgsConstructor
 public class Property {
 
-    public static final Property GAME_STATE = new Property("gameState", "INGAME");
-    private final PropertyData data;
+    public static final Property GAME_STATE = Property.ofString("gameState", "INGAME");
 
-    public Property(String name, Object defaultValue) {
-        this.data = new PropertyData(name, defaultValue, defaultValue);
+    private final String name;
+    private final Object defaultValue;
+
+    @Setter
+    private Object value;
+
+    private Property(String name, Object defaultValue, Object value) {
+        this.name = name;
+        this.defaultValue = defaultValue;
+        this.value = value;
     }
 
-    public Property(String name, Object defaultValue, Object value) {
-        this.data = new PropertyData(name, defaultValue, value);
+    public static Property ofString(String name, String defaultValue) {
+        return new Property(name, defaultValue, defaultValue);
     }
 
-    public static Property fromData(PropertyData data) {
-        return new Property(data.getName(), data.getDefaultValue(), data.getValue());
+    public static Property ofInt(String name, int defaultValue) {
+        return new Property(name, defaultValue, defaultValue);
+    }
+
+    public static Property ofFloat(String name, float defaultValue) {
+        return new Property(name, defaultValue, defaultValue);
+    }
+
+    public static Property ofBoolean(String name, boolean defaultValue) {
+        return new Property(name, defaultValue, defaultValue);
+    }
+
+    public static Property of(String name, Object defaultValue, Object value) {
+        return new Property(name, defaultValue, value);
     }
 
     public static Set<Property> getDefaultProperties() {
         return Set.of(GAME_STATE);
-    }
-
-    public String getName() {
-        return data.getName();
-    }
-
-    public Object getDefaultValue() {
-        return data.getDefaultValue();
-    }
-
-    public Object getValue() {
-        return data.getValue();
-    }
-
-    public void setValue(Object value) {
-        data.setValue(value);
     }
 }

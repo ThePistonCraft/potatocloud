@@ -3,7 +3,7 @@ package net.potatocloud.core.networking.packets.player;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import net.potatocloud.api.property.PropertyData;
+import net.potatocloud.api.property.Property;
 import net.potatocloud.core.networking.Packet;
 import net.potatocloud.core.networking.PacketIds;
 import net.potatocloud.core.networking.netty.PacketBuffer;
@@ -19,7 +19,7 @@ public class CloudPlayerUpdatePacket implements Packet {
     private UUID playerUniqueId;
     private String connectedProxyName;
     private String connectedServiceName;
-    private Set<PropertyData> properties;
+    private Set<Property> properties;
 
     @Override
     public int getId() {
@@ -31,7 +31,7 @@ public class CloudPlayerUpdatePacket implements Packet {
         buf.writeString(playerUniqueId.toString());
         buf.writeString(connectedProxyName);
         buf.writeString(connectedServiceName);
-        buf.writePropertyDataSet(properties);
+        buf.writePropertySet(properties);
     }
 
     @Override
@@ -39,6 +39,6 @@ public class CloudPlayerUpdatePacket implements Packet {
         playerUniqueId = UUID.fromString(buf.readString());
         connectedProxyName = buf.readString();
         connectedServiceName = buf.readString();
-        properties = buf.readPropertyDataSet();
+        properties = buf.readPropertySet();
     }
 }

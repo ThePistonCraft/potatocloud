@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.group.ServiceGroupManager;
 import net.potatocloud.api.property.Property;
-import net.potatocloud.api.property.PropertyData;
 import net.potatocloud.core.networking.NetworkConnection;
 import net.potatocloud.core.networking.PacketListener;
 import net.potatocloud.core.networking.packets.group.GroupUpdatePacket;
@@ -35,8 +34,8 @@ public class UpdateGroupListener implements PacketListener<GroupUpdatePacket> {
         }
 
         group.getProperties().clear();
-        for (PropertyData data : packet.getProperties()) {
-            group.setProperty(Property.fromData(data));
+        for (Property property : packet.getProperties()) {
+            group.setProperty(property);
         }
 
         // update group file

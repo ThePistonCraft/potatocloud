@@ -5,7 +5,6 @@ import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.player.CloudPlayerManager;
 import net.potatocloud.api.player.impl.CloudPlayerImpl;
 import net.potatocloud.api.property.Property;
-import net.potatocloud.api.property.PropertyData;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.core.networking.NetworkConnection;
 import net.potatocloud.core.networking.PacketIds;
@@ -54,8 +53,8 @@ public class PaperPlugin extends JavaPlugin implements Listener {
             player.setConnectedServiceName(packet.getConnectedServiceName());
 
             player.getProperties().clear();
-            for (PropertyData data : packet.getProperties()) {
-                player.setProperty(Property.fromData(data));
+            for (Property property : packet.getProperties()) {
+                player.setProperty(property);
             }
         });
 

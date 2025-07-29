@@ -2,7 +2,6 @@ package net.potatocloud.node.listeners.service;
 
 import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.property.Property;
-import net.potatocloud.api.property.PropertyData;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.api.service.ServiceStatus;
@@ -22,8 +21,8 @@ public class UpdateServiceListener implements PacketListener<ServiceUpdatePacket
         service.setStatus(ServiceStatus.valueOf(packet.getStatus()));
         service.setMaxPlayers(packet.getMaxPlayers());
         service.getProperties().clear();
-        for (PropertyData data : packet.getProperties()) {
-            service.setProperty(Property.fromData(data));
+        for (Property property : packet.getProperties()) {
+            service.setProperty(property);
         }
 
         Node.getInstance().getServer().getConnectedSessions().stream()

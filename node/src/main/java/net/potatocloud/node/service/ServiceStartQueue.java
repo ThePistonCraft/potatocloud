@@ -27,7 +27,7 @@ public class ServiceStartQueue extends Thread {
         setDaemon(true);
 
         Node.getInstance().getEventManager().on(PropertyChangedEvent.class, event -> {
-            if (!event.getPropertyData().getName().equals(Property.GAME_STATE.getName())) {
+            if (!event.getProperty().getName().equals(Property.GAME_STATE.getName())) {
                 return;
             }
 

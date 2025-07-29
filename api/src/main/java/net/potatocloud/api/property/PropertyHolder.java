@@ -30,7 +30,7 @@ public interface PropertyHolder {
             getProperties().add(property);
         }
 
-        CloudAPI.getInstance().getEventManager().call(new PropertyChangedEvent(getPropertyHolderName(), property.getData(), oldValue, value));
+        CloudAPI.getInstance().getEventManager().call(new PropertyChangedEvent(getPropertyHolderName(), property, oldValue, value));
     }
 
 

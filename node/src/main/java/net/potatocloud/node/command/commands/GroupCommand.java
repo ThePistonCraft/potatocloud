@@ -133,7 +133,7 @@ public class GroupCommand implements Command, TabCompleter {
                 final String value = args[4];
 
                 try {
-                    group.setProperty(new Property(key, value));
+                    group.setProperty(Property.of(key, value, value));
                     group.update();
                     logger.info("Property &a" + key + " &7was set to &a" + value + " &7in group &a" + name);
                 } catch (Exception e) {

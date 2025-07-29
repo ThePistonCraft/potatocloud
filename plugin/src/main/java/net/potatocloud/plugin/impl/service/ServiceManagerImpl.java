@@ -1,6 +1,5 @@
 package net.potatocloud.plugin.impl.service;
 
-import net.potatocloud.api.property.Property;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.core.networking.NetworkClient;
@@ -16,7 +15,6 @@ import net.potatocloud.plugin.impl.listener.service.ServiceUpdateListener;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
 
 public class ServiceManagerImpl implements ServiceManager {
 
@@ -60,8 +58,8 @@ public class ServiceManagerImpl implements ServiceManager {
                 service.getName(),
                 service.getStatus().name(),
                 service.getMaxPlayers(),
-                service.getProperties().stream().map(Property::getData).collect(Collectors.toSet())
-        ));
+                service.getProperties())
+        );
     }
 
     @Override

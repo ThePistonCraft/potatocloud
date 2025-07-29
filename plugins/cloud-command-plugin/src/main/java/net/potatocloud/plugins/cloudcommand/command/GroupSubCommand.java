@@ -160,7 +160,7 @@ public class GroupSubCommand {
                 final String value = args[5];
 
                 try {
-                    group.setProperty(new Property(key, value));
+                    group.setProperty(Property.of(key, value, value));
                     group.update();
 
                     player.sendMessage(messages.get("group.property.set.success")

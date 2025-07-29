@@ -3,7 +3,7 @@ package net.potatocloud.core.networking.packets.group;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import net.potatocloud.api.property.PropertyData;
+import net.potatocloud.api.property.Property;
 import net.potatocloud.core.networking.Packet;
 import net.potatocloud.core.networking.PacketIds;
 import net.potatocloud.core.networking.netty.PacketBuffer;
@@ -23,7 +23,7 @@ public class GroupUpdatePacket implements Packet {
     private int maxMemory;
     private boolean fallback;
     private List<String> serviceTemplates;
-    private Set<PropertyData> properties;
+    private Set<Property> properties;
     private List<String> customJvmFlags;
 
     @Override
@@ -40,7 +40,7 @@ public class GroupUpdatePacket implements Packet {
         buf.writeInt(maxMemory);
         buf.writeBoolean(fallback);
         buf.writeStringList(serviceTemplates);
-        buf.writePropertyDataSet(properties);
+        buf.writePropertySet(properties);
         buf.writeStringList(customJvmFlags);
     }
 
@@ -53,7 +53,7 @@ public class GroupUpdatePacket implements Packet {
         maxMemory = buf.readInt();
         fallback = buf.readBoolean();
         serviceTemplates = buf.readStringList();
-        properties = buf.readPropertyDataSet();
+        properties = buf.readPropertySet();
         customJvmFlags = buf.readStringList();
     }
 }

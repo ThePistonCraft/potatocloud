@@ -3,7 +3,7 @@ package net.potatocloud.core.networking.packets.service;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import net.potatocloud.api.property.PropertyData;
+import net.potatocloud.api.property.Property;
 import net.potatocloud.core.networking.Packet;
 import net.potatocloud.core.networking.PacketIds;
 import net.potatocloud.core.networking.netty.PacketBuffer;
@@ -18,7 +18,7 @@ public class ServiceUpdatePacket implements Packet {
     private String serviceName;
     private String status;
     private int maxPlayers;
-    private Set<PropertyData> properties;
+    private Set<Property> properties;
 
     @Override
     public int getId() {
@@ -30,7 +30,7 @@ public class ServiceUpdatePacket implements Packet {
         buf.writeString(serviceName);
         buf.writeString(status);
         buf.writeInt(maxPlayers);
-        buf.writePropertyDataSet(properties);
+        buf.writePropertySet(properties);
     }
 
     @Override
@@ -38,6 +38,6 @@ public class ServiceUpdatePacket implements Packet {
         serviceName = buf.readString();
         status = buf.readString();
         maxPlayers = buf.readInt();
-        properties = buf.readPropertyDataSet();
+        properties = buf.readPropertySet();
     }
 }
