@@ -312,11 +312,11 @@ public class ServiceImpl implements Service {
             try {
                 FileUtils.deleteDirectory(directory.toFile());
             } catch (IOException e) {
-                logger.error("The temp directory for " + getName() + " could not be deleted! The service might still be running");
+                logger.error("Temp directory for " + getName() + " could not be deleted! The service might still be running");
             }
         }
 
-        logger.info("The Service &a" + getName() + " &7has been stopped.");
+        logger.info("Service &a" + getName() + " &7has been stopped.");
     }
 
 
