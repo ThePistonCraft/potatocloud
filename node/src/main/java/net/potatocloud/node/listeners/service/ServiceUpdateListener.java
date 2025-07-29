@@ -11,7 +11,7 @@ import net.potatocloud.core.networking.packets.service.ServiceUpdatePacket;
 import net.potatocloud.node.Node;
 
 @RequiredArgsConstructor
-public class UpdateServiceListener implements PacketListener<ServiceUpdatePacket> {
+public class ServiceUpdateListener implements PacketListener<ServiceUpdatePacket> {
 
     private final ServiceManager serviceManager;
 

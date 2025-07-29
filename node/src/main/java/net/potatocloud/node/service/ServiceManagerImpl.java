@@ -3,7 +3,6 @@ package net.potatocloud.node.service;
 import net.potatocloud.api.event.EventManager;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.group.ServiceGroupManager;
-import net.potatocloud.api.property.Property;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.core.networking.NetworkServer;
@@ -17,7 +16,6 @@ import net.potatocloud.node.listeners.service.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
 
 public class ServiceManagerImpl implements ServiceManager {
 
@@ -38,7 +36,7 @@ public class ServiceManagerImpl implements ServiceManager {
 
         server.registerPacketListener(PacketIds.REQUEST_SERVICES, new RequestServicesListener(this));
         server.registerPacketListener(PacketIds.SERVICE_STARTED, new ServiceStartedListener(this, logger, eventManager));
-        server.registerPacketListener(PacketIds.SERVICE_UPDATE, new UpdateServiceListener(this));
+        server.registerPacketListener(PacketIds.SERVICE_UPDATE, new ServiceUpdateListener(this));
         server.registerPacketListener(PacketIds.START_SERVICE, new StartServiceListener(this, groupManager));
         server.registerPacketListener(PacketIds.STOP_SERVICE, new ShutdownServiceListener(this));
         server.registerPacketListener(PacketIds.SERVICE_EXECUTE_COMMAND, new ServiceExecuteCommandListener(this));

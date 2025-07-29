@@ -316,7 +316,7 @@ public class ServiceImpl implements Service {
             }
         }
 
-        logger.info("Service &a" + getName() + " &7has been stopped.");
+        logger.info("Service &a" + getName() + " &7has been stopped");
     }
 
 
