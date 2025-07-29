@@ -3,7 +3,6 @@ package net.potatocloud.node.service;
 import net.potatocloud.api.event.events.property.PropertyChangedEvent;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.group.ServiceGroupManager;
-import net.potatocloud.api.player.CloudPlayerManager;
 import net.potatocloud.api.property.Property;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
@@ -17,14 +16,15 @@ public class ServiceStartQueue extends Thread {
 
     private final ServiceGroupManager groupManager;
     private final ServiceManager serviceManager;
-    private final CloudPlayerManager playerManager;
 
-    private boolean running = true;
+    private boolean isRunning = true;
 
-    public ServiceStartQueue(ServiceGroupManager groupManager, ServiceManager serviceManager, CloudPlayerManager playerManager) {
+    public ServiceStartQueue(ServiceGroupManager groupManager, ServiceManager serviceManager) {
         this.groupManager = groupManager;
         this.serviceManager = serviceManager;
-        this.playerManager = playerManager;
+
+        setName("ServiceStartQueue");
+        setDaemon(true);
 
         Node.getInstance().getEventManager().on(PropertyChangedEvent.class, event -> {
             if (!event.getPropertyData().getName().equals(Property.GAME_STATE.getName())) {
@@ -35,11 +35,7 @@ public class ServiceStartQueue extends Thread {
                 return;
             }
 
-            if (!event.getOldValue().equals("LOBBY")) {
-                return;
-            }
-
-            if (!event.getNewValue().equals("INGAME")) {
+            if (!event.getOldValue().equals("LOBBY") || !event.getNewValue().equals("INGAME")) {
                 return;
             }
 
@@ -50,62 +46,52 @@ public class ServiceStartQueue extends Thread {
 
             serviceManager.startService(service.getServiceGroup());
         });
-
-        setName("ServiceStartQueue");
-        setDaemon(true);
     }
 
     @Override
     public void run() {
-        while (running) {
+        while (isRunning) {
             try {
                 final List<ServiceGroup> groups = groupManager.getAllServiceGroups().stream()
                         .sorted(Comparator.comparingInt(ServiceGroup::getStartPriority).reversed())
                         .toList();
 
-                for (final ServiceGroup group : groups) {
+                for (ServiceGroup group : groups) {
                     if (!groupManager.existsServiceGroup(group.getName())) {
                         continue;
                     }
 
-                    final List<Service> services = serviceManager.getAllServices().stream().
-                            filter(s -> s.getServiceGroup().getName().equals(group.getName()))
-                            .filter(s -> s.getStatus() == ServiceStatus.RUNNING || s.getStatus() == ServiceStatus.STARTING || s.getStatus() == ServiceStatus.STOPPING)
+                    final List<Service> services = group.getAllServices().stream()
+                            .filter(service -> service.getStatus() == ServiceStatus.RUNNING || service.getStatus() == ServiceStatus.STARTING)
                             .toList();
 
                     if (services.size() < group.getMinOnlineCount()) {
-                        serviceManager.startServices(group, group.getMinOnlineCount() - services.size());
+                        serviceManager.startService(group);
                         continue;
                     }
 
-                    final int onlinePlayersInGroup = playerManager.getOnlinePlayersByGroup(group).size();
-                    final int maxPlayersInGroup = services.stream().mapToInt(Service::getMaxPlayers).sum();
-
-                    if (maxPlayersInGroup == 0) {
+                    if (services.size() >= group.getMaxOnlineCount()) {
                         continue;
                     }
 
-                    int requiredServices = group.getMinOnlineCount();
+                    final int maxPlayers = services.stream().mapToInt(Service::getMaxPlayers).sum();
 
-                    if (services.size() >= requiredServices) {
-                        requiredServices = services.size();
+                    if (maxPlayers == 0) {
+                        continue;
                     }
 
-                    final double onlinePercentage = (double) onlinePlayersInGroup / maxPlayersInGroup * 100;
+                    final int usagePercent = (int) ((group.getOnlinePlayerCount() / (double) maxPlayers) * 100);
+                    final boolean hasStarting = services.stream().anyMatch(service -> service.getStatus() == ServiceStatus.STARTING);
 
-                    if (onlinePercentage >= group.getStartPercentage()) {
-                        requiredServices = Math.min(requiredServices + 1, group.getMaxOnlineCount());
-                    }
-
-                    if (requiredServices - services.size() > 0) {
-                        serviceManager.startServices(group, requiredServices - services.size());
+                    if (usagePercent >= group.getStartPercentage() && !hasStarting) {
+                        serviceManager.startService(group);
+                        break;
                     }
                 }
 
                 Thread.sleep(1000);
-
             } catch (InterruptedException e) {
-                running = false;
+                isRunning = false;
                 Thread.currentThread().interrupt();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -115,7 +101,7 @@ public class ServiceStartQueue extends Thread {
 
 
     public void close() {
-        running = false;
+        isRunning = false;
         interrupt();
     }
 }
