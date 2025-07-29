@@ -23,6 +23,7 @@ public class PluginCloudAPI extends CloudAPI {
     private final ServiceGroupManager groupManager;
     private final ServiceManager serviceManager;
     private final CloudPlayerManager playerManager;
+    private final ClientEventManager eventManager;
 
     public PluginCloudAPI() {
         packetManager = new PacketManager();
@@ -31,6 +32,7 @@ public class PluginCloudAPI extends CloudAPI {
         groupManager = new ServiceGroupManagerImpl(client);
         serviceManager = new ServiceManagerImpl(client);
         playerManager = new CloudPlayerManagerImpl(client);
+        eventManager = new ClientEventManager(client);
     }
 
     public static PluginCloudAPI getInstance() {
@@ -53,7 +55,7 @@ public class PluginCloudAPI extends CloudAPI {
 
     @Override
     public EventManager getEventManager() {
-        return new ClientEventManager(client);
+        return eventManager;
     }
 
     @Override
