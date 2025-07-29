@@ -13,6 +13,7 @@ public class NodeConfig {
     private String prompt = "&7&a%user%&7@cloud ~> ";
     private boolean enableBanner = true;
     private int primaryColorCode = 42;
+    private boolean logPlayerConnections = true;
 
     private int serviceStartPort = 30000;
     private int proxyStartPort = 25565;
@@ -45,6 +46,7 @@ public class NodeConfig {
         prompt = yaml.getString("console.prompt", prompt);
         enableBanner = yaml.getBoolean("console.enable-banner", enableBanner);
         primaryColorCode = yaml.getInt("console.primary-color", primaryColorCode);
+        logPlayerConnections = yaml.getBoolean("console.log-player-connections", logPlayerConnections);
 
         serviceStartPort = yaml.getInt("service.service-start-port", serviceStartPort);
         proxyStartPort = yaml.getInt("service.proxy-start-port", proxyStartPort);
@@ -72,6 +74,7 @@ public class NodeConfig {
         yaml.set("console.enable-banner", enableBanner);
         yaml.setComment("console.primary-color", "Primary color code for console messages and prompt (Supported colors: https://www.ditig.com/256-colors-cheat-sheet)");
         yaml.set("console.primary-color", primaryColorCode);
+        yaml.set("console.log-player-connections", logPlayerConnections);
 
         addSpacer(yaml, "service");
 

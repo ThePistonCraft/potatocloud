@@ -18,8 +18,15 @@ public class RemoveCloudPlayerListener implements PacketListener<CloudPlayerRemo
         final CloudPlayer playerToRemove = playerManager.getCloudPlayer(packet.getPlayerUniqueId());
         playerManager.unregisterPlayer(playerToRemove);
 
-        Node.getInstance().getServer().getConnectedSessions().stream()
+        final Node node = Node.getInstance();
+
+        node.getServer().getConnectedSessions().stream()
                 .filter(networkConnection -> !networkConnection.equals(connection))
                 .forEach(networkConnection -> networkConnection.send(packet));
+
+        if (node.getConfig().isLogPlayerConnections() && !node.isStopping()) {
+            node.getLogger().info("Player &a" + playerToRemove.getUsername()
+                    + " &7disconnected &7from the network &8[&7UUID&8: &a" + playerToRemove.getUniqueId() + "&8]");
+        }
     }
 }
