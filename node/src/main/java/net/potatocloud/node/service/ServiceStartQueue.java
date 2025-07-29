@@ -35,7 +35,7 @@ public class ServiceStartQueue extends Thread {
                 return;
             }
 
-            if (!event.getOldValue().equals("LOBBY") || !event.getNewValue().equals("INGAME")) {
+            if (!event.getNewValue().equals("INGAME")) {
                 return;
             }
 
