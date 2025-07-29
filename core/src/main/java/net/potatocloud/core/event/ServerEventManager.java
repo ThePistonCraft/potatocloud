@@ -17,6 +17,10 @@ public class ServerEventManager extends BaseEventManager {
             final Event event = EventSerializer.deserialize(packet);
             if (event != null) {
                 callLocal(event);
+
+                server.getConnectedSessions().stream()
+                        .filter(networkConnection -> !networkConnection.equals(connection))
+                        .forEach(networkConnection -> networkConnection.send(packet));
             }
         });
     }
