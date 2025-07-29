@@ -62,7 +62,7 @@ public class ServiceStartQueue extends Thread {
                     }
 
                     final List<Service> services = group.getAllServices().stream()
-                            .filter(service -> service.getStatus() == ServiceStatus.RUNNING || service.getStatus() == ServiceStatus.STARTING)
+                            .filter(service -> service.getStatus() == ServiceStatus.RUNNING || service.getStatus() == ServiceStatus.STARTING || service.getStatus() == ServiceStatus.STOPPING)
                             .toList();
 
                     if (services.size() < group.getMinOnlineCount()) {
