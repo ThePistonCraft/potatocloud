@@ -3,6 +3,6 @@
   "name": "potatocloud-plugin-hub",
   "version": "1.0.0",
   "main": "net.potatocloud.plugins.hub.HubPlugin",
-  "authors": "TruaYT",
+  "authors": ["TruaYT"],
   "depends": ["potatocloud-plugin"]
 }

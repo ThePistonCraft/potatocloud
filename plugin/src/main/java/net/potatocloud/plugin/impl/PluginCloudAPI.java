@@ -28,7 +28,7 @@ public class PluginCloudAPI extends CloudAPI {
     public PluginCloudAPI() {
         packetManager = new PacketManager();
         client = new NettyNetworkClient(packetManager);
-        client.connect("0.0.0.0", Integer.parseInt(System.getProperty("potatocloud.node.port")));
+        client.connect("127.0.0.1", Integer.parseInt(System.getProperty("potatocloud.node.port")));
         groupManager = new ServiceGroupManagerImpl(client);
         serviceManager = new ServiceManagerImpl(client);
         playerManager = new CloudPlayerManagerImpl(client);
