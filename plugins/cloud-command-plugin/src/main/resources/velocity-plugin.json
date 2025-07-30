@@ -3,6 +3,6 @@
   "name": "potatocloud-plugin-cloudcommand",
   "version": "1.0.0",
   "main": "net.potatocloud.plugins.cloudcommand.CloudCommandPlugin",
-  "authors": "jirmjahu",
+  "authors": ["jirmjahu"],
   "depends": ["potatocloud-plugin"]
 }
