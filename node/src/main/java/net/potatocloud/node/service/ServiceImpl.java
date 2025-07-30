@@ -25,6 +25,7 @@ import oshi.SystemInfo;
 import oshi.software.os.OSProcess;
 
 import java.io.*;
+import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -235,7 +236,7 @@ public class ServiceImpl implements Service {
             }
         }, "processReader-" + getName()).start();
 
-        logger.info("The Service &a" + this.getName() + "&7 is now starting... &8[&7Port&8: &a" + port + ", &7Group&8: &a" + group.getName() + "&8]");
+        logger.info("Service &a" + this.getName() + "&7 is now starting... &8[&7Port&8: &a" + port + "&8, &7Group&8: &a" + group.getName() + "&8]");
         Node.getInstance().getEventManager().call(new PreparedServiceStartingEvent(this.getName()));
     }
 
@@ -311,11 +312,11 @@ public class ServiceImpl implements Service {
             try {
                 FileUtils.deleteDirectory(directory.toFile());
             } catch (IOException e) {
-                logger.error("The temp directory for " + getName() + " could not be deleted! The service might still be running");
+                logger.error("Temp directory for " + getName() + " could not be deleted! The service might still be running");
             }
         }
 
-        logger.info("The Service &a" + getName() + " &7has been stopped.");
+        logger.info("Service &a" + getName() + " &7has been stopped");
     }
 
 
@@ -353,7 +354,11 @@ public class ServiceImpl implements Service {
             Node.getInstance().getTemplateManager().createTemplate(targetPath.toFile().getName());
         }
 
-        FileUtils.copyDirectory(sourcePath.toFile(), targetPath.toFile());
+        try {
+            FileUtils.copyDirectory(sourcePath.toFile(), targetPath.toFile());
+        } catch (FileSystemException ignored) {
+
+        }
     }
 
 

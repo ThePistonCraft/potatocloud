@@ -11,45 +11,33 @@ import net.potatocloud.core.networking.netty.PacketBuffer;
 import java.util.Set;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class ServiceAddPacket implements Packet {
+@AllArgsConstructor
+public class ServiceUpdatePacket implements Packet {
 
-    private String name;
-    private int serviceId;
-    private int port;
-    private long startTimestamp;
-    private String groupName;
-    private Set<Property> properties;
+    private String serviceName;
     private String status;
     private int maxPlayers;
+    private Set<Property> properties;
 
     @Override
     public int getId() {
-        return PacketIds.SERVICE_ADD;
+        return PacketIds.SERVICE_UPDATE;
     }
 
     @Override
     public void write(PacketBuffer buf) {
-        buf.writeString(name);
-        buf.writeInt(serviceId);
-        buf.writeInt(port);
-        buf.writeLong(startTimestamp);
-        buf.writeString(groupName);
-        buf.writePropertySet(properties);
+        buf.writeString(serviceName);
         buf.writeString(status);
         buf.writeInt(maxPlayers);
+        buf.writePropertySet(properties);
     }
 
     @Override
     public void read(PacketBuffer buf) {
-        name = buf.readString();
-        serviceId = buf.readInt();
-        port = buf.readInt();
-        startTimestamp = buf.readLong();
-        groupName = buf.readString();
-        properties = buf.readPropertySet();
+        serviceName = buf.readString();
         status = buf.readString();
         maxPlayers = buf.readInt();
+        properties = buf.readPropertySet();
     }
 }

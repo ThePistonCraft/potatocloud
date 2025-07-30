@@ -52,7 +52,7 @@ public class PlatformManager {
         if (platformFile.exists()) {
             needsDownload = needsUpdate(platformFile, platform);
             if (needsDownload) {
-                logger.info("The Platform &a" + platform.getFullName() + " &7is outdated! Downloading update&8...");
+                logger.info("Platform &a" + platform.getFullName() + " &7is outdated! Downloading update&8...");
             }
         }
 

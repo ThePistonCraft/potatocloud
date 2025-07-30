@@ -4,15 +4,15 @@ import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.group.ServiceGroupManager;
 import net.potatocloud.core.networking.NetworkConnection;
 import net.potatocloud.core.networking.PacketListener;
-import net.potatocloud.core.networking.packets.group.CreateGroupPacket;
+import net.potatocloud.core.networking.packets.group.GroupCreatePacket;
 
 @RequiredArgsConstructor
-public class CreateGroupListener implements PacketListener<CreateGroupPacket> {
+public class CreateGroupListener implements PacketListener<GroupCreatePacket> {
 
     private final ServiceGroupManager groupManager;
 
     @Override
-    public void onPacket(NetworkConnection connection, CreateGroupPacket packet) {
+    public void onPacket(NetworkConnection connection, GroupCreatePacket packet) {
         groupManager.createServiceGroup(
                 packet.getName(),
                 packet.getPlatformName(),

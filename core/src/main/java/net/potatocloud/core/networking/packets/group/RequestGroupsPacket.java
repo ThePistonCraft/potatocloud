@@ -1,12 +1,24 @@
 package net.potatocloud.core.networking.packets.group;
 
+import lombok.NoArgsConstructor;
 import net.potatocloud.core.networking.Packet;
-import net.potatocloud.core.networking.PacketTypes;
+import net.potatocloud.core.networking.PacketIds;
+import net.potatocloud.core.networking.netty.PacketBuffer;
 
+@NoArgsConstructor
 public class RequestGroupsPacket implements Packet {
 
     @Override
-    public String getType() {
-        return PacketTypes.REQUEST_GROUPS;
+    public int getId() {
+        return PacketIds.REQUEST_GROUPS;
     }
+
+    @Override
+    public void write(PacketBuffer buf) {
+    }
+
+    @Override
+    public void read(PacketBuffer buf) {
+    }
+
 }

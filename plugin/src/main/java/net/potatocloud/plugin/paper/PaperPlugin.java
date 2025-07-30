@@ -5,13 +5,12 @@ import net.potatocloud.api.CloudAPI;
 import net.potatocloud.api.player.CloudPlayerManager;
 import net.potatocloud.api.player.impl.CloudPlayerImpl;
 import net.potatocloud.api.property.Property;
-import net.potatocloud.api.property.PropertyData;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.core.networking.NetworkConnection;
-import net.potatocloud.core.networking.PacketTypes;
-import net.potatocloud.core.networking.packets.player.AddCloudPlayerPacket;
-import net.potatocloud.core.networking.packets.player.RemoveCloudPlayerPacket;
-import net.potatocloud.core.networking.packets.player.UpdateCloudPlayerPacket;
+import net.potatocloud.core.networking.PacketIds;
+import net.potatocloud.core.networking.packets.player.CloudPlayerAddPacket;
+import net.potatocloud.core.networking.packets.player.CloudPlayerRemovePacket;
+import net.potatocloud.core.networking.packets.player.CloudPlayerUpdatePacket;
 import net.potatocloud.core.networking.packets.service.ServiceStartedPacket;
 import net.potatocloud.plugin.impl.PluginCloudAPI;
 import org.bukkit.event.EventHandler;
@@ -36,23 +35,26 @@ public class PaperPlugin extends JavaPlugin implements Listener {
 
         final CloudPlayerManager playerManager = api.getPlayerManager();
 
-        api.getClient().registerPacketListener(PacketTypes.PLAYER_ADD, (NetworkConnection connection, AddCloudPlayerPacket packet) -> {
+        api.getClient().registerPacketListener(PacketIds.PLAYER_ADD, (NetworkConnection connection, CloudPlayerAddPacket packet) -> {
             playerManager.getOnlinePlayers().add(new CloudPlayerImpl(packet.getUsername(), packet.getUniqueId(), packet.getConnectedProxyName()));
         });
 
-        api.getClient().registerPacketListener(PacketTypes.PLAYER_REMOVE, (NetworkConnection connection, RemoveCloudPlayerPacket packet) -> {
+        api.getClient().registerPacketListener(PacketIds.PLAYER_REMOVE, (NetworkConnection connection, CloudPlayerRemovePacket packet) -> {
             playerManager.getOnlinePlayers().remove(playerManager.getCloudPlayer(packet.getPlayerUniqueId()));
         });
 
-        api.getClient().registerPacketListener(PacketTypes.UPDATE_PLAYER, (NetworkConnection connection, UpdateCloudPlayerPacket packet) -> {
+        api.getClient().registerPacketListener(PacketIds.PLAYER_UPDATE, (NetworkConnection connection, CloudPlayerUpdatePacket packet) -> {
             final CloudPlayerImpl player = (CloudPlayerImpl) playerManager.getCloudPlayer(packet.getPlayerUniqueId());
+            if (player == null) {
+                return;
+            }
 
             player.setConnectedProxyName(packet.getConnectedProxyName());
             player.setConnectedServiceName(packet.getConnectedServiceName());
 
             player.getProperties().clear();
-            for (PropertyData data : packet.getProperties()) {
-                player.setProperty(Property.fromData(data));
+            for (Property property : packet.getProperties()) {
+                player.setProperty(property);
             }
         });
 

@@ -58,7 +58,7 @@ public class ServiceGroupStorage {
                     defaultValue = value;
                 }
 
-                properties.add(new Property(key, defaultValue, value));
+                properties.add(Property.of(key, defaultValue, value));
             }
         }
 

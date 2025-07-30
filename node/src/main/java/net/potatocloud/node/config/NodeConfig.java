@@ -11,6 +11,9 @@ import java.io.File;
 public class NodeConfig {
 
     private String prompt = "&7&a%user%&7@cloud ~> ";
+    private boolean enableBanner = true;
+    private int primaryColorCode = 42;
+    private boolean logPlayerConnections = true;
 
     private int serviceStartPort = 30000;
     private int proxyStartPort = 25565;
@@ -41,6 +44,9 @@ public class NodeConfig {
         yaml.load();
 
         prompt = yaml.getString("console.prompt", prompt);
+        enableBanner = yaml.getBoolean("console.enable-banner", enableBanner);
+        primaryColorCode = yaml.getInt("console.primary-color", primaryColorCode);
+        logPlayerConnections = yaml.getBoolean("console.log-player-connections", logPlayerConnections);
 
         serviceStartPort = yaml.getInt("service.service-start-port", serviceStartPort);
         proxyStartPort = yaml.getInt("service.proxy-start-port", proxyStartPort);
@@ -65,13 +71,20 @@ public class NodeConfig {
 
         yaml.setComment("console.prompt", "Console prompt text (%user% = current user)");
         yaml.set("console.prompt", prompt);
+        yaml.set("console.enable-banner", enableBanner);
+        yaml.setComment("console.primary-color", "Primary color code for console messages and prompt (Supported colors: https://www.ditig.com/256-colors-cheat-sheet)");
+        yaml.set("console.primary-color", primaryColorCode);
+        yaml.set("console.log-player-connections", logPlayerConnections);
+
+        addSpacer(yaml, "service");
 
         yaml.set("service.service-start-port", serviceStartPort);
         yaml.set("service.proxy-start-port", proxyStartPort);
         yaml.set("service.service-splitter", splitter);
         yaml.setComment("service.auto-update-platforms", "Auto updates platform jars to latest build in the same MC version. Also updates MC version if using 'platform-latest'");
-
         yaml.set("service.auto-update-platforms", platformAutoUpdate);
+
+        addSpacer(yaml, "folders");
 
         yaml.set("folders.groups", groupsFolder);
         yaml.set("folders.static", staticFolder);
@@ -81,9 +94,15 @@ public class NodeConfig {
         yaml.set("folders.logs", logsFolder);
         yaml.set("folders.data", dataFolder);
 
+        addSpacer(yaml, "node");
+
         yaml.set("node.host", nodeHost);
         yaml.set("node.port", nodePort);
 
         yaml.save();
+    }
+
+    private void addSpacer(YamlFile yaml, String key) {
+        yaml.setComment(key, "\n");
     }
 }

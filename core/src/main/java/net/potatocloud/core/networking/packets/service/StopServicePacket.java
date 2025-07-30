@@ -10,25 +10,22 @@ import net.potatocloud.core.networking.netty.PacketBuffer;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ServiceRemovePacket implements Packet {
+public class StopServicePacket implements Packet {
 
     private String serviceName;
-    private int servicePort;
 
     @Override
     public int getId() {
-        return PacketIds.SERVICE_REMOVE;
+        return PacketIds.STOP_SERVICE;
     }
 
     @Override
     public void write(PacketBuffer buf) {
         buf.writeString(serviceName);
-        buf.writeInt(servicePort);
     }
 
     @Override
     public void read(PacketBuffer buf) {
         serviceName = buf.readString();
-        servicePort = buf.readInt();
     }
 }

@@ -73,14 +73,14 @@ public class PlatformCommand implements Command, TabCompleter {
 
         final Platform platform = PlatformVersions.getPlatformByName(args[1]);
         if (platform == null) {
-            logger.info("&cThis platform does not exist.");
+            logger.info("&cThis platform does not exist");
             return;
         }
 
         File platformFile = platformsFolder.resolve(platform.getFullName() + ".jar").toFile();
 
         if (!platformFile.exists()) {
-            logger.info("&cPlatform &a" + platform.getFullName() + " &cis not installed.");
+            logger.info("&cPlatform &a" + platform.getFullName() + " &cis not downloaded");
             return;
         }
 

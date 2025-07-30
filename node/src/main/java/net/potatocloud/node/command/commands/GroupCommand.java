@@ -133,14 +133,15 @@ public class GroupCommand implements Command, TabCompleter {
                 final String value = args[4];
 
                 try {
-                    group.setProperty(new Property(key, value));
+                    group.setProperty(Property.of(key, value, value));
                     group.update();
                     logger.info("Property &a" + key + " &7was set to &a" + value + " &7in group &a" + name);
                 } catch (Exception e) {
                     logger.info("&cUsage&8: &7group property set &8[&aname&8] [&akey&8] [&avalue&8]");
                 }
             }
-            default -> logger.info("&cUsage&8: &7group property &8[&7list&8|&7set&8|&7remove&8] [&aname&8] [&akey&8] [&avalue&8]");
+            default ->
+                    logger.info("&cUsage&8: &7group property &8[&7list&8|&7set&8|&7remove&8] [&aname&8] [&akey&8] [&avalue&8]");
         }
     }
 
@@ -396,7 +397,7 @@ public class GroupCommand implements Command, TabCompleter {
             }
 
             if (args.length == 4 && args[1].equalsIgnoreCase("set")) {
-                List<String> completions = new ArrayList<>();
+                final List<String> completions = new ArrayList<>();
                 completions.add("<custom>");
                 completions.addAll(Property.getDefaultProperties().stream()
                         .map(Property::getName)

@@ -303,7 +303,7 @@ public class ServiceCommand implements Command, TabCompleter {
 
                 //set custom property
                 try {
-                    service.setProperty(new Property(key, value));
+                    service.setProperty(Property.of(key, value, value));
                     service.update();
                     logger.info("Property &a" + key + " &7was set to &a" + value + " &7in service &a" + name);
                 } catch (Exception e) {

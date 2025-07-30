@@ -11,11 +11,11 @@ import net.potatocloud.core.networking.PacketManager;
 public class NettyClientHandler extends ChannelInboundHandlerAdapter {
 
     private final PacketManager packetManager;
+    private final NetworkConnection connection;
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         if (msg instanceof Packet packet) {
-            NetworkConnection connection = new NettyNetworkConnection(ctx.channel());
             packetManager.onPacket(connection, packet);
         }
     }

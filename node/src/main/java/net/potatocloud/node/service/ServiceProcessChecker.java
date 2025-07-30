@@ -21,7 +21,7 @@ public class ServiceProcessChecker extends Thread {
             }
         }
         if (!isInterrupted()) {
-            service.getLogger().info("The service &a" + service.getName() + " &7seems to be offline...");
+            service.getLogger().info("Service &a" + service.getName() + " &7seems to be offline...");
             service.cleanup();
         }
     }

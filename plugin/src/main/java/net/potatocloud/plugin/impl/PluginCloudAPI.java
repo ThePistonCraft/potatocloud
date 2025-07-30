@@ -23,14 +23,16 @@ public class PluginCloudAPI extends CloudAPI {
     private final ServiceGroupManager groupManager;
     private final ServiceManager serviceManager;
     private final CloudPlayerManager playerManager;
+    private final ClientEventManager eventManager;
 
     public PluginCloudAPI() {
         packetManager = new PacketManager();
         client = new NettyNetworkClient(packetManager);
-        client.connect("0.0.0.0", Integer.parseInt(System.getProperty("potatocloud.node.port")));
+        client.connect("127.0.0.1", Integer.parseInt(System.getProperty("potatocloud.node.port")));
         groupManager = new ServiceGroupManagerImpl(client);
         serviceManager = new ServiceManagerImpl(client);
         playerManager = new CloudPlayerManagerImpl(client);
+        eventManager = new ClientEventManager(client);
     }
 
     public static PluginCloudAPI getInstance() {
@@ -53,7 +55,7 @@ public class PluginCloudAPI extends CloudAPI {
 
     @Override
     public EventManager getEventManager() {
-        return new ClientEventManager(client);
+        return eventManager;
     }
 
     @Override

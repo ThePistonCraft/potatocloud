@@ -1,4 +1,4 @@
-package net.potatocloud.core.networking.packets.service;
+package net.potatocloud.core.networking.packets.player;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,28 +7,27 @@ import net.potatocloud.core.networking.Packet;
 import net.potatocloud.core.networking.PacketIds;
 import net.potatocloud.core.networking.netty.PacketBuffer;
 
+import java.util.UUID;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ServiceRemovePacket implements Packet {
+public class CloudPlayerRemovePacket implements Packet {
 
-    private String serviceName;
-    private int servicePort;
+    private UUID playerUniqueId;
 
     @Override
     public int getId() {
-        return PacketIds.SERVICE_REMOVE;
+        return PacketIds.PLAYER_REMOVE;
     }
 
     @Override
     public void write(PacketBuffer buf) {
-        buf.writeString(serviceName);
-        buf.writeInt(servicePort);
+        buf.writeString(playerUniqueId.toString());
     }
 
     @Override
     public void read(PacketBuffer buf) {
-        serviceName = buf.readString();
-        servicePort = buf.readInt();
+        playerUniqueId = UUID.fromString(buf.readString());
     }
 }

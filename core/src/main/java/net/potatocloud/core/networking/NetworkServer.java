@@ -10,7 +10,7 @@ public interface NetworkServer {
 
     boolean isRunning();
 
-    <T extends Packet> void registerPacketListener(String packetType, PacketListener<T> listener);
+    <T extends Packet> void registerPacketListener(int id, PacketListener<T> listener);
 
     List<NetworkConnection> getConnectedSessions();
 

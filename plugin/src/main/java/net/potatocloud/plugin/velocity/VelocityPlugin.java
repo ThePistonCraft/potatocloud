@@ -24,8 +24,8 @@ import net.potatocloud.api.player.impl.CloudPlayerImpl;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceStatus;
 import net.potatocloud.core.networking.NetworkConnection;
-import net.potatocloud.core.networking.PacketTypes;
-import net.potatocloud.core.networking.packets.player.ConnectCloudPlayerWithServicePacket;
+import net.potatocloud.core.networking.PacketIds;
+import net.potatocloud.core.networking.packets.player.CloudPlayerConnectPacket;
 import net.potatocloud.core.networking.packets.service.ServiceRemovePacket;
 import net.potatocloud.core.networking.packets.service.ServiceStartedPacket;
 import net.potatocloud.plugin.impl.PluginCloudAPI;
@@ -67,11 +67,11 @@ public class VelocityPlugin {
             connectPlayer(connectEvent.getPlayerUsername(), connectEvent.getServiceName());
         });
 
-        api.getClient().registerPacketListener(PacketTypes.CONNECT_PLAYER, (NetworkConnection connection, ConnectCloudPlayerWithServicePacket packet) -> {
+        api.getClient().registerPacketListener(PacketIds.PLAYER_CONNECT, (NetworkConnection connection, CloudPlayerConnectPacket packet) -> {
             connectPlayer(packet.getPlayerUsername(), packet.getServiceName());
         });
 
-        api.getClient().registerPacketListener(PacketTypes.SERVICE_REMOVE, (NetworkConnection connection, ServiceRemovePacket packet) -> {
+        api.getClient().registerPacketListener(PacketIds.SERVICE_REMOVE, (NetworkConnection connection, ServiceRemovePacket packet) -> {
             server.unregisterServer(new ServerInfo(packet.getServiceName(), new InetSocketAddress("0.0.0.0", packet.getServicePort())));
         });
     }

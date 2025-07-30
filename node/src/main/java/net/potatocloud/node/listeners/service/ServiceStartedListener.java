@@ -23,7 +23,7 @@ public class ServiceStartedListener implements PacketListener<ServiceStartedPack
     @Override
     public void onPacket(NetworkConnection connection, ServiceStartedPacket packet) {
         final Service service = serviceManager.getService(packet.getServiceName());
-        logger.info("The Service &a" + packet.getServiceName() + "&7 is now &aonline");
+        logger.info("Service &a" + packet.getServiceName() + "&7 is now &aonline");
 
         service.setStatus(ServiceStatus.RUNNING);
         service.update();

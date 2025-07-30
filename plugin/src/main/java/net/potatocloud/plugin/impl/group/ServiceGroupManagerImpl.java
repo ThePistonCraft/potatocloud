@@ -2,20 +2,18 @@ package net.potatocloud.plugin.impl.group;
 
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.group.ServiceGroupManager;
-import net.potatocloud.api.property.Property;
 import net.potatocloud.core.networking.NetworkClient;
-import net.potatocloud.core.networking.PacketTypes;
-import net.potatocloud.core.networking.packets.group.CreateGroupPacket;
-import net.potatocloud.core.networking.packets.group.DeleteGroupPacket;
+import net.potatocloud.core.networking.PacketIds;
+import net.potatocloud.core.networking.packets.group.GroupCreatePacket;
+import net.potatocloud.core.networking.packets.group.GroupDeletePacket;
+import net.potatocloud.core.networking.packets.group.GroupUpdatePacket;
 import net.potatocloud.core.networking.packets.group.RequestGroupsPacket;
-import net.potatocloud.core.networking.packets.group.UpdateGroupPacket;
 import net.potatocloud.plugin.impl.listener.group.AddGroupListener;
 import net.potatocloud.plugin.impl.listener.group.UpdateGroupListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ServiceGroupManagerImpl implements ServiceGroupManager {
 
@@ -27,8 +25,8 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
 
         client.send(new RequestGroupsPacket());
 
-        client.registerPacketListener(PacketTypes.GROUP_ADD, new AddGroupListener(this));
-        client.registerPacketListener(PacketTypes.UPDATE_GROUP, new UpdateGroupListener(this));
+        client.registerPacketListener(PacketIds.GROUP_ADD, new AddGroupListener(this));
+        client.registerPacketListener(PacketIds.GROUP_UPDATE, new UpdateGroupListener(this));
     }
 
     public void addServiceGroup(ServiceGroup group) {
@@ -50,7 +48,7 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
 
     @Override
     public ServiceGroup createServiceGroup(String name, String platformName, int minOnlineCount, int maxOnlineCount, int maxPlayers, int maxMemory, boolean fallback, boolean isStatic) {
-        client.send(new CreateGroupPacket(
+        client.send(new GroupCreatePacket(
                 name,
                 platformName,
                 minOnlineCount,
@@ -66,12 +64,12 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
 
     @Override
     public void deleteServiceGroup(String name) {
-        client.send(new DeleteGroupPacket(name));
+        client.send(new GroupDeletePacket(name));
     }
 
     @Override
     public void updateServiceGroup(ServiceGroup group) {
-        client.send(new UpdateGroupPacket(
+        client.send(new GroupUpdatePacket(
                 group.getName(),
                 group.getMinOnlineCount(),
                 group.getMaxOnlineCount(),
@@ -79,7 +77,7 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
                 group.getMaxMemory(),
                 group.isFallback(),
                 group.getServiceTemplates(),
-                group.getProperties().stream().map(Property::getData).collect(Collectors.toSet()),
+                group.getProperties(),
                 group.getCustomJvmFlags()
         ));
     }

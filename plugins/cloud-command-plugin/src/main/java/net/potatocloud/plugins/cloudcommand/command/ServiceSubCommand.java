@@ -213,7 +213,7 @@ public class ServiceSubCommand {
                 final String value = args[5];
 
                 try {
-                    service.setProperty(new Property(key, value));
+                    service.setProperty(Property.of(key, value, value));
                     service.update();
 
                     player.sendMessage(messages.get("service.property.set.success")

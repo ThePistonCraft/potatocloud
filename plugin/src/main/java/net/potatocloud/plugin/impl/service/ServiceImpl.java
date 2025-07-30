@@ -1,5 +1,6 @@
 package net.potatocloud.plugin.impl.service;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import net.potatocloud.api.group.ServiceGroup;
@@ -9,14 +10,14 @@ import net.potatocloud.api.service.ServiceStatus;
 import net.potatocloud.core.networking.NetworkClient;
 import net.potatocloud.core.networking.packets.service.ServiceCopyPacket;
 import net.potatocloud.core.networking.packets.service.ServiceExecuteCommandPacket;
-import net.potatocloud.core.networking.packets.service.ShutdownServicePacket;
+import net.potatocloud.core.networking.packets.service.StopServicePacket;
 import net.potatocloud.plugin.impl.PluginCloudAPI;
 
-import java.util.HashSet;
 import java.util.Set;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class ServiceImpl implements Service {
 
     private final String name;
@@ -24,24 +25,15 @@ public class ServiceImpl implements Service {
     private final int port;
     private final long startTimestamp;
     private final ServiceGroup group;
-    private final NetworkClient client;
     private final Set<Property> properties;
     private ServiceStatus status;
-    private int usedMemory;
     private int maxPlayers;
 
-    public ServiceImpl(String name, int serviceId, int port, long startTimestamp, ServiceGroup group, ServiceStatus status, int usedMemory) {
-        this.name = name;
-        this.serviceId = serviceId;
-        this.port = port;
-        this.startTimestamp = startTimestamp;
-        this.group = group;
-        this.status = status;
-        this.usedMemory = usedMemory;
+    private final NetworkClient client = PluginCloudAPI.getInstance().getClient();
 
-        maxPlayers = group.getMaxPlayers();
-        client = PluginCloudAPI.getInstance().getClient();
-        properties = new HashSet<>(group.getProperties());
+    @Override
+    public int getUsedMemory() {
+        return 0; //todo request from node;
     }
 
     @Override
@@ -51,7 +43,7 @@ public class ServiceImpl implements Service {
 
     @Override
     public void shutdown() {
-        client.send(new ShutdownServicePacket(name));
+        client.send(new StopServicePacket(name));
     }
 
     @Override

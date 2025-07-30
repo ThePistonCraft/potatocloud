@@ -18,6 +18,23 @@ public class NettyNetworkConnection implements NetworkConnection {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        final NettyNetworkConnection other = (NettyNetworkConnection) obj;
+        return channel.id().equals(other.channel.id());
+    }
+
+    @Override
+    public int hashCode() {
+        return channel.id().hashCode();
+    }
+
+    @Override
     public void close() {
         channel.close();
     }

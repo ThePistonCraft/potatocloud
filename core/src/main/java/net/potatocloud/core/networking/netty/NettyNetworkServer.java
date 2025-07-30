@@ -2,6 +2,9 @@ package net.potatocloud.core.networking.netty;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
+import io.netty.channel.epoll.Epoll;
+import io.netty.channel.epoll.EpollIoHandler;
+import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.nio.NioIoHandler;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -27,21 +30,24 @@ public class NettyNetworkServer implements NetworkServer {
 
     @Override
     public void start(String hostname, int port) {
+        this.port = port;
         PacketRegistry.registerPackets(packetManager);
 
-        this.port = port;
-        bossGroup = new MultiThreadIoEventLoopGroup(NioIoHandler.newFactory());
-        workerGroup = new MultiThreadIoEventLoopGroup(NioIoHandler.newFactory());
+        final IoHandlerFactory factory = Epoll.isAvailable() ? EpollIoHandler.newFactory() : NioIoHandler.newFactory();
+        bossGroup = new MultiThreadIoEventLoopGroup(factory);
+        workerGroup = new MultiThreadIoEventLoopGroup(factory);
 
         final ServerBootstrap server = new ServerBootstrap();
         server.group(bossGroup, workerGroup)
-                .channel(NioServerSocketChannel.class)
+                .channel(Epoll.isAvailable() ? EpollServerSocketChannel.class : NioServerSocketChannel.class)
+                .childOption(ChannelOption.SO_KEEPALIVE, true)
+                .childOption(ChannelOption.TCP_NODELAY, true)
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
-                    protected void initChannel(SocketChannel ch) {
-                        ChannelPipeline pipeline = ch.pipeline();
+                    protected void initChannel(SocketChannel channel) {
+                        final ChannelPipeline pipeline = channel.pipeline();
                         pipeline.addLast(new NettyPacketDecoder(packetManager));
-                        pipeline.addLast(new NettyPacketEncoder(packetManager));
+                        pipeline.addLast(new NettyPacketEncoder());
                         pipeline.addLast(new NettyServerHandler(NettyNetworkServer.this, packetManager));
                     }
                 });
@@ -66,8 +72,8 @@ public class NettyNetworkServer implements NetworkServer {
     }
 
     @Override
-    public <T extends Packet> void registerPacketListener(String packetType, PacketListener<T> listener) {
-        packetManager.registerListener(packetType, listener);
+    public <T extends Packet> void registerPacketListener(int id, PacketListener<T> listener) {
+        packetManager.registerListener(id, listener);
     }
 
     @Override
