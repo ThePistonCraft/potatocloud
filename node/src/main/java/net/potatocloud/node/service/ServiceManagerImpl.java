@@ -80,7 +80,15 @@ public class ServiceManagerImpl implements ServiceManager {
         services.add(service);
 
         // broadcast add service packet to all connected clients
-        server.broadcastPacket(new ServiceAddPacket(service.getName(), service.getServiceId(), service.getPort(), service.getStartTimestamp(), service.getGroup().getName(), service.getStatus().name()));
+        server.broadcastPacket(new ServiceAddPacket(service.getName(),
+                service.getServiceId(),
+                service.getPort(),
+                service.getStartTimestamp(),
+                service.getGroup().getName(),
+                service.getProperties(),
+                service.getStatus().name(),
+                service.getMaxPlayers())
+        );
 
         service.start();
     }

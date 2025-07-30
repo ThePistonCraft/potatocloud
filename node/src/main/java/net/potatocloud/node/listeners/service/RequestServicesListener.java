@@ -22,7 +22,9 @@ public class RequestServicesListener implements PacketListener<RequestServicesPa
                     service.getPort(),
                     service.getStartTimestamp(),
                     service.getServiceGroup().getName(),
-                    service.getStatus().name()
+                    service.getProperties(),
+                    service.getStatus().name(),
+                    service.getMaxPlayers()
             ));
         }
     }
