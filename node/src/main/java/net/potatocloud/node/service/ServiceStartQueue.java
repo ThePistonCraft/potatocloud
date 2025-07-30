@@ -31,16 +31,17 @@ public class ServiceStartQueue extends Thread {
                 return;
             }
 
-            if (event.getNewValue() == null) {
-                return;
-            }
-
-            if (!event.getNewValue().equals("INGAME")) {
+            if (event.getNewValue() == null || !event.getNewValue().equals("INGAME")) {
                 return;
             }
 
             final Service service = Node.getInstance().getServiceManager().getService(event.getHolderName());
             if (service == null) {
+                return;
+            }
+
+            final ServiceGroup group = service.getServiceGroup();
+            if (group.getOnlineServiceCount() >= group.getMaxOnlineCount()) {
                 return;
             }
 
