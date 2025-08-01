@@ -35,7 +35,7 @@ public class UpdateGroupListener implements PacketListener<GroupUpdatePacket> {
 
         group.getProperties().clear();
         for (Property property : packet.getProperties()) {
-            group.setProperty(property);
+            group.setProperty(property, property.getValue(), false);
         }
 
         // update group file

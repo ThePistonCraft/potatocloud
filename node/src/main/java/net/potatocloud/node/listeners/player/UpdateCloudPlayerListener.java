@@ -22,7 +22,7 @@ public class UpdateCloudPlayerListener implements PacketListener<CloudPlayerUpda
 
         player.getProperties().clear();
         for (Property property : packet.getProperties()) {
-            player.setProperty(property);
+            player.setProperty(property, property.getValue(), false);
         }
 
         Node.getInstance().getServer().getConnectedSessions().stream()

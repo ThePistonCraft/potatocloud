@@ -19,17 +19,15 @@ public interface PropertyHolder {
                 .orElse(null);
     }
 
-    default void setProperty(Property property, Object value) {
+    default void setProperty(Property property, Object value, boolean fireEvent) {
         final Property existingProperty = getProperty(property.getName());
         Object oldValue = null;
 
         if (existingProperty != null) {
             oldValue = existingProperty.getValue();
-
             if (Objects.equals(oldValue, value)) {
                 return;
             }
-
             existingProperty.setValue(value);
             property = existingProperty;
         } else {
@@ -37,9 +35,15 @@ public interface PropertyHolder {
             getProperties().add(property);
         }
 
-        CloudAPI.getInstance().getEventManager().call(
-                new PropertyChangedEvent(getPropertyHolderName(), property, oldValue, value)
-        );
+        if (fireEvent) {
+            CloudAPI.getInstance().getEventManager().call(
+                    new PropertyChangedEvent(getPropertyHolderName(), property, oldValue, value)
+            );
+        }
+    }
+
+    default void setProperty(Property property, Object value) {
+        setProperty(property, value, true);
     }
 
     default void setProperty(Property property) {

@@ -54,7 +54,7 @@ public class PaperPlugin extends JavaPlugin implements Listener {
 
             player.getProperties().clear();
             for (Property property : packet.getProperties()) {
-                player.setProperty(property);
+                player.setProperty(property, property.getValue(), false);
             }
         });
 

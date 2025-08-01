@@ -65,7 +65,8 @@ public class ServiceGroupImpl implements ServiceGroup {
         final Property prop = getProperty(property.getName());
         if (prop != null) {
             for (Service onlineService : getAllServices()) {
-                onlineService.setProperty(prop, prop.getValue());
+                onlineService.setProperty(prop, prop.getValue(), false);
+                onlineService.update();
             }
         }
     }

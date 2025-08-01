@@ -22,7 +22,7 @@ public class ServiceUpdateListener implements PacketListener<ServiceUpdatePacket
         service.setMaxPlayers(packet.getMaxPlayers());
         service.getProperties().clear();
         for (Property property : packet.getProperties()) {
-            service.setProperty(property);
+            service.setProperty(property, property.getValue(), false);
         }
 
         Node.getInstance().getServer().getConnectedSessions().stream()
