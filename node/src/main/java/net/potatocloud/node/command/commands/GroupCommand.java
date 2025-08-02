@@ -186,7 +186,7 @@ public class GroupCommand implements Command, TabCompleter {
                     return;
                 }
 
-                case "minOnlineCount" -> group.setMinOnlineCount(Integer.parseInt(value));
+                case "minonlinecount" -> group.setMinOnlineCount(Integer.parseInt(value));
                 case "maxonlinecount" -> group.setMaxOnlineCount(Integer.parseInt(value));
                 case "maxplayers" -> group.setMaxPlayers(Integer.parseInt(value));
                 case "maxmemory" -> group.setMaxMemory(Integer.parseInt(value));
