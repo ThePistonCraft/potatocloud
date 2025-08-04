@@ -5,6 +5,7 @@ import net.potatocloud.api.service.Service;
 import net.potatocloud.node.Node;
 import net.potatocloud.node.command.CommandManager;
 import net.potatocloud.node.screen.Screen;
+import net.potatocloud.node.screen.ScreenManager;
 import org.jline.jansi.Ansi;
 import org.jline.reader.EndOfFileException;
 import org.jline.reader.UserInterruptException;
@@ -14,6 +15,7 @@ public class ConsoleReader extends Thread {
 
     private final Console console;
     private final CommandManager commandManager;
+    private final ScreenManager screenManager;
     private final Node node;
 
     @Override
@@ -21,24 +23,35 @@ public class ConsoleReader extends Thread {
         try {
             while (!isInterrupted()) {
                 final String input = console.getLineReader().readLine(console.getPrompt());
+
                 if (input == null || input.isBlank()) {
+                    // remove blank inputs
                     console.println(Ansi.ansi().cursorUpLine().eraseLine().cursorUp(1).toString());
                     continue;
                 }
 
-                final Screen currentScreen = node.getScreenManager().getCurrentScreen();
-                if (currentScreen == null || currentScreen.getName().equals("node-screen")) {
+                final Screen currentScreen = screenManager.getCurrentScreen();
+                final boolean isNodeScreen = currentScreen.getName().equals(Screen.NODE_SCREEN);
+
+                if (isNodeScreen) {
+                    // add executed commands into log file
+                    node.getLogger().addCachedLog(input);
+
                     commandManager.executeCommand(input);
-                } else {
-                    if (input.equalsIgnoreCase("leave") || input.equalsIgnoreCase("exit")) {
-                        node.getScreenManager().switchScreen("node-screen");
-                    } else {
-                        final Service service = node.getServiceManager().getService(currentScreen.getName());
-                        if (service != null) {
-                            service.executeCommand(input);
-                        }
-                    }
+                    continue;
                 }
+
+                if (input.equalsIgnoreCase("leave") || input.equalsIgnoreCase("exit")) {
+                    screenManager.switchScreen(Screen.NODE_SCREEN);
+                    continue;
+                }
+
+                final Service service = node.getServiceManager().getService(currentScreen.getName());
+                if (service == null) {
+                    return;
+                }
+
+                service.executeCommand(input);
             }
         } catch (UserInterruptException e) {
             node.shutdown();
