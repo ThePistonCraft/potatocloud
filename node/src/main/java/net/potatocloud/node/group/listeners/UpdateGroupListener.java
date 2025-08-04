@@ -1,4 +1,4 @@
-package net.potatocloud.node.listeners.group;
+package net.potatocloud.node.group.listeners;
 
 import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.group.ServiceGroup;
@@ -19,6 +19,10 @@ public class UpdateGroupListener implements PacketListener<GroupUpdatePacket> {
     @Override
     public void onPacket(NetworkConnection connection, GroupUpdatePacket packet) {
         final ServiceGroup group = groupManager.getServiceGroup(packet.getGroupName());
+        if (group == null)  {
+            return;
+        }
+
         group.setMinOnlineCount(packet.getMinOnlineCount());
         group.setMaxOnlineCount(packet.getMaxOnlineCount());
         group.setMaxPlayers(packet.getMaxPlayers());
@@ -38,7 +42,6 @@ public class UpdateGroupListener implements PacketListener<GroupUpdatePacket> {
             group.setProperty(property, property.getValue(), false);
         }
 
-        // update group file
         if (groupManager instanceof ServiceGroupManagerImpl impl) {
             ServiceGroupStorage.saveToFile(group, impl.getGroupsPath());
         }

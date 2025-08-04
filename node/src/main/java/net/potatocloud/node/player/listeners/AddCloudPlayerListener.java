@@ -1,4 +1,4 @@
-package net.potatocloud.node.listeners.player;
+package net.potatocloud.node.player.listeners;
 
 import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.player.CloudPlayer;
@@ -17,6 +17,7 @@ public class AddCloudPlayerListener implements PacketListener<CloudPlayerAddPack
     @Override
     public void onPacket(NetworkConnection connection, CloudPlayerAddPacket packet) {
         final CloudPlayer player = new CloudPlayerImpl(packet.getUsername(), packet.getUniqueId(), packet.getConnectedProxyName());
+
         playerManager.registerPlayer(player);
 
         final Node node = Node.getInstance();

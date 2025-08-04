@@ -1,4 +1,4 @@
-package net.potatocloud.node.listeners.group;
+package net.potatocloud.node.group.listeners;
 
 import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.group.ServiceGroup;
@@ -14,10 +14,10 @@ public class DeleteGroupListener implements PacketListener<GroupDeletePacket> {
 
     @Override
     public void onPacket(NetworkConnection connection, GroupDeletePacket packet) {
-        final ServiceGroup groupToDelete = groupManager.getServiceGroup(packet.getGroupName());
-        if (groupToDelete == null) {
+        final ServiceGroup group = groupManager.getServiceGroup(packet.getGroupName());
+        if (group == null) {
             return;
         }
-        groupManager.deleteServiceGroup(groupToDelete);
+        groupManager.deleteServiceGroup(group);
     }
 }
