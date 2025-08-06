@@ -49,7 +49,7 @@ public class PlatformCommand implements Command, TabCompleter {
     }
 
     private void listPlatforms() {
-        logger.info("&7Available platforms:");
+        logger.info("&7Available platforms&8:");
         for (PlatformVersions platform : PlatformVersions.values()) {
             logger.info("&8» &a" + platform.platform().getFullName() + " &7- Proxy: &a" + platform.platform().isProxy());
         }
