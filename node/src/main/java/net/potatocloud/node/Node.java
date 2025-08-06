@@ -56,6 +56,7 @@ public class Node extends CloudAPI {
     private final ServiceManagerImpl serviceManager;
     private final ServiceStartQueue serviceStartQueue;
 
+    private final long startedTime;
     private boolean isStopping;
 
     @SneakyThrows
@@ -123,6 +124,7 @@ public class Node extends CloudAPI {
 
         registerCommands();
 
+        startedTime = System.currentTimeMillis();
         logger.info("Startup completed in &a" + (System.currentTimeMillis() - Long.parseLong(System.getProperty("nodeStartupTime"))) + "ms &7| Use &8'&ahelp&8' &7to see available commands");
 
         serviceStartQueue = new ServiceStartQueue(groupManager, serviceManager);
@@ -141,6 +143,7 @@ public class Node extends CloudAPI {
         commandManager.registerCommand(new ClearCommand(console));
         commandManager.registerCommand(new HelpCommand(logger, commandManager));
         commandManager.registerCommand(new PlayerCommand(logger, playerManager, serviceManager));
+        commandManager.registerCommand(new InfoCommand(logger));
     }
 
     @Override
@@ -187,5 +190,9 @@ public class Node extends CloudAPI {
 
         logger.info("&7Shutdown complete. Goodbye!");
         console.close();
+    }
+
+    public long getUptime() {
+        return (System.currentTimeMillis() - startedTime);
     }
 }
