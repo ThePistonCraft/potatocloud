@@ -18,7 +18,7 @@ public class ScreenManager {
     private final Logger logger;
 
     private Screen currentScreen = null;
-    private List<Screen> screens = new ArrayList<>();
+    private final List<Screen> screens = new ArrayList<>();
 
     public void switchScreen(String screenName) {
         final Screen screen = getScreen(screenName);
@@ -30,24 +30,22 @@ public class ScreenManager {
 
         console.clearScreen();
 
-        if (screen.getName().equals("node-screen")) {
+        if (screen.getName().equals(Screen.NODE_SCREEN)) {
             // get cached logs directly from the logger
-            for (String log : logger.getCachedLogs()) {
-                console.println(log);
-            }
+            logger.getCachedLogs().stream()
+                    .filter(log -> !log.toLowerCase().contains("service screen"))
+                    .forEach(console::println);
             console.setPrompt(console.getDefaultPrompt());
             return;
         }
 
         console.setPrompt("[" + screen.getName() + "] ");
-        for (String log : screen.getCachedLogs()) {
-            console.println(log);
-        }
+        screen.getCachedLogs().forEach(console::println);
     }
 
     public Screen getScreen(String screenName) {
         return screens.stream()
-                .filter(screen -> screen.getName().equals(screenName))
+                .filter(screen -> screen.getName().equalsIgnoreCase(screenName))
                 .findFirst()
                 .orElse(null);
     }

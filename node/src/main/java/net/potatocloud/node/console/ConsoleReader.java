@@ -5,7 +5,6 @@ import net.potatocloud.api.service.Service;
 import net.potatocloud.node.Node;
 import net.potatocloud.node.command.CommandManager;
 import net.potatocloud.node.screen.Screen;
-import net.potatocloud.node.screen.ScreenManager;
 import org.jline.jansi.Ansi;
 import org.jline.reader.EndOfFileException;
 import org.jline.reader.UserInterruptException;
@@ -15,7 +14,6 @@ public class ConsoleReader extends Thread {
 
     private final Console console;
     private final CommandManager commandManager;
-    private final ScreenManager screenManager;
     private final Node node;
 
     @Override
@@ -30,19 +28,19 @@ public class ConsoleReader extends Thread {
                     continue;
                 }
 
-                final Screen currentScreen = screenManager.getCurrentScreen();
+                final Screen currentScreen = Node.getInstance().getScreenManager().getCurrentScreen();
                 final boolean isNodeScreen = currentScreen.getName().equals(Screen.NODE_SCREEN);
 
                 if (isNodeScreen) {
                     // add executed commands into log file
-                    node.getLogger().addCachedLog(input);
+                    node.getLogger().logCommand(input);
 
                     commandManager.executeCommand(input);
                     continue;
                 }
 
                 if (input.equalsIgnoreCase("leave") || input.equalsIgnoreCase("exit")) {
-                    screenManager.switchScreen(Screen.NODE_SCREEN);
+                    Node.getInstance().getScreenManager().switchScreen(Screen.NODE_SCREEN);
                     continue;
                 }
 
