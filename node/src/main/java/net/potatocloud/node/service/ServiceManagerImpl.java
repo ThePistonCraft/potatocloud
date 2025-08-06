@@ -62,7 +62,7 @@ public class ServiceManagerImpl implements ServiceManager {
         server.registerPacketListener(PacketIds.SERVICE_STARTED, new ServiceStartedListener(this, logger, eventManager));
         server.registerPacketListener(PacketIds.SERVICE_UPDATE, new ServiceUpdateListener(this));
         server.registerPacketListener(PacketIds.START_SERVICE, new StartServiceListener(this, groupManager));
-        server.registerPacketListener(PacketIds.STOP_SERVICE, new ShutdownServiceListener(this));
+        server.registerPacketListener(PacketIds.STOP_SERVICE, new StopServiceListener(this));
         server.registerPacketListener(PacketIds.SERVICE_EXECUTE_COMMAND, new ServiceExecuteCommandListener(this));
         server.registerPacketListener(PacketIds.SERVICE_COPY, new ServiceCopyListener(this));
     }

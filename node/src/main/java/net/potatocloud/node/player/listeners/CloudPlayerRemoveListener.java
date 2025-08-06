@@ -9,7 +9,7 @@ import net.potatocloud.node.Node;
 import net.potatocloud.node.player.CloudPlayerManagerImpl;
 
 @RequiredArgsConstructor
-public class RemoveCloudPlayerListener implements PacketListener<CloudPlayerRemovePacket> {
+public class CloudPlayerRemoveListener implements PacketListener<CloudPlayerRemovePacket> {
 
     private final CloudPlayerManagerImpl playerManager;
 

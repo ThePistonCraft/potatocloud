@@ -10,7 +10,7 @@ import net.potatocloud.node.Node;
 import net.potatocloud.node.player.CloudPlayerManagerImpl;
 
 @RequiredArgsConstructor
-public class AddCloudPlayerListener implements PacketListener<CloudPlayerAddPacket> {
+public class CloudPlayerAddListener implements PacketListener<CloudPlayerAddPacket> {
 
     private final CloudPlayerManagerImpl playerManager;
 

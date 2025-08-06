@@ -8,8 +8,8 @@ import net.potatocloud.core.networking.packets.group.GroupCreatePacket;
 import net.potatocloud.core.networking.packets.group.GroupDeletePacket;
 import net.potatocloud.core.networking.packets.group.GroupUpdatePacket;
 import net.potatocloud.core.networking.packets.group.RequestGroupsPacket;
-import net.potatocloud.plugin.impl.group.listeners.AddGroupListener;
-import net.potatocloud.plugin.impl.group.listeners.UpdateGroupListener;
+import net.potatocloud.plugin.impl.group.listeners.GroupAddListener;
+import net.potatocloud.plugin.impl.group.listeners.GroupUpdateListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,8 +25,8 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
 
         client.send(new RequestGroupsPacket());
 
-        client.registerPacketListener(PacketIds.GROUP_ADD, new AddGroupListener(this));
-        client.registerPacketListener(PacketIds.GROUP_UPDATE, new UpdateGroupListener(this));
+        client.registerPacketListener(PacketIds.GROUP_ADD, new GroupAddListener(this));
+        client.registerPacketListener(PacketIds.GROUP_UPDATE, new GroupUpdateListener(this));
     }
 
     public void addServiceGroup(ServiceGroup group) {

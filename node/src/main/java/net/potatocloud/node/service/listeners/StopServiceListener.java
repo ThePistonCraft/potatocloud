@@ -8,7 +8,7 @@ import net.potatocloud.core.networking.PacketListener;
 import net.potatocloud.core.networking.packets.service.StopServicePacket;
 
 @AllArgsConstructor
-public class ShutdownServiceListener implements PacketListener<StopServicePacket> {
+public class StopServiceListener implements PacketListener<StopServicePacket> {
 
     private final ServiceManager serviceManager;
 

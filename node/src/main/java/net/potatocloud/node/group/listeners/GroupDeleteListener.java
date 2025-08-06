@@ -8,7 +8,7 @@ import net.potatocloud.core.networking.PacketListener;
 import net.potatocloud.core.networking.packets.group.GroupDeletePacket;
 
 @RequiredArgsConstructor
-public class DeleteGroupListener implements PacketListener<GroupDeletePacket> {
+public class GroupDeleteListener implements PacketListener<GroupDeletePacket> {
 
     private final ServiceGroupManager groupManager;
 

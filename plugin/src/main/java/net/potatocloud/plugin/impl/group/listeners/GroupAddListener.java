@@ -8,7 +8,7 @@ import net.potatocloud.core.networking.packets.group.GroupAddPacket;
 import net.potatocloud.plugin.impl.group.ServiceGroupManagerImpl;
 
 @RequiredArgsConstructor
-public class AddGroupListener implements PacketListener<GroupAddPacket> {
+public class GroupAddListener implements PacketListener<GroupAddPacket> {
 
     private final ServiceGroupManagerImpl groupManager;
 

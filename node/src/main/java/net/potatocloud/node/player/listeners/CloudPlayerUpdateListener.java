@@ -10,7 +10,7 @@ import net.potatocloud.core.networking.packets.player.CloudPlayerUpdatePacket;
 import net.potatocloud.node.Node;
 
 @RequiredArgsConstructor
-public class UpdateCloudPlayerListener implements PacketListener<CloudPlayerUpdatePacket> {
+public class CloudPlayerUpdateListener implements PacketListener<CloudPlayerUpdatePacket> {
 
     private final CloudPlayerManager playerManager;
 

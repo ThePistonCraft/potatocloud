@@ -13,10 +13,10 @@ import net.potatocloud.core.networking.PacketIds;
 import net.potatocloud.core.networking.packets.group.GroupAddPacket;
 import net.potatocloud.core.networking.packets.group.GroupUpdatePacket;
 import net.potatocloud.node.Node;
-import net.potatocloud.node.group.listeners.CreateGroupListener;
-import net.potatocloud.node.group.listeners.DeleteGroupListener;
+import net.potatocloud.node.group.listeners.GroupCreateListener;
+import net.potatocloud.node.group.listeners.GroupDeleteListener;
 import net.potatocloud.node.group.listeners.RequestGroupsListener;
-import net.potatocloud.node.group.listeners.UpdateGroupListener;
+import net.potatocloud.node.group.listeners.GroupUpdateListener;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -40,9 +40,9 @@ public class ServiceGroupManagerImpl implements ServiceGroupManager {
         this.server = server;
 
         server.registerPacketListener(PacketIds.REQUEST_GROUPS, new RequestGroupsListener(this));
-        server.registerPacketListener(PacketIds.GROUP_UPDATE, new UpdateGroupListener(this));
-        server.registerPacketListener(PacketIds.GROUP_CREATE, new CreateGroupListener(this));
-        server.registerPacketListener(PacketIds.GROUP_DELETE, new DeleteGroupListener(this));
+        server.registerPacketListener(PacketIds.GROUP_UPDATE, new GroupUpdateListener(this));
+        server.registerPacketListener(PacketIds.GROUP_CREATE, new GroupCreateListener(this));
+        server.registerPacketListener(PacketIds.GROUP_DELETE, new GroupDeleteListener(this));
     }
 
     @Override
