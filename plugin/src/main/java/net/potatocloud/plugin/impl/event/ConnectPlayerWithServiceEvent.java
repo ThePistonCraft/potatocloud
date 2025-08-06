@@ -6,7 +6,7 @@ import net.potatocloud.api.event.Event;
 
 @Data
 @AllArgsConstructor
-public class LocalConnectPlayerWithServiceEvent implements Event {
+public class ConnectPlayerWithServiceEvent implements Event {
 
     private String playerUsername;
     private String serviceName;

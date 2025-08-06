@@ -30,7 +30,7 @@ import net.potatocloud.core.networking.packets.player.CloudPlayerConnectPacket;
 import net.potatocloud.core.networking.packets.service.ServiceRemovePacket;
 import net.potatocloud.core.networking.packets.service.ServiceStartedPacket;
 import net.potatocloud.plugin.impl.PluginCloudAPI;
-import net.potatocloud.plugin.impl.event.LocalConnectPlayerWithServiceEvent;
+import net.potatocloud.plugin.impl.event.ConnectPlayerWithServiceEvent;
 import net.potatocloud.plugin.impl.player.CloudPlayerManagerImpl;
 
 import java.net.InetSocketAddress;
@@ -64,7 +64,7 @@ public class VelocityPlugin {
             registerServer(service);
         });
 
-        api.getEventManager().on(LocalConnectPlayerWithServiceEvent.class, connectEvent -> {
+        api.getEventManager().on(ConnectPlayerWithServiceEvent.class, connectEvent -> {
             connectPlayer(connectEvent.getPlayerUsername(), connectEvent.getServiceName());
         });
 

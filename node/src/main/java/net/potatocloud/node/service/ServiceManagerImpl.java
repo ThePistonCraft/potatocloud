@@ -10,11 +10,17 @@ import net.potatocloud.core.networking.PacketIds;
 import net.potatocloud.core.networking.packets.service.ServiceAddPacket;
 import net.potatocloud.core.networking.packets.service.ServiceUpdatePacket;
 import net.potatocloud.node.config.NodeConfig;
+import net.potatocloud.node.console.Console;
 import net.potatocloud.node.console.Logger;
-import net.potatocloud.node.listeners.service.*;
+import net.potatocloud.node.platform.PlatformManager;
+import net.potatocloud.node.screen.ScreenManager;
+import net.potatocloud.node.service.listeners.*;
+import net.potatocloud.node.template.TemplateManager;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ServiceManagerImpl implements ServiceManager {
@@ -26,13 +32,31 @@ public class ServiceManagerImpl implements ServiceManager {
     private final NetworkServer server;
     private final EventManager eventManager;
     private final ServiceGroupManager groupManager;
+    private final ScreenManager screenManager;
+    private final TemplateManager templateManager;
+    private final PlatformManager platformManager;
+    private final Console console;
 
-    public ServiceManagerImpl(NodeConfig config, Logger logger, NetworkServer server, EventManager eventManager, ServiceGroupManager groupManager) {
+    public ServiceManagerImpl(
+            NodeConfig config,
+            Logger logger,
+            NetworkServer server,
+            EventManager eventManager,
+            ServiceGroupManager groupManager,
+            ScreenManager screenManager,
+            TemplateManager templateManager,
+            PlatformManager platformManager,
+            Console console
+    ) {
         this.config = config;
         this.logger = logger;
         this.server = server;
         this.eventManager = eventManager;
         this.groupManager = groupManager;
+        this.screenManager = screenManager;
+        this.templateManager = templateManager;
+        this.platformManager = platformManager;
+        this.console = console;
 
         server.registerPacketListener(PacketIds.REQUEST_SERVICES, new RequestServicesListener(this));
         server.registerPacketListener(PacketIds.SERVICE_STARTED, new ServiceStartedListener(this, logger, eventManager));
@@ -53,7 +77,7 @@ public class ServiceManagerImpl implements ServiceManager {
 
     @Override
     public List<Service> getAllServices() {
-        return services;
+        return Collections.unmodifiableList(services);
     }
 
     @Override
@@ -75,11 +99,23 @@ public class ServiceManagerImpl implements ServiceManager {
 
         final int serviceId = getFreeServiceId(group);
         final int port = getServicePort(group);
-        final ServiceImpl service = new ServiceImpl(serviceId, port, group, config, logger);
+        final ServiceImpl service = new ServiceImpl(
+                serviceId,
+                port,
+                group,
+                config,
+                logger,
+                server,
+                screenManager,
+                templateManager,
+                platformManager,
+                eventManager,
+                this,
+                console
+        );
 
         services.add(service);
 
-        // broadcast add service packet to all connected clients
         server.broadcastPacket(new ServiceAddPacket(service.getName(),
                 service.getServiceId(),
                 service.getPort(),
@@ -105,7 +141,7 @@ public class ServiceManagerImpl implements ServiceManager {
     }
 
     private int getFreeServiceId(ServiceGroup serviceGroup) {
-        final List<Integer> usedIds = new ArrayList<>();
+        final Set<Integer> usedIds = new HashSet<>();
 
         for (Service service : services) {
             if (service.getServiceGroup().equals(serviceGroup)) {
@@ -122,7 +158,7 @@ public class ServiceManagerImpl implements ServiceManager {
     }
 
     private int getServicePort(ServiceGroup serviceGroup) {
-        final List<Integer> usedPorts = new ArrayList<>();
+        final Set<Integer> usedPorts = new HashSet<>();
         for (Service service : services) {
             usedPorts.add(service.getPort());
         }

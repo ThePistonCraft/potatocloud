@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import net.potatocloud.node.Node;
 import net.potatocloud.node.command.CommandManager;
+import net.potatocloud.node.screen.ScreenManager;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.terminal.Terminal;
@@ -19,13 +20,16 @@ public class Console {
     private final Terminal terminal;
     private final LineReader lineReader;
 
+    private final ConsoleReader consoleReader;
+    private final Node node;
+
     @Setter
     private String prompt;
 
-    private final ConsoleReader consoleReader;
-
     @SneakyThrows
     public Console(CommandManager commandManager, Node node) {
+        this.node = node;
+
         terminal = TerminalBuilder.builder()
                 .name("potatocloud-console")
                 .system(true)
@@ -37,7 +41,7 @@ public class Console {
                 .completer(new ConsoleCommandCompleter(commandManager))
                 .build();
 
-        this.prompt = getDefaultPrompt();
+        prompt = getDefaultPrompt();
 
         consoleReader = new ConsoleReader(this, commandManager, node);
     }
@@ -45,7 +49,7 @@ public class Console {
     public void start() {
         clearScreen();
 
-        if (Node.getInstance().getConfig().isEnableBanner()) {
+        if (node.getConfig().isEnableBanner()) {
             ConsoleBanner.display(this);
         }
 
@@ -57,7 +61,8 @@ public class Console {
     }
 
     public String getDefaultPrompt() {
-        return ConsoleColor.format(Node.getInstance().getConfig().getPrompt().replace("%user%", System.getProperty("user.name")));
+        final String rawPrompt = node.getConfig().getPrompt();
+        return ConsoleColor.format(rawPrompt.replace("%user%", System.getProperty("user.name")));
     }
 
     public void clearScreen() {

@@ -70,11 +70,11 @@ public class Node extends CloudAPI {
         console = new Console(commandManager, this);
         console.start();
 
-        logger = new Logger(console, new File(config.getLogsFolder()));
+        logger = new Logger(console, Path.of(config.getLogsFolder()));
         new ExceptionMessageHandler(logger);
 
         screenManager = new ScreenManager(console, logger);
-        Screen screen = new Screen("node-screen");
+        Screen screen = new Screen(Screen.NODE_SCREEN);
         screenManager.addScreen(screen);
         screenManager.setCurrentScreen(screen);
 
@@ -94,8 +94,11 @@ public class Node extends CloudAPI {
         Files.createDirectories(dataFolder);
         for (String name : files) {
             try (InputStream stream = getClass().getClassLoader().getResourceAsStream("default-files/" + name)) {
-                if (stream != null)
-                    FileUtils.copyInputStreamToFile(stream, dataFolder.resolve(name).toFile());
+                if (stream == null) {
+                    continue;
+                }
+
+                FileUtils.copyInputStreamToFile(stream, dataFolder.resolve(name).toFile());
             } catch (Exception e) {
                 logger.warn("Failed to copy default service file: " + name);
             }
@@ -114,8 +117,9 @@ public class Node extends CloudAPI {
         }
 
         platformManager = new PlatformManager(Path.of(config.getPlatformsFolder()), logger);
-        serviceManager = new ServiceManagerImpl(config, logger, server, eventManager, groupManager);
-        serviceManager.getAllServices().clear();
+        serviceManager = new ServiceManagerImpl(
+                config, logger, server, eventManager, groupManager, screenManager, templateManager, platformManager, console
+        );
 
         registerCommands();
 

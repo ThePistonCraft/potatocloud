@@ -7,6 +7,7 @@ public class ServiceProcessChecker extends Thread {
     public ServiceProcessChecker(ServiceImpl service) {
         this.service = service;
         setDaemon(true);
+        setName("ServiceProcessChecker-" + service.getName());
     }
 
 
@@ -17,9 +18,11 @@ public class ServiceProcessChecker extends Thread {
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException ignored) {
+                Thread.currentThread().interrupt();
                 return;
             }
         }
+
         if (!isInterrupted()) {
             service.getLogger().info("Service &a" + service.getName() + " &7seems to be offline...");
             service.cleanup();

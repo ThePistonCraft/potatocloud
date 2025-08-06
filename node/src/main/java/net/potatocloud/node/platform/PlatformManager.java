@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.impl.PaperMCPlatformVersion;
+import net.potatocloud.api.platform.impl.PurpurPlatformVersion;
 import net.potatocloud.node.Node;
 import net.potatocloud.node.console.Logger;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -38,48 +39,42 @@ public class PlatformManager {
                 .resolve(platform.getFullName() + ".jar")
                 .toFile();
 
-        if (!Node.getInstance().getConfig().isPlatformAutoUpdate()) {
-            if (!platformFile.exists()) {
-                logger.info("&7Downloading platform: &a" + platform.getFullName());
-                URL url = URI.create(platform.getDownloadUrl()).toURL();
-                FileUtils.copyURLToFile(url, platformFile, 5000, 5000);
-                logger.info("&7Finished downloading platform: &a" + platform.getFullName());
-            }
+        if (!platformFile.exists()) {
+            downloadPlatform(platform, platformFile);
             return;
         }
 
-        boolean needsDownload = true;
-        if (platformFile.exists()) {
-            needsDownload = needsUpdate(platformFile, platform);
-            if (needsDownload) {
-                logger.info("Platform &a" + platform.getFullName() + " &7is outdated! Downloading update&8...");
-            }
-        }
-
-        if (needsDownload) {
-            logger.info("&7Downloading platform: &a" + platform.getFullName());
-            final URL url = URI.create(platform.getDownloadUrl()).toURL();
-            FileUtils.copyURLToFile(url, platformFile, 5000, 5000);
-            logger.info("&7Finished downloading platform: &a" + platform.getFullName());
+        final boolean autoUpdate = Node.getInstance().getConfig().isPlatformAutoUpdate();
+        if (autoUpdate && needsUpdate(platformFile, platform)) {
+            logger.info("Platform &a" + platform.getFullName() + " &7is outdated! Downloading update&8...");
+            downloadPlatform(platform, platformFile);
         }
     }
 
     @SneakyThrows
+    private void downloadPlatform(Platform platform, File platformFile) {
+        logger.info("&7Downloading platform: &a" + platform.getFullName());
+        URL url = URI.create(platform.getDownloadUrl()).toURL();
+        FileUtils.copyURLToFile(url, platformFile, 5000, 5000);
+        logger.info("&7Finished downloading platform: &a" + platform.getFullName());
+    }
+
+
+    @SneakyThrows
     private boolean needsUpdate(File currentPlatformFile, Platform platform) {
-        if (platform.getFileHash() == null || platform.getFileHash().isEmpty()) {
+        final String platformHash = platform.getFileHash();
+        if (platformHash == null || platformHash.isEmpty()) {
             return false;
         }
 
         try (FileInputStream stream = new FileInputStream(currentPlatformFile)) {
-            String currentFileHash = "";
-            if (platform instanceof PaperMCPlatformVersion) {
-                currentFileHash = DigestUtils.sha256Hex(stream);
-            } else {
-                //used by purpermc
-                currentFileHash = DigestUtils.md5Hex(stream);
-            }
+            final String currentFileHash = switch (platform) {
+                case PaperMCPlatformVersion ignored -> DigestUtils.sha256Hex(stream);
+                case PurpurPlatformVersion ignored -> DigestUtils.md5Hex(stream);
+                default -> DigestUtils.sha256Hex(stream);
+            };
 
-            return !currentFileHash.equals(platform.getFileHash());
+            return !currentFileHash.equals(platformHash);
         }
     }
 }

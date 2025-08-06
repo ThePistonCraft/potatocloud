@@ -7,17 +7,16 @@ import net.potatocloud.api.group.ServiceGroupManager;
 import net.potatocloud.api.group.impl.ServiceGroupImpl;
 import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.PlatformVersions;
-import net.potatocloud.api.property.Property;
 import net.potatocloud.api.service.Service;
 import net.potatocloud.core.networking.NetworkServer;
 import net.potatocloud.core.networking.PacketIds;
 import net.potatocloud.core.networking.packets.group.GroupAddPacket;
 import net.potatocloud.core.networking.packets.group.GroupUpdatePacket;
 import net.potatocloud.node.Node;
-import net.potatocloud.node.listeners.group.CreateGroupListener;
-import net.potatocloud.node.listeners.group.DeleteGroupListener;
-import net.potatocloud.node.listeners.group.RequestGroupsListener;
-import net.potatocloud.node.listeners.group.UpdateGroupListener;
+import net.potatocloud.node.group.listeners.CreateGroupListener;
+import net.potatocloud.node.group.listeners.DeleteGroupListener;
+import net.potatocloud.node.group.listeners.RequestGroupsListener;
+import net.potatocloud.node.group.listeners.UpdateGroupListener;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,7 +24,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ServiceGroupManagerImpl implements ServiceGroupManager {

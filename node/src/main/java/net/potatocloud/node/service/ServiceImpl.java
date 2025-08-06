@@ -3,23 +3,28 @@ package net.potatocloud.node.service;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import net.potatocloud.api.CloudAPI;
+import net.potatocloud.api.event.EventManager;
 import net.potatocloud.api.event.events.service.PreparedServiceStartingEvent;
 import net.potatocloud.api.event.events.service.ServiceStoppedEvent;
 import net.potatocloud.api.event.events.service.ServiceStoppingEvent;
 import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.platform.Platform;
 import net.potatocloud.api.platform.impl.PandaSpigotVersion;
+import net.potatocloud.api.platform.impl.PaperMCPlatformVersion;
+import net.potatocloud.api.platform.impl.PurpurPlatformVersion;
 import net.potatocloud.api.property.Property;
 import net.potatocloud.api.service.Service;
+import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.api.service.ServiceStatus;
 import net.potatocloud.core.networking.NetworkServer;
 import net.potatocloud.core.networking.packets.service.ServiceRemovePacket;
-import net.potatocloud.node.Node;
 import net.potatocloud.node.config.NodeConfig;
+import net.potatocloud.node.console.Console;
 import net.potatocloud.node.console.Logger;
+import net.potatocloud.node.platform.PlatformManager;
 import net.potatocloud.node.screen.Screen;
 import net.potatocloud.node.screen.ScreenManager;
+import net.potatocloud.node.template.TemplateManager;
 import org.apache.commons.io.FileUtils;
 import oshi.SystemInfo;
 import oshi.software.os.OSProcess;
@@ -40,33 +45,69 @@ public class ServiceImpl implements Service {
     private final ServiceGroup group;
     private final NodeConfig config;
     private final Logger logger;
+
     private final List<String> logs = new ArrayList<>();
+
     private final NetworkServer server;
+    private final ScreenManager screenManager;
+    private final TemplateManager templateManager;
+    private final PlatformManager platformManager;
+    private final EventManager eventManager;
+    private final ServiceManager serviceManager;
+    private final Console console;
+
     private final Set<Property> properties;
     private final Screen screen;
+
     @Setter
     private int maxPlayers;
+
     @Setter
     private ServiceStatus status = ServiceStatus.STOPPED;
+
     private long startTimestamp;
+
     private Path directory;
+
     private Process serverProcess;
     private BufferedWriter processWriter;
     private BufferedReader processReader;
+
     @Setter
     private ServiceProcessChecker processChecker;
 
-    public ServiceImpl(int serviceId, int port, ServiceGroup group, NodeConfig config, Logger logger) {
+    public ServiceImpl(
+            int serviceId,
+            int port,
+            ServiceGroup group,
+            NodeConfig config,
+            Logger logger,
+            NetworkServer server,
+            ScreenManager screenManager,
+            TemplateManager templateManager,
+            PlatformManager platformManager,
+            EventManager eventManager,
+            ServiceManager serviceManager,
+            Console console
+    ) {
         this.serviceId = serviceId;
         this.port = port;
         this.group = group;
         this.config = config;
         this.logger = logger;
+        this.server = server;
+        this.screenManager = screenManager;
+        this.templateManager = templateManager;
+        this.platformManager = platformManager;
+        this.eventManager = eventManager;
+        this.serviceManager = serviceManager;
+        this.console = console;
+
         maxPlayers = group.getMaxPlayers();
-        server = Node.getInstance().getServer();
         properties = new HashSet<>(group.getProperties());
+
         screen = new Screen(getName());
-        Node.getInstance().getScreenManager().addScreen(screen);
+        screenManager.addScreen(screen);
     }
 
     @Override
@@ -121,20 +162,23 @@ public class ServiceImpl implements Service {
 
         // copy templates
         for (String templateName : group.getServiceTemplates()) {
-            Node.getInstance().getTemplateManager().copyTemplate(templateName, directory);
+            templateManager.copyTemplate(templateName, directory);
         }
 
-        // copy cloud plugin into plugins folder
+        // copy cloud plugin from data folder into server plugins folder
         final Path pluginsFolder = directory.resolve("plugins");
         Files.createDirectories(pluginsFolder);
 
         FileUtils.copyFile(Path.of(config.getDataFolder(), "potatocloud-plugin.jar").toFile(), pluginsFolder.resolve("potatocloud-plugin.jar").toFile());
 
-        // download and configure the platform of the service
-        final Platform platform = getGroup().getPlatform();
-        Node.getInstance().getPlatformManager().downloadPlatform(platform);
+        // download the platform of the service
+        final Platform platform = group.getPlatform();
+        platformManager.downloadPlatform(platform);
 
-        if (!platform.isProxy()) {
+        // prepare the platform of the service
+        if ((platform instanceof PaperMCPlatformVersion || platform instanceof PurpurPlatformVersion) && !platform.isProxy()) {
+            // Paper and Purpur
+
             final Properties properties = new Properties();
             final File file = directory.resolve("server.properties").toFile();
 
@@ -156,8 +200,9 @@ public class ServiceImpl implements Service {
             if (!Files.exists(spigotConfigFile)) {
                 Files.copy(Path.of(config.getDataFolder(), "spigot.yml"), spigotConfigFile);
             }
+        } else if (platform.isProxy() && platform instanceof PaperMCPlatformVersion) {
+            // Velocity
 
-        } else {
             final Path velocityConfigFile = directory.resolve("velocity.toml");
 
             if (!Files.exists(velocityConfigFile)) {
@@ -173,17 +218,19 @@ public class ServiceImpl implements Service {
             Files.writeString(velocityConfigFile, fileContent);
 
             // a forwarding secret file has to be created or else velocity will throw an error
-            if (!Files.exists(directory.resolve("forwarding.secret"))) {
-                Files.writeString(directory.resolve("forwarding.secret"), UUID.randomUUID().toString(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            final Path forwardingSecretFile = directory.resolve("forwarding.secret");
+            if (!Files.exists(forwardingSecretFile)) {
+                Files.writeString(forwardingSecretFile, UUID.randomUUID().toString(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
             }
         }
 
-        final Path jarPath = Path.of(config.getPlatformsFolder())
+        // copy server file
+        final Path platformFilePath = Path.of(config.getPlatformsFolder())
                 .resolve(platform.getFullName())
                 .resolve(platform.getFullName() + ".jar");
 
-        final Path serverJarPath = directory.resolve("server.jar");
-        FileUtils.copyFile(jarPath.toFile(), serverJarPath.toFile());
+        final Path finalServerFilePath = directory.resolve("server.jar");
+        FileUtils.copyFile(platformFilePath.toFile(), finalServerFilePath.toFile());
 
         // create start arguments
         final ArrayList<String> args = new ArrayList<>();
@@ -206,13 +253,13 @@ public class ServiceImpl implements Service {
         }
 
         args.add("-jar");
-        args.add(serverJarPath.toAbsolutePath().toString());
+        args.add(platformFilePath.toAbsolutePath().toString());
 
         if (!platform.isProxy() && !(platform instanceof PandaSpigotVersion)) {
             args.add("-nogui");
         }
 
-        // crate and start the service process
+        // create and start the service process
         final ProcessBuilder processBuilder = new ProcessBuilder(args).directory(directory.toFile());
         serverProcess = processBuilder.start();
 
@@ -224,20 +271,20 @@ public class ServiceImpl implements Service {
                 String line;
                 while ((line = processReader.readLine()) != null) {
                     logs.add(line);
-                    screen.getCachedLogs().add(line);
+                    screen.addLog(line);
 
-                    if (Node.getInstance().getScreenManager().getCurrentScreen().getName().equals(getName())) {
-                        Node.getInstance().getConsole().println(line);
+                    if (screenManager.getCurrentScreen().getName().equals(getName())) {
+                        console.println(line);
                     }
 
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }, "processReader-" + getName()).start();
+        }, "ProcessReader-" + getName()).start();
 
         logger.info("Service &a" + this.getName() + "&7 is now starting... &8[&7Port&8: &a" + port + "&8, &7Group&8: &a" + group.getName() + "&8]");
-        Node.getInstance().getEventManager().call(new PreparedServiceStartingEvent(this.getName()));
+        eventManager.call(new PreparedServiceStartingEvent(this.getName()));
     }
 
     @Override
@@ -262,8 +309,8 @@ public class ServiceImpl implements Service {
         logger.info("Stopping service &a" + getName() + "&7...");
         status = ServiceStatus.STOPPING;
 
-        if (Node.getInstance().getServer() != null && Node.getInstance().getEventManager() != null) {
-            Node.getInstance().getEventManager().call(new ServiceStoppingEvent(this.getName()));
+        if (server != null && eventManager != null) {
+            eventManager.call(new ServiceStoppingEvent(this.getName()));
         }
 
         executeCommand(group.getPlatform().isProxy() ? "end" : "stop");
@@ -274,7 +321,7 @@ public class ServiceImpl implements Service {
         }
 
         if (serverProcess != null) {
-            boolean finished = serverProcess.waitFor(10, TimeUnit.SECONDS);
+            final boolean finished = serverProcess.waitFor(10, TimeUnit.SECONDS);
             if (!finished) {
                 serverProcess.toHandle().destroyForcibly();
                 serverProcess.waitFor();
@@ -293,19 +340,18 @@ public class ServiceImpl implements Service {
         status = ServiceStatus.STOPPED;
         startTimestamp = 0L;
 
-        ((ServiceManagerImpl) Node.getInstance().getServiceManager()).removeService(this);
+        ((ServiceManagerImpl) serviceManager).removeService(this);
 
-        final ScreenManager screenManager = Node.getInstance().getScreenManager();
         screenManager.removeScreen(screen);
 
         if (screenManager.getCurrentScreen().getName().equals(getName())) {
-            screenManager.switchScreen("node-screen");
+            screenManager.switchScreen(Screen.NODE_SCREEN);
         }
 
         if (server != null) {
             server.broadcastPacket(new ServiceRemovePacket(this.getName(), this.getPort()));
 
-            Node.getInstance().getEventManager().call(new ServiceStoppedEvent(this.getName()));
+            eventManager.call(new ServiceStoppedEvent(this.getName()));
         }
 
         if (!group.isStatic()) {
@@ -351,7 +397,7 @@ public class ServiceImpl implements Service {
         }
 
         if (!Files.exists(targetPath)) {
-            Node.getInstance().getTemplateManager().createTemplate(targetPath.toFile().getName());
+            templateManager.createTemplate(targetPath.toFile().getName());
         }
 
         try {
@@ -361,19 +407,12 @@ public class ServiceImpl implements Service {
         }
     }
 
-
-    @Override
-    public void update() {
-        CloudAPI.getInstance().getServiceManager().updateService(this);
-    }
-
     @SneakyThrows
     public List<String> getLogs() {
         synchronized (logs) {
             return new ArrayList<>(logs);
         }
     }
-
 
     @Override
     public String getPropertyHolderName() {
