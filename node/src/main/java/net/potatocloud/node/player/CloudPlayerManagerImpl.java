@@ -5,9 +5,9 @@ import net.potatocloud.api.player.CloudPlayerManager;
 import net.potatocloud.core.networking.NetworkServer;
 import net.potatocloud.core.networking.PacketIds;
 import net.potatocloud.core.networking.packets.player.CloudPlayerConnectPacket;
-import net.potatocloud.node.listeners.player.AddCloudPlayerListener;
-import net.potatocloud.node.listeners.player.RemoveCloudPlayerListener;
-import net.potatocloud.node.listeners.player.UpdateCloudPlayerListener;
+import net.potatocloud.node.player.listeners.AddCloudPlayerListener;
+import net.potatocloud.node.player.listeners.RemoveCloudPlayerListener;
+import net.potatocloud.node.player.listeners.UpdateCloudPlayerListener;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -61,7 +61,7 @@ public class CloudPlayerManagerImpl implements CloudPlayerManager {
     }
 
     @Override
-    public void updatePlayer(CloudPlayer player) {
-    }
+    public void updatePlayer(CloudPlayer player) {}
+
 }
 
