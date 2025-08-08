@@ -155,7 +155,9 @@ public class ServiceImpl implements Service {
         directory = group.isStatic() ? staticFolder.resolve(getName()) : tempFolder.resolve(getName());
 
         if (!group.isStatic()) {
-            FileUtils.deleteDirectory(directory.toFile());
+            if (Files.exists(directory)) {
+                FileUtils.deleteQuietly(directory.toFile());
+            }
         }
 
         Files.createDirectories(directory);
@@ -355,10 +357,10 @@ public class ServiceImpl implements Service {
         }
 
         if (!group.isStatic()) {
-            try {
-                FileUtils.deleteDirectory(directory.toFile());
-            } catch (IOException e) {
-                logger.error("Temp directory for " + getName() + " could not be deleted! The service might still be running");
+            if (Files.exists(directory)) {
+                if (!FileUtils.deleteQuietly(directory.toFile())) {
+                    logger.error("Temp directory for " + getName() + " could not be deleted! The service might still be running");
+                }
             }
         }
 
