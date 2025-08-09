@@ -19,4 +19,4 @@ motd:
   maintenance:
     firstLine: "<dark_gray>» <gradient:#55FF55:#DAF3DA>potatocloud</gradient> <dark_gray>• <gray>Powered by potatoes <dark_gray>• <white>1.20+"
     secondLine: "                  <red>We are in maintenance"
-    version: "<red>maintenance"
+    version: "<red>Maintenance"

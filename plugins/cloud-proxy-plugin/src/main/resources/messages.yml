@@ -1,20 +1,20 @@
 prefix: "<dark_gray>» <gradient:#55FF55:#DAF3DA>potatocloud</gradient> <dark_gray>• <reset>"
-notWhitelist: "<dark_gray>» <red>You are not whitelisted on this server"
+notWhitelist: "You are not whitelisted on this server"
 no-permission: "<red>You do not have enough permissions for this command"
 
 help:
-  toggle: "<white>/proxy toggle <dark_gray>- <gray>toggles maintenance mode"
-  list: "<white>/proxy list <dark_gray>- <gray>show whitelist"
-  reload: "<white>/proxy reload <dark_gray>- <gray>reload config"
-  whitelist: "<white>/proxy whitelist <add, remove> <Name> <dark_gray>- <gray>add or remove player from whitelist"
+  toggle: "<dark_gray> » <green>/proxy toggle <dark_gray>- <gray>Toggle maintenance mode"
+  list: "<dark_gray> » <green>/proxy list <dark_gray>- <gray>Show whitelisted players"
+  reload: "<dark_gray> » <green>/proxy reload <dark_gray>- <gray>Reload config"
+  whitelist: "<dark_gray> » <green>/proxy whitelist <dark_gray>[<green>add<dark_gray>, <green>remove<dark_gray>] [<green>Name<dark_gray>] <gray>- Add or remove a player from whitelist"
 
-now_maintenance: "<red>The maintenance mode is now <green>enabled"
-now_not_maintenance: "<red>The maintenance mode is now <red>disabled"
+now_maintenance: "<gray>The maintenance mode is now <green>enabled"
+now_not_maintenance: "<gray>The maintenance mode is now <red>disabled"
 
 info_text: "<gray>Following players are whitelisted:"
 info_key: "<dark_gray>» <green>%name%"
 
-reload: "<red>The config got reloaded"
+reload: "<gray>The config got reloaded"
 
 whitelist:
   already: "<red>This player is already on the whitelist"
