@@ -23,7 +23,7 @@ public class LoginListener {
         final Player player = event.getPlayer();
         final String username = player.getUsername();
 
-        if (config.whitelist().contains(username)) {
+        if (config.whitelist().contains(username) || player.hasPermission("*")) {
             return;
         }
 
