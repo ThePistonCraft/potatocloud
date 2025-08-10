@@ -1,6 +1,6 @@
 # potatocloud
 
-A super simple "cloud" system for Minecraft servers that is performant, customizable and made to be simple and easy to use
+A simple "cloud" system for Minecraft servers that is performant, customizable and made to be simple and easy to use
 
 ## Supported Platforms (Server Versions)
 - Paper (1.20.4 - current)
@@ -52,7 +52,7 @@ dependencies {
 ```
 
 
-### You can access the API by using
+### You can access the API by using:
 
 ```java
 CloudAPI api = CloudAPI.getInstance();
