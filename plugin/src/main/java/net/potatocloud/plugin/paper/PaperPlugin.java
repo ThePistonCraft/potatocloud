@@ -2,6 +2,7 @@ package net.potatocloud.plugin.paper;
 
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.potatocloud.api.CloudAPI;
+import net.potatocloud.api.player.CloudPlayer;
 import net.potatocloud.api.player.CloudPlayerManager;
 import net.potatocloud.api.player.impl.CloudPlayerImpl;
 import net.potatocloud.api.property.Property;
@@ -40,7 +41,11 @@ public class PaperPlugin extends JavaPlugin implements Listener {
         });
 
         api.getClient().registerPacketListener(PacketIds.PLAYER_REMOVE, (NetworkConnection connection, CloudPlayerRemovePacket packet) -> {
-            playerManager.getOnlinePlayers().remove(playerManager.getCloudPlayer(packet.getPlayerUniqueId()));
+            final CloudPlayer player = playerManager.getCloudPlayer(packet.getPlayerUniqueId());
+            if (player == null) {
+                return;
+            }
+            playerManager.getOnlinePlayers().remove(player);
         });
 
         api.getClient().registerPacketListener(PacketIds.PLAYER_UPDATE, (NetworkConnection connection, CloudPlayerUpdatePacket packet) -> {
@@ -54,7 +59,7 @@ public class PaperPlugin extends JavaPlugin implements Listener {
 
             player.getProperties().clear();
             for (Property property : packet.getProperties()) {
-                player.setProperty(property);
+                player.setProperty(property, property.getValue(), false);
             }
         });
 

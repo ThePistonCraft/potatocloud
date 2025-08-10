@@ -1,4 +1,4 @@
-package net.potatocloud.node.listeners.service;
+package net.potatocloud.node.service.listeners;
 
 import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.service.Service;
@@ -15,6 +15,9 @@ public class ServiceCopyListener implements PacketListener<ServiceCopyPacket> {
     @Override
     public void onPacket(NetworkConnection connection, ServiceCopyPacket packet) {
         final Service service = serviceManager.getService(packet.getServiceName());
+        if (service == null) {
+            return;
+        }
         service.copy(packet.getTemplateName(), packet.getFilter());
     }
 }

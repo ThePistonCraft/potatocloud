@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.LoginEvent;
+import com.velocitypowered.api.event.connection.PostLoginEvent;
 import com.velocitypowered.api.event.player.KickedFromServerEvent;
 import com.velocitypowered.api.event.player.PlayerChooseInitialServerEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
@@ -29,7 +30,7 @@ import net.potatocloud.core.networking.packets.player.CloudPlayerConnectPacket;
 import net.potatocloud.core.networking.packets.service.ServiceRemovePacket;
 import net.potatocloud.core.networking.packets.service.ServiceStartedPacket;
 import net.potatocloud.plugin.impl.PluginCloudAPI;
-import net.potatocloud.plugin.impl.event.LocalConnectPlayerWithServiceEvent;
+import net.potatocloud.plugin.impl.event.ConnectPlayerWithServiceEvent;
 import net.potatocloud.plugin.impl.player.CloudPlayerManagerImpl;
 
 import java.net.InetSocketAddress;
@@ -63,7 +64,7 @@ public class VelocityPlugin {
             registerServer(service);
         });
 
-        api.getEventManager().on(LocalConnectPlayerWithServiceEvent.class, connectEvent -> {
+        api.getEventManager().on(ConnectPlayerWithServiceEvent.class, connectEvent -> {
             connectPlayer(connectEvent.getPlayerUsername(), connectEvent.getServiceName());
         });
 
@@ -153,16 +154,19 @@ public class VelocityPlugin {
             return;
         }
 
-        if (event.getPlayer().getUniqueId().equals(UUID.fromString("74eb9589-198f-465b-8d59-c452436ca99b"))
-                || event.getPlayer().getUniqueId().equals(UUID.fromString("b44abeab-480e-438c-8109-e870feea3121"))) {
-            event.getPlayer().sendMessage(MiniMessage.miniMessage().deserialize("<green>This network uses <bold>potatocloud"));
-        }
-
         final CloudPlayerManagerImpl playerManager = (CloudPlayerManagerImpl) api.getPlayerManager();
         playerManager.registerPlayer(
                 new CloudPlayerImpl(event.getPlayer().getUsername(), event.getPlayer().getUniqueId(), thisService.getName()));
 
         api.getEventManager().call(new CloudPlayerJoinEvent(event.getPlayer().getUniqueId(), event.getPlayer().getUsername()));
+    }
+
+    @Subscribe
+    public void onPostLogin(PostLoginEvent event) {
+        if (event.getPlayer().getUniqueId().equals(UUID.fromString("74eb9589-198f-465b-8d59-c452436ca99b"))
+                || event.getPlayer().getUniqueId().equals(UUID.fromString("b44abeab-480e-438c-8109-e870feea3121"))) {
+            event.getPlayer().sendMessage(MiniMessage.miniMessage().deserialize("<green>This network uses potatocloud"));
+        }
     }
 
     @Subscribe

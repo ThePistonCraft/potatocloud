@@ -31,16 +31,17 @@ public class ServiceStartQueue extends Thread {
                 return;
             }
 
-            if (event.getNewValue() == null) {
-                return;
-            }
-
-            if (!event.getNewValue().equals("INGAME")) {
+            if (event.getNewValue() == null || !event.getNewValue().equals("INGAME")) {
                 return;
             }
 
             final Service service = Node.getInstance().getServiceManager().getService(event.getHolderName());
             if (service == null) {
+                return;
+            }
+
+            final ServiceGroup group = service.getServiceGroup();
+            if (group.getOnlineServiceCount() >= group.getMaxOnlineCount()) {
                 return;
             }
 
@@ -80,10 +81,15 @@ public class ServiceStartQueue extends Thread {
                         continue;
                     }
 
+                    final int groupStartPercentage = group.getStartPercentage();
+                    if(groupStartPercentage == -1) { // if this is on -1 no server will be started
+                        break;
+                    }
+
                     final int usagePercent = (int) ((group.getOnlinePlayerCount() / (double) maxPlayers) * 100);
                     final boolean hasStarting = services.stream().anyMatch(service -> service.getStatus() == ServiceStatus.STARTING);
 
-                    if (usagePercent >= group.getStartPercentage() && !hasStarting) {
+                    if (usagePercent >= groupStartPercentage && !hasStarting) {
                         serviceManager.startService(group);
                         break;
                     }

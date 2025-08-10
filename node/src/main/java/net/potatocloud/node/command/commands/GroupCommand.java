@@ -186,7 +186,7 @@ public class GroupCommand implements Command, TabCompleter {
                     return;
                 }
 
-                case "minOnlineCount" -> group.setMinOnlineCount(Integer.parseInt(value));
+                case "minonlinecount" -> group.setMinOnlineCount(Integer.parseInt(value));
                 case "maxonlinecount" -> group.setMaxOnlineCount(Integer.parseInt(value));
                 case "maxplayers" -> group.setMaxPlayers(Integer.parseInt(value));
                 case "maxmemory" -> group.setMaxMemory(Integer.parseInt(value));
@@ -286,16 +286,16 @@ public class GroupCommand implements Command, TabCompleter {
         }
 
         final ServiceGroup group = groupManager.getServiceGroup(name);
-        logger.info("Name: &a" + group.getName());
-        logger.info("Platform: &a" + group.getPlatform().getFullName());
-        logger.info("Templates: &a" + String.join(", ", group.getServiceTemplates()));
-        logger.info("Min Online Count: &a" + group.getMinOnlineCount());
-        logger.info("Max Online Count: &a" + group.getMaxOnlineCount());
-        logger.info("Online Players: &a" + CloudAPI.getInstance().getPlayerManager().getOnlinePlayersByGroup(group).size());
-        logger.info("Max Players: &a" + group.getMaxPlayers());
-        logger.info("Max Memory: &a" + group.getMaxMemory() + "MB");
-        logger.info("Fallback: " + (group.isFallback() ? "&aYes" : "&cNo"));
-        logger.info("Static: " + (group.isStatic() ? "&aYes" : "&cNo"));
+        logger.info("&7Info for group &a" + group.getName() + "&8:");
+        logger.info("&8» &7Platform: &a" + group.getPlatform().getFullName());
+        logger.info("&8» &7Templates: &a" + String.join(", ", group.getServiceTemplates()));
+        logger.info("&8» &7Min Online Count: &a" + group.getMinOnlineCount());
+        logger.info("&8» &7Max Online Count: &a" + group.getMaxOnlineCount());
+        logger.info("&8» &7Online Players: &a" + CloudAPI.getInstance().getPlayerManager().getOnlinePlayersByGroup(group).size());
+        logger.info("&8» &7Max Players: &a" + group.getMaxPlayers());
+        logger.info("&8» &7Max Memory: &a" + group.getMaxMemory() + "MB");
+        logger.info("&8» &7Fallback: " + (group.isFallback() ? "&aYes" : "&cNo"));
+        logger.info("&8» &7Static: " + (group.isStatic() ? "&aYes" : "&cNo"));
     }
 
     private void sendHelp() {

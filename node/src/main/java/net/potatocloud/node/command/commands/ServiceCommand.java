@@ -56,6 +56,7 @@ public class ServiceCommand implements Command, TabCompleter {
             logger.info("There are &cno &7running services");
             return;
         }
+        logger.info("All running services&8:");
         for (final Service service : services) {
             logger.info("&8» &a" + service.getName() + " &7- Group: &a" + service.getServiceGroup().getName() + " &7- Status: &a" + service.getStatus());
         }
@@ -118,15 +119,15 @@ public class ServiceCommand implements Command, TabCompleter {
             logger.info("&cNo service found with the name &a" + name);
             return;
         }
-        logger.info("Name: &a" + service.getName());
-        logger.info("Group: &a" + service.getServiceGroup().getName());
-        logger.info("Port: &a" + service.getPort());
-        logger.info("Status: &a" + service.getStatus());
-        logger.info("Online Players: &a" + service.getOnlinePlayerCount());
-        logger.info("Max Players: &a" + service.getMaxPlayers());
-        logger.info("Memory usage: &a" + service.getUsedMemory() + "MB");
-        logger.info("Start Timestamp: &a" + TIME_FORMAT.format(service.getStartTimestamp()));
-        logger.info("Online Time: &a" + DurationUtil.formatDuration(System.currentTimeMillis() - service.getStartTimestamp()));
+        logger.info("&7Info for service &a" + service.getName() + "&8:");
+        logger.info("&8» &7Group: &a" + service.getServiceGroup().getName());
+        logger.info("&8» &7Port: &a" + service.getPort());
+        logger.info("&8» &7Status: &a" + service.getStatus());
+        logger.info("&8» &7Online Players: &a" + service.getOnlinePlayerCount());
+        logger.info("&8» &7Max Players: &a" + service.getMaxPlayers());
+        logger.info("&8» &7Memory usage: &a" + service.getUsedMemory() + "MB");
+        logger.info("&8» &7Start Timestamp: &a" + TIME_FORMAT.format(service.getStartTimestamp()));
+        logger.info("&8» &7Online Time: &a" + DurationUtil.formatDuration(System.currentTimeMillis() - service.getStartTimestamp()));
     }
 
     private void executeService(String args[]) {

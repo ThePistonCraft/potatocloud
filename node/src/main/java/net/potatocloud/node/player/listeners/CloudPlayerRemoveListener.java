@@ -1,4 +1,4 @@
-package net.potatocloud.node.listeners.player;
+package net.potatocloud.node.player.listeners;
 
 import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.player.CloudPlayer;
@@ -9,14 +9,17 @@ import net.potatocloud.node.Node;
 import net.potatocloud.node.player.CloudPlayerManagerImpl;
 
 @RequiredArgsConstructor
-public class RemoveCloudPlayerListener implements PacketListener<CloudPlayerRemovePacket> {
+public class CloudPlayerRemoveListener implements PacketListener<CloudPlayerRemovePacket> {
 
     private final CloudPlayerManagerImpl playerManager;
 
     @Override
     public void onPacket(NetworkConnection connection, CloudPlayerRemovePacket packet) {
-        final CloudPlayer playerToRemove = playerManager.getCloudPlayer(packet.getPlayerUniqueId());
-        playerManager.unregisterPlayer(playerToRemove);
+        final CloudPlayer player = playerManager.getCloudPlayer(packet.getPlayerUniqueId());
+        if (player == null) {
+            return;
+        }
+        playerManager.unregisterPlayer(player);
 
         final Node node = Node.getInstance();
 
@@ -25,8 +28,8 @@ public class RemoveCloudPlayerListener implements PacketListener<CloudPlayerRemo
                 .forEach(networkConnection -> networkConnection.send(packet));
 
         if (node.getConfig().isLogPlayerConnections() && !node.isStopping()) {
-            node.getLogger().info("Player &a" + playerToRemove.getUsername()
-                    + " &7disconnected &7from the network &8[&7UUID&8: &a" + playerToRemove.getUniqueId() + "&8]");
+            node.getLogger().info("Player &a" + player.getUsername()
+                    + " &7disconnected &7from the network &8[&7UUID&8: &a" + player.getUniqueId() + "&8]");
         }
     }
 }

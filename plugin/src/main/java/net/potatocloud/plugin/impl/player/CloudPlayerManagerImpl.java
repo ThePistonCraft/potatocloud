@@ -9,7 +9,7 @@ import net.potatocloud.core.networking.NetworkClient;
 import net.potatocloud.core.networking.packets.player.CloudPlayerAddPacket;
 import net.potatocloud.core.networking.packets.player.CloudPlayerRemovePacket;
 import net.potatocloud.core.networking.packets.player.CloudPlayerUpdatePacket;
-import net.potatocloud.plugin.impl.event.LocalConnectPlayerWithServiceEvent;
+import net.potatocloud.plugin.impl.event.ConnectPlayerWithServiceEvent;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -57,7 +57,7 @@ public class CloudPlayerManagerImpl implements CloudPlayerManager {
 
     @Override
     public void connectPlayerWithService(String playerName, String serviceName) {
-        CloudAPI.getInstance().getEventManager().call(new LocalConnectPlayerWithServiceEvent(playerName, serviceName));
+        CloudAPI.getInstance().getEventManager().call(new ConnectPlayerWithServiceEvent(playerName, serviceName));
     }
 
     @Override

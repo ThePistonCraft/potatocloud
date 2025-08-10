@@ -1,4 +1,4 @@
-package net.potatocloud.plugin.impl.listener.group;
+package net.potatocloud.plugin.impl.group.listeners;
 
 import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.group.impl.ServiceGroupImpl;
@@ -8,7 +8,7 @@ import net.potatocloud.core.networking.packets.group.GroupAddPacket;
 import net.potatocloud.plugin.impl.group.ServiceGroupManagerImpl;
 
 @RequiredArgsConstructor
-public class AddGroupListener implements PacketListener<GroupAddPacket> {
+public class GroupAddListener implements PacketListener<GroupAddPacket> {
 
     private final ServiceGroupManagerImpl groupManager;
 

@@ -1,7 +1,9 @@
-package net.potatocloud.node.listeners.service;
+package net.potatocloud.node.service.listeners;
 
 import lombok.RequiredArgsConstructor;
+import net.potatocloud.api.group.ServiceGroup;
 import net.potatocloud.api.group.ServiceGroupManager;
+import net.potatocloud.api.service.Service;
 import net.potatocloud.api.service.ServiceManager;
 import net.potatocloud.core.networking.NetworkConnection;
 import net.potatocloud.core.networking.PacketListener;
@@ -15,6 +17,10 @@ public class StartServiceListener implements PacketListener<StartServicePacket> 
 
     @Override
     public void onPacket(NetworkConnection connection, StartServicePacket packet) {
-        serviceManager.startService(groupManager.getServiceGroup(packet.getGroupName()));
+        final ServiceGroup group = groupManager.getServiceGroup(packet.getGroupName());
+        if (group == null)  {
+            return;
+        }
+        serviceManager.startService(group);
     }
 }

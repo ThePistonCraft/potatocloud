@@ -1,4 +1,4 @@
-package net.potatocloud.node.listeners.group;
+package net.potatocloud.node.group.listeners;
 
 import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.group.ServiceGroup;

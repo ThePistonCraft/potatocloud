@@ -10,12 +10,23 @@ public class DurationUtil {
     public static String formatDuration(long millis) {
         final Duration duration = Duration.ofMillis(millis);
 
-        final long days = duration.toDays();
+        final long totalDays = duration.toDays();
+
+        final long months = totalDays / 30;
+        final long weeks = (totalDays % 30) / 7;
+        final long days = totalDays % 7;
+
         final long hours = duration.toHours() % 24;
         final long minutes = duration.toMinutes() % 60;
         final long seconds = duration.getSeconds() % 60;
 
         final StringBuilder builder = new StringBuilder();
+        if (months > 0) {
+            builder.append(months).append("mo ");
+        }
+        if (weeks > 0) {
+            builder.append(weeks).append("w ");
+        }
         if (days > 0) {
             builder.append(days).append("d ");
         }
@@ -29,4 +40,5 @@ public class DurationUtil {
 
         return builder.toString().trim();
     }
+
 }

@@ -14,7 +14,7 @@ import java.util.List;
 public class ProxyCommand implements SimpleCommand {
 
     private final Config config;
-    private final MessagesConfig messagesConfig;
+    private final MessagesConfig messages;
 
     @Override
     public void execute(Invocation invocation) {
@@ -25,83 +25,84 @@ public class ProxyCommand implements SimpleCommand {
             return;
         }
 
-        if (!(player.hasPermission(this.config.getPermission()))) {
-            player.sendMessage(this.messagesConfig.get("no-permission"));
+        if (!player.hasPermission(config.getPermission())) {
+            player.sendMessage(messages.get("no-permission"));
             return;
         }
 
         if (args.length == 1) {
             switch (args[0].toLowerCase()) {
                 case "toggle" -> {
-                    boolean state = this.config.maintenance();
-                    boolean newState = !state;
-                    this.config.maintenance(newState);
+                    final boolean state = config.maintenance();
+                    final boolean newState = !state;
+                    config.maintenance(newState);
 
-                    player.sendMessage(newState ? this.messagesConfig.get("now_maintenance") : this.messagesConfig.get("now_not_maintenance"));
+                    player.sendMessage(newState
+                            ? messages.get("now_maintenance")
+                            : messages.get("now_not_maintenance"));
                 }
                 case "list", "info" -> {
-                    player.sendMessage(this.config.maintenance() ? this.messagesConfig.get("now_maintenance") : this.messagesConfig.get("now_not_maintenance"));
-                    player.sendMessage(this.messagesConfig.get("info_text"));
-                    this.config.whitelist().forEach(name -> {
-                        player.sendMessage(this.messagesConfig.get("info_key")
+                    player.sendMessage(messages.get("info_text"));
+                    config.whitelist().forEach(name -> {
+                        player.sendMessage(messages.get("info_key")
                                 .replaceText(text -> text.match("%name%").replacement(name)));
                     });
                 }
                 case "reload" -> {
-                    this.config.reload();
-                    player.sendMessage(this.messagesConfig.get("reload"));
+                    config.reload();
+                    player.sendMessage(messages.get("reload"));
                 }
-                default -> {
-                    this.usage(player);
-                }
+                default -> sendUsage(player);
             }
             return;
         }
 
         if (args.length == 3) {
             if (!args[0].equalsIgnoreCase("whitelist")) {
-                this.usage(player);
+                sendUsage(player);
                 return;
             }
 
+            final List<String> whitelist = config.whitelist();
+            final String name = args[2];
+
             if (args[1].equalsIgnoreCase("add")) {
-                List<String> whitelist = this.config.whitelist();
-                if (whitelist.contains(args[2])) {
-                    player.sendMessage(this.messagesConfig.get("whitelist.already"));
+                if (whitelist.contains(name)) {
+                    player.sendMessage(messages.get("whitelist.already"));
                     return;
                 }
-                whitelist.add(args[2]);
-                this.config.whitelist(whitelist);
-                player.sendMessage(this.messagesConfig.get("whitelist.added"));
+                whitelist.add(name);
+                config.whitelist(whitelist);
+                player.sendMessage(messages.get("whitelist.added")
+                        .replaceText(text -> text.match("%name%").replacement(name)));
                 return;
             }
 
             if (args[1].equalsIgnoreCase("remove")) {
-                List<String> whitelist = this.config.whitelist();
-                if (!(whitelist.contains(args[2]))) {
-                    player.sendMessage(this.messagesConfig.get("whitelist.not")
-                            .replaceText(text -> text.match("%name%").replacement(args[2])));
+                if (!whitelist.contains(name)) {
+                    player.sendMessage(messages.get("whitelist.not")
+                            .replaceText(text -> text.match("%name%").replacement(name)));
                     return;
                 }
-                whitelist.remove(args[2]);
-                this.config.whitelist(whitelist);
-                player.sendMessage(this.messagesConfig.get("whitelist.removed")
-                        .replaceText(text -> text.match("%name%").replacement(args[2])));
+                whitelist.remove(name);
+                config.whitelist(whitelist);
+                player.sendMessage(messages.get("whitelist.removed")
+                        .replaceText(text -> text.match("%name%").replacement(name)));
                 return;
             }
 
-            this.usage(player);
+            sendUsage(player);
             return;
         }
 
-        this.usage(player);
+        sendUsage(player);
     }
 
-    private void usage(Player player) {
-        player.sendMessage(this.messagesConfig.get("help.toggle"));
-        player.sendMessage(this.messagesConfig.get("help.list"));
-        player.sendMessage(this.messagesConfig.get("help.reload"));
-        player.sendMessage(this.messagesConfig.get("help.whitelist"));
+    private void sendUsage(Player player) {
+        player.sendMessage(messages.get("help.toggle"));
+        player.sendMessage(messages.get("help.list"));
+        player.sendMessage(messages.get("help.reload"));
+        player.sendMessage(messages.get("help.whitelist"));
     }
 
     @Override
@@ -113,13 +114,13 @@ public class ProxyCommand implements SimpleCommand {
             return Collections.emptyList();
         }
 
-        if (!(player.hasPermission(this.config.getPermission()))) {
+        if (!player.hasPermission(config.getPermission())) {
             return Collections.emptyList();
         }
 
         if (args.length == 3) {
             if (args[1].equalsIgnoreCase("remove")) {
-                return this.config.whitelist();
+                return config.whitelist();
             }
         }
 
@@ -130,7 +131,6 @@ public class ProxyCommand implements SimpleCommand {
         if (args.length == 0 || args.length == 1) {
             return List.of("toggle", "list", "whitelist", "reload");
         }
-
 
         return Collections.emptyList();
     }

@@ -1,4 +1,4 @@
-package net.potatocloud.node.listeners.service;
+package net.potatocloud.node.service.listeners;
 
 import lombok.RequiredArgsConstructor;
 import net.potatocloud.api.event.EventManager;
@@ -23,11 +23,14 @@ public class ServiceStartedListener implements PacketListener<ServiceStartedPack
     @Override
     public void onPacket(NetworkConnection connection, ServiceStartedPacket packet) {
         final Service service = serviceManager.getService(packet.getServiceName());
+        if (service == null) {
+            return;
+        }
+
         logger.info("Service &a" + packet.getServiceName() + "&7 is now &aonline");
 
         service.setStatus(ServiceStatus.RUNNING);
         service.update();
-        serviceManager.updateService(service);
 
         // call service started event
         eventManager.call(new ServiceStartedEvent(packet.getServiceName()));
