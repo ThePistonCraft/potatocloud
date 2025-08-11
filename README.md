@@ -80,4 +80,9 @@ holder.setProperty(custom, "Player123");
 // getting the value of a property
 Object value = holder.getProperty("server_owner").getValue();
 ```
+## ☁️ Test Server
+
+This cloud system is used by [Surnex.net](https://surnex.net) as a test object.
+
+
 
