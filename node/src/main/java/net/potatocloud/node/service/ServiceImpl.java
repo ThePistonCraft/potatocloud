@@ -178,7 +178,7 @@ public class ServiceImpl implements Service {
         platformManager.downloadPlatform(platform);
 
         // prepare the platform of the service
-        if ((platform instanceof PaperMCPlatformVersion || platform instanceof PurpurPlatformVersion) && !platform.isProxy()) {
+        if ((platform instanceof PaperMCPlatformVersion || platform instanceof PurpurPlatformVersion || platform instanceof PandaSpigotVersion) && !platform.isProxy()) {
             // Paper and Purpur
 
             final Properties properties = new Properties();
@@ -243,7 +243,8 @@ public class ServiceImpl implements Service {
         args.add("-Dpotatocloud.node.port=" + config.getNodePort());
 
         if (!platform.isProxy()) {
-            args.add("-Dcom.mojang.eula.agree=true");
+            final Path eulaFile = directory.resolve("eula.txt");
+            Files.writeString(eulaFile, "eula=true", StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
         }
 
         if (!platform.getRecommendedFlags().isEmpty()) {
